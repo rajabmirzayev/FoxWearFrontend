@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from './services/api';
 import { ApiResponse, CreateProductRequest, Product, Category, ProductSize, Color } from './types';
+import Modal from './components/Modal';
 
 export default function AddProduct() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState('');
+  const [isDirty, setIsDirty] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [sizes, setSizes] = useState<ProductSize[]>([]);
   const [availableColors, setAvailableColors] = useState<Color[]>([]);
@@ -78,6 +81,7 @@ export default function AddProduct() {
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setIsDirty(true);
     const { name, value } = e.target;
     if (name.includes('Price') || name === 'discountRate' || name === 'categoryId') {
       const sanitized = value.replace(/^0+(?=\d)/, '');
@@ -139,6 +143,7 @@ export default function AddProduct() {
   };
 
   const handleColorChange = (index: number, field: string, value: string) => {
+    setIsDirty(true);
     setColors(prev => {
       const newColors = [...prev];
       newColors[index] = { ...newColors[index], [field]: value };
@@ -147,6 +152,7 @@ export default function AddProduct() {
   };
 
   const addColorOption = () => {
+    setIsDirty(true);
     setColors(prev => [...prev, {
       colorName: '',
       colorCode: '#000000',
@@ -158,6 +164,7 @@ export default function AddProduct() {
 
   const removeColorOption = (index: number) => {
     if (index === 0) return;
+    setIsDirty(true);
     setColors(prev => prev.filter((_, i) => i !== index));
     setColorSelectionTypes(prev => prev.filter((_, i) => i !== index));
   };
@@ -196,6 +203,7 @@ export default function AddProduct() {
   };
 
   const addSize = (colorIndex: number) => {
+    setIsDirty(true);
     setColors(prev => {
       const newColors = [...prev];
       newColors[colorIndex].items.push({ sizeId: sizes.length > 0 ? sizes[0].id : 0, stockQuantity: 0 });
@@ -205,6 +213,7 @@ export default function AddProduct() {
 
   const removeSize = (colorIndex: number, itemIndex: number) => {
     if (itemIndex === 0) return;
+    setIsDirty(true);
     setColors(prev => {
       const newColors = [...prev];
       newColors[colorIndex].items = newColors[colorIndex].items.filter((_, i) => i !== itemIndex);
@@ -213,6 +222,7 @@ export default function AddProduct() {
   };
 
   const handleImageChange = (colorIndex: number, imageIndex: number, field: string, value: any) => {
+    setIsDirty(true);
     setColors(prev => {
       const newColors = [...prev];
       if (field === 'isMain' && value === true) {
@@ -228,6 +238,7 @@ export default function AddProduct() {
   };
 
   const handleItemChange = (colorIndex: number, itemIndex: number, field: string, value: any) => {
+    setIsDirty(true);
     setColors(prev => {
       const newColors = [...prev];
       let finalValue = value;
@@ -248,7 +259,7 @@ export default function AddProduct() {
     setUploadErrors(prev => ({ ...prev, [uploadKey]: '' }));
 
     if (file.size > 5 * 1024 * 1024) {
-      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'Şəkil 5MB-dan böyük ola bilməz' }));
+      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'The image cannot be larger than 5MB' }));
       return;
     }
 
@@ -267,11 +278,11 @@ export default function AddProduct() {
       if (response.data.success) {
         handleImageChange(colorIndex, imageIndex, 'image', response.data.data);
       } else {
-        setUploadErrors(prev => ({ ...prev, [uploadKey]: response.data.message || 'Yükləmə uğursuz oldu' }));
+        setUploadErrors(prev => ({ ...prev, [uploadKey]: response.data.message || 'Upload failed' }));
       }
     } catch (err: any) {
       console.error('Upload error', err);
-      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'Yükləmə xətası baş verdi' }));
+      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'A loading error occurred' }));
     } finally {
       setUploading(prev => ({ ...prev, [uploadKey]: false }));
     }
@@ -356,8 +367,27 @@ export default function AddProduct() {
     );
   }
 
+  const handleCancel = () => {
+    if (isDirty) {
+      setShowCancelModal(true);
+    } else {
+      navigate('/admin/products');
+    }
+  };
+
   return (
-    <div className="flex-1 overflow-y-auto bg-background-soft px-8 py-8 custom-scrollbar">
+    <div className="h-full flex flex-col">
+      <Modal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        onConfirm={() => navigate('/admin/products')}
+        title="Discard the changes?"
+        message="The changes you made will not be saved. Are you sure you want to exit?"
+        confirmLabel="Exit"
+        cancelLabel="Cancel"
+        type="warning"
+      />
+      <div className="flex-1 overflow-y-auto bg-background-soft px-8 py-8 custom-scrollbar">
       <div className="max-w-5xl mx-auto">
         {/* Breadcrumbs & Header */}
         <div className="mb-8">
@@ -370,7 +400,7 @@ export default function AddProduct() {
             <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Add New Product</h2>
             <div className="flex gap-3">
               <button 
-                onClick={() => navigate('/admin/products')}
+                onClick={handleCancel}
                 className="px-6 py-2 border border-primary/20 text-primary font-semibold rounded-lg hover:bg-primary/5 transition-colors cursor-pointer"
               >
                 Cancel
@@ -729,12 +759,13 @@ export default function AddProduct() {
               <span className="font-bold tracking-wide">Add Another Color Option</span>
             </button>
           </div>
+        </div>
 
-          {/* Page Footer */}
+        {/* Page Footer */}
           <div className="flex items-center justify-end pt-8 pb-12 border-t border-border-subtle">
             <div className="flex gap-4">
               <button 
-                onClick={() => navigate('/admin/products')}
+                onClick={handleCancel}
                 className="px-8 py-3 bg-white border border-border-subtle text-slate-600 font-bold rounded-lg hover:bg-background-soft transition-all cursor-pointer"
               >
                 Cancel & Exit

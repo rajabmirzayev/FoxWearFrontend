@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from './services/api';
 import { ApiResponse, Product, ProductPage, ProductFilter, Category, ProductSize, Color } from './types';
+import Modal from './components/Modal';
 
 export default function ProductList() {
   const navigate = useNavigate();
@@ -13,6 +14,19 @@ export default function ProductList() {
   const [error, setError] = useState<string | null>(null);
   const [pageInfo, setPageInfo] = useState<ProductPage | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Modal states
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; productId: number | null }>({
+    isOpen: false,
+    productId: null
+  });
+  const [alertModal, setAlertModal] = useState<{ isOpen: boolean; title: string; message: string; type: 'info' | 'danger' | 'warning' }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info'
+  });
+
   const [filters, setFilters] = useState<ProductFilter>({
     page: 0,
     size: 10,
@@ -131,18 +145,31 @@ export default function ProductList() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
       const response = await api.delete<ApiResponse<string>>(`/api/admin/products/${id}/soft`);
       if (response.data.success) {
         fetchProducts();
       } else {
-        alert(response.data.message || 'Failed to delete product');
+        setAlertModal({
+          isOpen: true,
+          title: 'Error',
+          message: response.data.message || 'It was not possible to delete the product',
+          type: 'danger'
+        });
       }
     } catch (err: any) {
       console.error('Error deleting product', err);
-      alert(err.response?.data?.message || 'An error occurred while deleting the product.');
+      setAlertModal({
+        isOpen: true,
+        title: 'Error',
+        message: err.response?.data?.message || 'An error occurred while deleting the product.',
+        type: 'danger'
+      });
     }
+  };
+
+  const confirmDelete = (id: number) => {
+    setDeleteModal({ isOpen: true, productId: id });
   };
 
   const handleToggleActive = async (id: number) => {
@@ -151,16 +178,48 @@ export default function ProductList() {
       if (response.data.success) {
         fetchProducts();
       } else {
-        alert(response.data.message || 'Failed to toggle status');
+        setAlertModal({
+          isOpen: true,
+          title: 'Error',
+          message: response.data.message || 'It was not possible to change the status',
+          type: 'danger'
+        });
       }
     } catch (err: any) {
       console.error('Error toggling product status', err);
-      alert(err.response?.data?.message || 'An error occurred while toggling the product status.');
+      setAlertModal({
+        isOpen: true,
+        title: 'Error',
+        message: err.response?.data?.message || 'An error occurred while changing the status.',
+        type: 'danger'
+      });
     }
   };
 
   return (
     <>
+      <Modal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, productId: null })}
+        onConfirm={() => deleteModal.productId && handleDelete(deleteModal.productId)}
+        title="Delete the product?"
+        message="Are you sure you want to delete this product?"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        type="danger"
+      />
+
+      <Modal
+        isOpen={alertModal.isOpen}
+        onClose={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
+        title={alertModal.title}
+        message={alertModal.message}
+        confirmLabel="Close"
+        cancelLabel=""
+        type={alertModal.type}
+      />
+
       {/* Header Section */}
       <header className="p-8 pb-4">
         <div className="flex justify-between items-end mb-8">
@@ -467,7 +526,7 @@ export default function ProductList() {
                             <span className="p-1.5 material-symbols-outlined text-lg">edit</span>
                           </button>
                           <button 
-                            onClick={() => handleDelete(product.id)}
+                            onClick={() => confirmDelete(product.id)}
                             className="hover:bg-red-50 rounded-lg text-red-600 cursor-pointer" 
                             title="Delete"
                           >
