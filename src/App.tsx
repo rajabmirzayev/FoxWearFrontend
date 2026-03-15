@@ -4,6 +4,7 @@ import LoginPage from './LoginPage';
 import AdminLayout from './AdminLayout';
 import ProductList from './ProductList';
 import AddProduct from './AddProduct';
+import EditProduct from './EditProduct';
 import Dashboard from './Dashboard';
 import Orders from './Orders';
 import Sales from './Sales';
@@ -33,6 +34,7 @@ export default function App() {
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="products" element={<ProductList />} />
                   <Route path="products/add" element={<AddProduct />} />
+                  <Route path="products/edit/:slug" element={<EditProduct />} />
                   <Route path="orders" element={<Orders />} />
                   <Route path="sales" element={<Sales />} />
                   <Route path="customers" element={<Customers />} />

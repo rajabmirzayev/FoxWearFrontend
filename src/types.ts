@@ -64,6 +64,7 @@ export interface Product {
   hasDiscount: boolean;
   slug: string;
   gender: 'MALE' | 'FEMALE' | 'UNISEX' | 'KIDS';
+  category: Category;
   categoryName: string;
   description?: string;
   isActive: boolean;

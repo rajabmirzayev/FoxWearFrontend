@@ -356,14 +356,40 @@ export default function ProductList() {
             </thead>
             <tbody className="divide-y divide-border-subtle">
               {loading ? (
-                <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-primary/40">
-                    <div className="flex flex-col items-center gap-2">
-                      <span className="material-symbols-outlined animate-spin text-4xl">sync</span>
-                      <p className="font-medium">Loading products...</p>
-                    </div>
-                  </td>
-                </tr>
+                Array.from({ length: filters.size || 10 }).map((_, idx) => (
+                  <tr key={`skeleton-${idx}`} className="animate-pulse">
+                    <td className="px-6 py-4">
+                      <div className="size-14 rounded bg-slate-200"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col gap-2">
+                        <div className="h-4 w-32 bg-slate-200 rounded"></div>
+                        <div className="h-3 w-20 bg-slate-100 rounded"></div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-24 bg-slate-100 rounded"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-16 bg-slate-100 rounded"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-20 bg-slate-200 rounded"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-24 bg-slate-100 rounded"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-6 w-16 bg-slate-100 rounded-full"></div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-2">
+                        <div className="size-8 bg-slate-100 rounded-lg"></div>
+                        <div className="size-8 bg-slate-100 rounded-lg"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
               ) : products.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-6 py-12 text-center text-primary/40">
@@ -433,7 +459,11 @@ export default function ProductList() {
                           </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="hover:bg-primary/10 rounded-lg text-primary cursor-pointer" title="Edit">
+                          <button 
+                            onClick={() => navigate(`/admin/products/edit/${product.slug}`)}
+                            className="hover:bg-primary/10 rounded-lg text-primary cursor-pointer" 
+                            title="Edit"
+                          >
                             <span className="p-1.5 material-symbols-outlined text-lg">edit</span>
                           </button>
                           <button 

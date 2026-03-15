@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from './services/api';
 import { ApiResponse, CreateProductRequest, Product, Category, ProductSize, Color } from './types';
 
-export default function AddProduct() {
+export default function EditProduct() {
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -11,6 +12,7 @@ export default function AddProduct() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [sizes, setSizes] = useState<ProductSize[]>([]);
   const [availableColors, setAvailableColors] = useState<Color[]>([]);
+  const [productId, setProductId] = useState<number | null>(null);
 
   const [formData, setFormData] = useState<Omit<CreateProductRequest, 'colors'>>({
     title: '',
@@ -22,60 +24,80 @@ export default function AddProduct() {
     categoryId: 0,
   });
 
-  const [colors, setColors] = useState<CreateProductRequest['colors']>([
-    {
-      colorName: '',
-      colorCode: '#000000',
-      images: [{ image: '', isMain: true }],
-      items: [{ sizeId: 0, stockQuantity: 0 }]
-    }
-  ]);
-
+  const [colors, setColors] = useState<CreateProductRequest['colors']>([]);
+  const [expandedColors, setExpandedColors] = useState<{ [key: number]: boolean }>({ 0: true });
   const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
   const [uploadErrors, setUploadErrors] = useState<{ [key: string]: string }>({});
-  const [colorSelectionTypes, setColorSelectionTypes] = useState<string[]>(['custom']);
+  const [colorSelectionTypes, setColorSelectionTypes] = useState<string[]>([]);
   const [pricingMaster, setPricingMaster] = useState<'discountPrice' | 'discountRate' | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      setFetching(true);
       try {
-        const [catRes, sizeRes, colorRes] = await Promise.all([
+        setFetching(true);
+        const [catRes, sizeRes, colorRes, productRes] = await Promise.all([
           api.get<ApiResponse<Category[]>>('/api/admin/products/category'),
           api.get<ApiResponse<ProductSize[]>>('/api/admin/products/size'),
-          api.get<ApiResponse<Color[]>>('/api/admin/products/colors')
+          api.get<ApiResponse<Color[]>>('/api/admin/products/colors'),
+          api.get<ApiResponse<Product>>(`/api/admin/products/${slug}`)
         ]);
         
-        if (catRes.data.success) {
-          setCategories(catRes.data.data);
-          if (catRes.data.data.length > 0) {
-            setFormData(prev => ({ ...prev, categoryId: catRes.data.data[0].id }));
-          }
-        }
-        
-        if (sizeRes.data.success) {
-          setSizes(sizeRes.data.data);
-          if (sizeRes.data.data.length > 0) {
-            const firstSizeId = sizeRes.data.data[0].id;
-            setColors(prev => prev.map(c => ({
-              ...c,
-              items: c.items.map(i => ({ ...i, sizeId: firstSizeId }))
-            })));
-          }
-        }
+        if (catRes.data.success) setCategories(catRes.data.data);
+        if (sizeRes.data.success) setSizes(sizeRes.data.data);
+        if (colorRes.data.success) setAvailableColors(colorRes.data.data);
 
-        if (colorRes.data.success) {
-          setAvailableColors(colorRes.data.data);
+        if (productRes.data.success) {
+          const p = productRes.data.data;
+          setProductId(p.id);
+          setFormData({
+            title: p.title,
+            description: p.description,
+            originalPrice: p.originalPrice,
+            discountPrice: p.discountPrice,
+            discountRate: p.discountRate,
+            gender: p.gender,
+            categoryId: p.category.id
+          });
+
+          if (p.discountRate > 0) setPricingMaster('discountRate');
+          else if (p.discountPrice > 0) setPricingMaster('discountPrice');
+
+          const mappedColors = p.colors.map(c => ({
+            colorName: c.colorName,
+            colorCode: c.colorCode,
+            images: c.images.map(img => ({
+              image: img.image,
+              isMain: img.main
+            })),
+            items: c.items.map(item => ({
+              sizeId: item.productSize.id,
+              stockQuantity: item.stockQuantity
+            }))
+          }));
+          setColors(mappedColors);
+          
+          // Determine selection types
+          const selectionTypes = p.colors.map(c => {
+            const match = colorRes.data.data.find(ac => ac.colorCode.toLowerCase() === c.colorCode.toLowerCase());
+            return match ? String(match.id) : 'custom';
+          });
+          setColorSelectionTypes(selectionTypes);
+          
+          // Expand first one by default
+          setExpandedColors({ 0: true });
+        } else {
+          setError(productRes.data.message || 'Product not found');
         }
       } catch (err) {
-        console.error('Error fetching categories/sizes/colors', err);
+        console.error('Error fetching data', err);
+        setError('Failed to load product data');
       } finally {
         setFetching(false);
       }
     };
     fetchData();
-  }, []);
+  }, [slug]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -154,12 +176,23 @@ export default function AddProduct() {
       items: [{ sizeId: sizes.length > 0 ? sizes[0].id : 0, stockQuantity: 0 }]
     }]);
     setColorSelectionTypes(prev => [...prev, 'custom']);
+    setExpandedColors(prev => ({ ...prev, [colors.length]: true }));
   };
 
   const removeColorOption = (index: number) => {
-    if (index === 0) return;
+    if (colors.length === 1) return;
     setColors(prev => prev.filter((_, i) => i !== index));
     setColorSelectionTypes(prev => prev.filter((_, i) => i !== index));
+    const newExpanded = { ...expandedColors };
+    delete newExpanded[index];
+    setExpandedColors(newExpanded);
+  };
+
+  const toggleColorExpand = (index: number) => {
+    setExpandedColors(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
   };
 
   const addImage = async (colorIndex: number, file: File) => {
@@ -167,10 +200,8 @@ export default function AddProduct() {
     const isFirstEmpty = color.images.length === 1 && color.images[0].image === '';
     
     if (isFirstEmpty) {
-      // Use the existing first empty slot
       await handleFileUpload(colorIndex, 0, file);
     } else {
-      // Add a new slot and use it
       const newIndex = color.images.length;
       setColors(prev => {
         const newColors = [...prev];
@@ -182,7 +213,10 @@ export default function AddProduct() {
   };
 
   const removeImage = (colorIndex: number, imageIndex: number) => {
-    if (imageIndex === 0) return;
+    if (imageIndex === 0 && colors[colorIndex].images.length === 1) {
+       handleImageChange(colorIndex, 0, 'image', '');
+       return;
+    }
     setColors(prev => {
       const newColors = [...prev];
       const removedImage = newColors[colorIndex].images[imageIndex];
@@ -204,7 +238,7 @@ export default function AddProduct() {
   };
 
   const removeSize = (colorIndex: number, itemIndex: number) => {
-    if (itemIndex === 0) return;
+    if (itemIndex === 0 && colors[colorIndex].items.length === 1) return;
     setColors(prev => {
       const newColors = [...prev];
       newColors[colorIndex].items = newColors[colorIndex].items.filter((_, i) => i !== itemIndex);
@@ -278,6 +312,7 @@ export default function AddProduct() {
   };
 
   const handleSubmit = async () => {
+    if (!productId) return;
     setLoading(true);
     setError('');
     try {
@@ -285,11 +320,11 @@ export default function AddProduct() {
         ...formData,
         colors
       };
-      const response = await api.post<ApiResponse<Product>>('/api/admin/products', payload);
+      const response = await api.put<ApiResponse<Product>>(`/api/admin/products/${productId}`, payload);
       if (response.data.success) {
         navigate('/admin/products');
       } else {
-        setError(response.data.message || 'Failed to create product');
+        setError(response.data.message || 'Failed to update product');
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');
@@ -364,10 +399,10 @@ export default function AddProduct() {
           <nav className="flex items-center gap-2 text-sm text-slate-500 mb-2">
             <button onClick={() => navigate('/admin/products')} className="hover:text-primary transition-colors cursor-pointer">Products</button>
             <span className="material-symbols-outlined text-xs">chevron_right</span>
-            <span className="text-slate-900 font-medium">Add New Product</span>
+            <span className="text-slate-900 font-medium">Edit Product</span>
           </nav>
           <div className="flex justify-between items-center">
-            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Add New Product</h2>
+            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Edit Product</h2>
             <div className="flex gap-3">
               <button 
                 onClick={() => navigate('/admin/products')}
@@ -380,7 +415,7 @@ export default function AddProduct() {
                 disabled={loading}
                 className="px-6 py-2 bg-primary text-white font-semibold rounded-lg shadow-md shadow-primary/20 hover:bg-primary/90 transition-all disabled:opacity-50 cursor-pointer"
               >
-                {loading ? 'Saving...' : 'Save Product'}
+                {loading ? 'Updating...' : 'Update Product'}
               </button>
             </div>
           </div>
@@ -744,7 +779,7 @@ export default function AddProduct() {
                 disabled={loading}
                 className="px-10 py-3 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all disabled:opacity-50 cursor-pointer"
               >
-                {loading ? 'Publishing...' : 'Publish Product'}
+                {loading ? 'Updating...' : 'Update Product'}
               </button>
             </div>
           </div>
