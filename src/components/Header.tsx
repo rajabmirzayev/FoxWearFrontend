@@ -21,6 +21,7 @@ export default function Header() {
         {/* Nav Links */}
         <nav className="hidden md:flex items-center gap-10">
           {[
+            { name: 'Homepage', path: '/' },
             { name: 'Products', path: '/products' },
             { name: 'Collections', path: '/collections' },
             { name: 'About Us', path: '/about' },

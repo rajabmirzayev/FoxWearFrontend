@@ -11,7 +11,28 @@ export default function Home() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [bannerLoaded, setBannerLoaded] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const reviewsScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (loading || reviews.length === 0) return;
+
+    const interval = setInterval(() => {
+      if (!isPaused && reviewsScrollRef.current) {
+        const container = reviewsScrollRef.current;
+        container.scrollLeft += 1;
+        
+        // If we've scrolled past the first set of reviews, reset to the beginning
+        // We use a small buffer to ensure smooth transition
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0;
+        }
+      }
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, [isPaused, loading, reviews.length]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -233,18 +254,37 @@ export default function Home() {
       {/* Reviews Section */}
       <section className="py-32 px-6 lg:px-10 border-b border-primary/5 bg-background-light">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <span className="text-primary text-xs font-bold uppercase tracking-[0.5em] block mb-4">Community</span>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-6">What Our Customers Say</h2>
-            <p className="text-primary/70 font-light text-lg max-w-2xl mx-auto">Join thousands of satisfied customers who have experienced the FoxWear difference in quality and style.</p>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+            <div className="max-w-xl">
+              <span className="text-primary text-xs font-bold uppercase tracking-[0.5em] block mb-4">Community</span>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-6">What Our Customers Say</h2>
+              <p className="text-primary/70 font-light text-lg">Join thousands of satisfied customers who have experienced the FoxWear difference in quality and style.</p>
+            </div>
+            <div className="flex items-center gap-6">
+              <Link className="text-sm font-bold uppercase tracking-[0.2em] border-b-2 border-primary pb-1 hover:text-primary/70 hover:border-primary/70 transition-all" to="#">View All</Link>
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-20">
-            {reviews.map((review, index) => (
-              <div key={index} className="flex flex-col gap-8 p-10 bg-background-soft border border-primary/5 rounded-none transition-all hover:shadow-2xl">
-                <div className="flex text-primary">
+          <div 
+            ref={reviewsScrollRef}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            className="flex overflow-x-auto gap-10 pb-12 no-scrollbar"
+          >
+            {[...reviews, ...reviews].map((review, index) => (
+              <div key={`${review.id}-${index}`} className="flex-shrink-0 w-[85vw] md:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.67rem)] flex flex-col gap-8 p-10 bg-background-soft border border-primary/5 rounded-none transition-all hover:shadow-2xl">
+                <div className="flex gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <span key={i} className={`material-symbols-outlined text-xl ${i < review.rate ? '[font-variation-settings:\'FILL\'_1]' : ''}`}>star</span>
+                    <span 
+                      key={i} 
+                      className={`material-symbols-outlined text-xl ${
+                        i < review.rate 
+                          ? 'text-yellow-500 [font-variation-settings:"FILL"_1]' 
+                          : 'text-primary/20'
+                      }`}
+                    >
+                      star
+                    </span>
                   ))}
                 </div>
                 <p className="text-primary/80 italic text-lg leading-relaxed font-light">"{review.description}"</p>
@@ -265,7 +305,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-12">
             <button className="group flex items-center gap-3 border-2 border-primary text-primary px-12 py-5 rounded-none font-bold uppercase tracking-[0.2em] hover:bg-primary hover:text-white dark:hover:text-background-light transition-all cursor-pointer shadow-xl">
               <span className="material-symbols-outlined group-hover:rotate-90 transition-transform">add</span>
               Write a Review
