@@ -6,7 +6,7 @@ export default function Header() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-50 bg-background-light/90 backdrop-blur-md border-b border-primary/10 transition-colors duration-300">
+    <header className="fixed top-0 left-0 w-full z-50 bg-background-light/70 backdrop-blur-xl border-b border-primary/10 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group cursor-pointer">
@@ -41,21 +41,21 @@ export default function Header() {
         <div className="flex items-center gap-6 text-primary">
           <button 
             onClick={toggleTheme}
-            className="hover:opacity-70 transition-all transform hover:scale-110 cursor-pointer"
+            className="hover:opacity-70 transition-all cursor-pointer"
             title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
           >
             <span className="material-symbols-outlined">
               {theme === 'light' ? 'dark_mode' : 'light_mode'}
             </span>
           </button>
-          <button className="hover:opacity-70 transition-all transform hover:scale-110 cursor-pointer">
+          <button className="hover:opacity-70 transition-all cursor-pointer">
             <span className="material-symbols-outlined">search</span>
           </button>
-          <button className="hover:opacity-70 transition-all transform hover:scale-110 relative cursor-pointer">
+          <button className="hover:opacity-70 transition-all relative cursor-pointer">
             <span className="material-symbols-outlined">shopping_bag</span>
             <span className="absolute -top-1 -right-1 bg-primary text-[10px] text-white dark:text-background-light rounded-full size-4 flex items-center justify-center font-bold shadow-lg">0</span>
           </button>
-          <Link to="/login" className="hover:opacity-70 transition-all transform hover:scale-110 cursor-pointer">
+          <Link to="/login" className="hover:opacity-70 transition-all cursor-pointer">
             <span className="material-symbols-outlined">person</span>
           </Link>
         </div>

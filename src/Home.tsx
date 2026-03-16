@@ -10,6 +10,7 @@ export default function Home() {
   const [mostLikedProducts, setMostLikedProducts] = useState<Product[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bannerLoaded, setBannerLoaded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,18 +53,26 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-background-light text-primary antialiased overflow-x-hidden transition-colors duration-300">
+    <div className="bg-background-light text-primary antialiased overflow-x-hidden transition-colors duration-300 pt-20">
       <Header />
 
       {/* Hero Section */}
-      <section className="relative h-[90vh] w-full flex items-center overflow-hidden">
+      <section className="relative h-[90vh] w-full flex items-center overflow-hidden bg-background-soft">
         <div className="absolute inset-0 z-0">
+          {/* Skeleton Loader / Placeholder Background */}
+          {!bannerLoaded && (
+            <div className="absolute inset-0 bg-background-soft animate-pulse flex items-center justify-center">
+              <div className="w-24 h-24 border-4 border-primary/10 border-t-primary rounded-full animate-spin"></div>
+            </div>
+          )}
+          
           <picture>
             <source media="(max-width: 768px)" srcSet={banner?.mobileImageUrl || banner?.imageUrl} />
             <img 
               alt={banner?.title || "Premium fashion model"} 
-              className="w-full h-full object-cover" 
-              src={banner?.imageUrl || "https://lh3.googleusercontent.com/aida-public/AB6AXuCTNMTVqylXZ5-FgBrCKd7rumLs7n7nKRQhkJ-z1fFvyfBNC30C1dFJ6PBVihcV1UDdKN26PKwd17eBAxn6eb9CsBmH3LhFOR2vq13HApZ4WSI5p_bt0G2ix0tG7HoYaWh4rsCF6SpsxWSEWIuYcpiK1ornoIrQfTTRgPwBKrlliCz1IJ2OAZnlvuh5UATMYMWGaP2fGS5W3NphmzRplAiZY8KPj-hUMoIed2KL7wsxPlaBNly_yGPGA-QhMWfICu-RQSDnJ-2y__WY"} 
+              className={`w-full h-full object-cover object-top transition-opacity duration-1000 ${bannerLoaded ? 'opacity-100' : 'opacity-0'}`} 
+              src={banner?.imageUrl || "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=2070&auto=format&fit=crop"} 
+              onLoad={() => setBannerLoaded(true)}
               referrerPolicy="no-referrer"
             />
           </picture>
@@ -83,7 +92,7 @@ export default function Home() {
             <div className="pt-4 animate-in fade-in duration-1000 delay-500">
               <Link 
                 to={banner?.buttonLink || "/products"} 
-                className="inline-block bg-white dark:bg-background-light text-primary px-12 py-5 text-sm font-bold uppercase tracking-[0.2em] rounded-none transition-all hover:bg-primary hover:text-white dark:hover:text-background-light transform hover:-translate-y-1 shadow-2xl"
+                className="inline-block bg-white dark:bg-background-light text-primary px-12 py-5 text-sm font-bold uppercase tracking-[0.2em] rounded-none transition-all hover:bg-primary hover:text-white dark:hover:text-background-light shadow-2xl"
               >
                 {banner?.buttonText || "Shop Now"}
               </Link>
@@ -106,13 +115,13 @@ export default function Home() {
                 onClick={() => scroll('left')}
                 className="size-12 border border-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white dark:hover:text-background-light transition-all rounded-full cursor-pointer group"
               >
-                <span className="material-symbols-outlined group-hover:scale-110 transition-transform">west</span>
+                <span className="material-symbols-outlined transition-transform">west</span>
               </button>
               <button 
                 onClick={() => scroll('right')}
                 className="size-12 border border-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white dark:hover:text-background-light transition-all rounded-full cursor-pointer group"
               >
-                <span className="material-symbols-outlined group-hover:scale-110 transition-transform">east</span>
+                <span className="material-symbols-outlined transition-transform">east</span>
               </button>
             </div>
             <Link className="text-sm font-bold uppercase tracking-[0.2em] border-b-2 border-primary pb-1 hover:text-primary/70 hover:border-primary/70 transition-all" to="/products">Explore All</Link>
@@ -189,7 +198,7 @@ export default function Home() {
             <img 
               alt="Men's Collection" 
               className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqObhbkem3eVdIZ6Tzk0hjU1QJpoxG96DtTXJIISIwsBF1c0kzT90Pdc409xu6WL6nnzfs1OpQT4FgE41XsAvuBPyw-wMy_5qs7aGVcBMI9oDZjf_NLWaaZozX5j6TyBLAnaEECcd3g5LvSDnNum4HM5WZn077XJpS91URfpG0I0zdLxZyQ4_b8OOHAn3EsMtBEbHsdDOrCWQDSbSsTrKPQUQayu546bHBIU-4litvq4EyPUYm7NZ0KM19Ki6yUAV7_TxWCjjuuhWZ" 
+              src="https://foxwear-images.s3.eu-north-1.amazonaws.com/9752eed7-83c0-4ca8-913a-206897004977_category-men.jpg" 
               referrerPolicy="no-referrer"
             />
             <div className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-black/40"></div>
@@ -206,7 +215,7 @@ export default function Home() {
             <img 
               alt="Women's Collection" 
               className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTNMTVqylXZ5-FgBrCKd7rumLs7n7nKRQhkJ-z1fFvyfBNC30C1dFJ6PBVihcV1UDdKN26PKwd17eBAxn6eb9CsBmH3LhFOR2vq13HApZ4WSI5p_bt0G2ix0tG7HoYaWh4rsCF6SpsxWSEWIuYcpiK1ornoIrQfTTRgPwBKrlliCz1IJ2OAZnlvuh5UATMYMWGaP2fGS5W3NphmzRplAiZY8KPj-hUMoIed2KL7wsxPlaBNly_yGPGA-QhMWfICu-RQSDnJ-2y__WY" 
+              src="https://foxwear-images.s3.eu-north-1.amazonaws.com/01ec34a5-251e-434c-b5d5-5f997c9d2072_category-women.jpg" 
               referrerPolicy="no-referrer"
             />
             <div className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-black/40"></div>
@@ -232,7 +241,7 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-20">
             {reviews.map((review, index) => (
-              <div key={index} className="flex flex-col gap-8 p-10 bg-background-soft border border-primary/5 rounded-none transition-all hover:shadow-2xl hover:-translate-y-2">
+              <div key={index} className="flex flex-col gap-8 p-10 bg-background-soft border border-primary/5 rounded-none transition-all hover:shadow-2xl">
                 <div className="flex text-primary">
                   {[...Array(5)].map((_, i) => (
                     <span key={i} className={`material-symbols-outlined text-xl ${i < review.rate ? '[font-variation-settings:\'FILL\'_1]' : ''}`}>star</span>
@@ -257,37 +266,10 @@ export default function Home() {
           </div>
 
           <div className="flex justify-center">
-            <button className="group flex items-center gap-3 border-2 border-primary text-primary px-12 py-5 rounded-none font-bold uppercase tracking-[0.2em] hover:bg-primary hover:text-white dark:hover:text-background-light transition-all transform hover:scale-105 cursor-pointer shadow-xl">
+            <button className="group flex items-center gap-3 border-2 border-primary text-primary px-12 py-5 rounded-none font-bold uppercase tracking-[0.2em] hover:bg-primary hover:text-white dark:hover:text-background-light transition-all cursor-pointer shadow-xl">
               <span className="material-symbols-outlined group-hover:rotate-90 transition-transform">add</span>
               Write a Review
             </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="py-32 px-6 lg:px-10">
-        <div className="max-w-6xl mx-auto bg-primary p-16 md:p-24 text-center rounded-none relative overflow-hidden shadow-[0_35px_60px_-15px_rgba(73,53,44,0.3)]">
-          <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
-            <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <path d="M0 0 L100 0 L100 100 L0 100 Z" fill="none" stroke="white" strokeWidth="0.1" />
-              <path d="M0 10 L100 90" fill="none" stroke="white" strokeWidth="0.05" />
-              <path d="M0 90 L100 10" fill="none" stroke="white" strokeWidth="0.05" />
-              <circle cx="50" cy="50" r="40" fill="none" stroke="white" strokeWidth="0.05" />
-            </svg>
-          </div>
-          <div className="relative z-10">
-            <span className="text-white/60 dark:text-background-light/60 text-xs font-bold uppercase tracking-[0.5em] mb-6 block">Newsletter</span>
-            <h2 className="text-white dark:text-background-light text-4xl md:text-6xl font-black uppercase tracking-tighter mb-8">Join the FoxPack</h2>
-            <p className="text-white/80 dark:text-background-light/80 text-xl font-light mb-12 max-w-xl mx-auto leading-relaxed">Subscribe to receive updates, access to exclusive deals, and more. Be the first to know about our new arrivals.</p>
-            <form className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                className="flex-grow bg-white/5 dark:bg-background-light/5 border border-white/20 dark:border-background-light/20 text-white dark:text-background-light placeholder:text-white/40 dark:placeholder:text-background-light/40 px-8 py-5 rounded-none focus:outline-none focus:bg-white/10 dark:focus:bg-background-light/10 transition-all text-lg" 
-                placeholder="Your email address" 
-                type="email" 
-              />
-              <button className="bg-white dark:bg-background-light text-primary px-12 py-5 rounded-none font-bold uppercase tracking-[0.2em] hover:bg-primary hover:text-white dark:hover:text-background-light transition-all transform hover:scale-105 cursor-pointer shadow-2xl">Subscribe</button>
-            </form>
           </div>
         </div>
       </section>
