@@ -259,7 +259,7 @@ export default function AddProduct() {
     setUploadErrors(prev => ({ ...prev, [uploadKey]: '' }));
 
     if (file.size > 5 * 1024 * 1024) {
-      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'Şəkil 5MB-dan böyük ola bilməz' }));
+      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'Image cannot be larger than 5MB' }));
       return;
     }
 
@@ -278,11 +278,11 @@ export default function AddProduct() {
       if (response.data.success) {
         handleImageChange(colorIndex, imageIndex, 'image', response.data.data);
       } else {
-        setUploadErrors(prev => ({ ...prev, [uploadKey]: response.data.message || 'Yükləmə uğursuz oldu' }));
+        setUploadErrors(prev => ({ ...prev, [uploadKey]: response.data.message || 'Upload failed' }));
       }
     } catch (err: any) {
       console.error('Upload error', err);
-      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'Yükləmə xətası baş verdi' }));
+      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'An error occurred during upload' }));
     } finally {
       setUploading(prev => ({ ...prev, [uploadKey]: false }));
     }
@@ -381,10 +381,10 @@ export default function AddProduct() {
         isOpen={showCancelModal}
         onClose={() => setShowCancelModal(false)}
         onConfirm={() => navigate('/admin/products')}
-        title="Dəyişiklikləri ləğv et?"
-        message="Etdiyiniz dəyişikliklər yadda saxlanılmayacaq. Çıxmaq istədiyinizə əminsiniz?"
-        confirmLabel="Bəli, çıx"
-        cancelLabel="Xeyr, qal"
+        title="Discard changes?"
+        message="Your changes will not be saved. Are you sure you want to exit?"
+        confirmLabel="Yes, exit"
+        cancelLabel="No, stay"
         type="warning"
       />
       <div className="flex-1 overflow-y-auto bg-background-soft px-8 py-8 custom-scrollbar transition-colors duration-300">

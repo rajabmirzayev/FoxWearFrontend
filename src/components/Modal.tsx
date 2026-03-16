@@ -17,8 +17,8 @@ export default function Modal({
   onClose,
   title,
   message,
-  confirmLabel = 'Bəli',
-  cancelLabel = 'Xeyr',
+  confirmLabel = 'Yes',
+  cancelLabel = 'No',
   onConfirm,
   type = 'info'
 }: ModalProps) {

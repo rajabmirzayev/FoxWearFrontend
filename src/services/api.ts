@@ -8,7 +8,7 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Tokenin vaxtının bitib-bitmədiyini yoxlayan funksiya
+// Function to check if the token has expired
 function isTokenExpired(token: string): boolean {
   try {
     const base64Url = token.split('.')[1];
@@ -20,7 +20,7 @@ function isTokenExpired(token: string): boolean {
         .join('')
     );
     const { exp } = JSON.parse(jsonPayload);
-    // 30 saniyəlik "təhlükəsizlik marjası" əlavə edirik
+    // Adding a 30-second "security margin"
     return Date.now() >= (exp * 1000) - 30000;
   } catch (e) {
     return true;
@@ -65,9 +65,9 @@ async function getValidToken(): Promise<string | null> {
   return token;
 }
 
-// Request interceptor: Sorğu getməmişdən əvvəl tokeni yoxla
+// Request interceptor: Check the token before the request is sent
 api.interceptors.request.use(async (config) => {
-  // Login və Refresh sorğuları üçün token yoxlamasına ehtiyac yoxdur
+  // No token check needed for Login and Refresh requests
   if (config.url?.includes('/api/auth/login') || config.url?.includes('/api/auth/refresh')) {
     return config;
   }
@@ -77,7 +77,7 @@ api.interceptors.request.use(async (config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else if (storage.getItem('refreshToken')) {
-    // Əgər refresh token var idisə amma getValidToken null qaytardısa, deməli refresh xətası olub
+    // If there was a refresh token but getValidToken returned null, it means a refresh error occurred
     storage.removeItem('accessToken');
     storage.removeItem('refreshToken');
     storage.removeItem('username');
@@ -91,13 +91,13 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Response interceptor: Fallback olaraq 401 və ya 500 (əgər auth xətasıdırsa) halları üçün
+// Response interceptor: For fallback 401 or 500 cases (if it's an auth error)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
     
-    // Əgər xəta artıq refresh və ya login sorğusunun özündən gəlirsə, sonsuz dövrə girməyək
+    // If the error is already from the refresh or login request itself, let's not enter an infinite loop
     if (originalRequest.url?.includes('/api/auth/refresh') || originalRequest.url?.includes('/api/auth/login')) {
       return Promise.reject(error);
     }

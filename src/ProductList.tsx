@@ -152,8 +152,8 @@ export default function ProductList() {
       } else {
         setAlertModal({
           isOpen: true,
-          title: 'Xəta',
-          message: response.data.message || 'Məhsulu silmək mümkün olmadı',
+          title: 'Error',
+          message: response.data.message || 'Could not delete product',
           type: 'danger'
         });
       }
@@ -161,8 +161,8 @@ export default function ProductList() {
       console.error('Error deleting product', err);
       setAlertModal({
         isOpen: true,
-        title: 'Xəta',
-        message: err.response?.data?.message || 'Məhsul silinərkən xəta baş verdi.',
+        title: 'Error',
+        message: err.response?.data?.message || 'An error occurred while deleting the product.',
         type: 'danger'
       });
     }
@@ -180,8 +180,8 @@ export default function ProductList() {
       } else {
         setAlertModal({
           isOpen: true,
-          title: 'Xəta',
-          message: response.data.message || 'Statusu dəyişmək mümkün olmadı',
+          title: 'Error',
+          message: response.data.message || 'Could not change status',
           type: 'danger'
         });
       }
@@ -189,8 +189,8 @@ export default function ProductList() {
       console.error('Error toggling product status', err);
       setAlertModal({
         isOpen: true,
-        title: 'Xəta',
-        message: err.response?.data?.message || 'Status dəyişdirilərkən xəta baş verdi.',
+        title: 'Error',
+        message: err.response?.data?.message || 'An error occurred while changing status.',
         type: 'danger'
       });
     }
@@ -202,10 +202,10 @@ export default function ProductList() {
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, productId: null })}
         onConfirm={() => deleteModal.productId && handleDelete(deleteModal.productId)}
-        title="Məhsulu sil?"
-        message="Bu məhsulu silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz."
-        confirmLabel="Bəli, sil"
-        cancelLabel="Xeyr"
+        title="Delete product?"
+        message="Are you sure you want to delete this product? This action cannot be undone."
+        confirmLabel="Yes, delete"
+        cancelLabel="No"
         type="danger"
       />
 
@@ -215,7 +215,7 @@ export default function ProductList() {
         onConfirm={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
         title={alertModal.title}
         message={alertModal.message}
-        confirmLabel="Bağla"
+        confirmLabel="Close"
         cancelLabel=""
         type={alertModal.type}
       />
