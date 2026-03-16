@@ -122,3 +122,29 @@ export interface CreateProductRequest {
     }[];
   }[];
 }
+
+export interface Banner {
+  id: number;
+  imageUrl: string;
+  mobileImageUrl: string;
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  buttonLink: string;
+  sortOrder: number;
+  placement: string;
+  active: boolean;
+}
+
+export interface UserProfile {
+  firstName: string;
+  lastName: string;
+  profilePicture: string | null;
+}
+
+export interface Review {
+  active: boolean;
+  description: string;
+  rate: number;
+  user: UserProfile;
+}

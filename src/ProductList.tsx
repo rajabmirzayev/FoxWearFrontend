@@ -152,8 +152,8 @@ export default function ProductList() {
       } else {
         setAlertModal({
           isOpen: true,
-          title: 'Error',
-          message: response.data.message || 'It was not possible to delete the product',
+          title: 'Xəta',
+          message: response.data.message || 'Məhsulu silmək mümkün olmadı',
           type: 'danger'
         });
       }
@@ -161,8 +161,8 @@ export default function ProductList() {
       console.error('Error deleting product', err);
       setAlertModal({
         isOpen: true,
-        title: 'Error',
-        message: err.response?.data?.message || 'An error occurred while deleting the product.',
+        title: 'Xəta',
+        message: err.response?.data?.message || 'Məhsul silinərkən xəta baş verdi.',
         type: 'danger'
       });
     }
@@ -180,8 +180,8 @@ export default function ProductList() {
       } else {
         setAlertModal({
           isOpen: true,
-          title: 'Error',
-          message: response.data.message || 'It was not possible to change the status',
+          title: 'Xəta',
+          message: response.data.message || 'Statusu dəyişmək mümkün olmadı',
           type: 'danger'
         });
       }
@@ -189,8 +189,8 @@ export default function ProductList() {
       console.error('Error toggling product status', err);
       setAlertModal({
         isOpen: true,
-        title: 'Error',
-        message: err.response?.data?.message || 'An error occurred while changing the status.',
+        title: 'Xəta',
+        message: err.response?.data?.message || 'Status dəyişdirilərkən xəta baş verdi.',
         type: 'danger'
       });
     }
@@ -202,10 +202,10 @@ export default function ProductList() {
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, productId: null })}
         onConfirm={() => deleteModal.productId && handleDelete(deleteModal.productId)}
-        title="Delete the product?"
-        message="Are you sure you want to delete this product?"
-        confirmLabel="Delete"
-        cancelLabel="Cancel"
+        title="Məhsulu sil?"
+        message="Bu məhsulu silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz."
+        confirmLabel="Bəli, sil"
+        cancelLabel="Xeyr"
         type="danger"
       />
 
@@ -215,7 +215,7 @@ export default function ProductList() {
         onConfirm={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
         title={alertModal.title}
         message={alertModal.message}
-        confirmLabel="Close"
+        confirmLabel="Bağla"
         cancelLabel=""
         type={alertModal.type}
       />
@@ -229,7 +229,7 @@ export default function ProductList() {
           </div>
           <button 
             onClick={() => navigate('/admin/products/add')}
-            className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 font-semibold cursor-pointer"
+            className="flex items-center gap-2 bg-primary text-white dark:text-background-light px-6 py-3 rounded-lg hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 font-semibold cursor-pointer"
           >
             <span className="material-symbols-outlined">add</span>
             Add New Product
@@ -237,7 +237,7 @@ export default function ProductList() {
         </div>
 
         {/* Filters System */}
-        <div className="bg-white border border-border-subtle rounded-xl p-4 shadow-sm space-y-4">
+        <div className="bg-background-light border border-border-subtle rounded-xl p-4 shadow-sm space-y-4 transition-colors duration-300">
           <div className="flex flex-wrap gap-4">
             {/* Search Bar */}
             <div className="flex-1 min-w-[300px]">
@@ -247,7 +247,7 @@ export default function ProductList() {
                   name="keyword"
                   value={searchTerm}
                   onChange={handleFilterChange}
-                  className="w-full pl-12 pr-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary text-sm transition-all" 
+                  className="w-full pl-12 pr-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary text-sm transition-all placeholder:text-primary/40 text-primary" 
                   placeholder="Search by name, SKU or brand..." 
                   type="text"
                 />
@@ -259,7 +259,7 @@ export default function ProductList() {
                 name="gender"
                 value={filters.gender}
                 onChange={handleFilterChange}
-                className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10"
+                className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10 text-primary"
               >
                 <option value="">Gender: All</option>
                 <option value="MALE">Men</option>
@@ -271,7 +271,7 @@ export default function ProductList() {
                 name="categoryId"
                 value={filters.categoryId || 'All'}
                 onChange={handleFilterChange}
-                className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10"
+                className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10 text-primary"
               >
                 <option value="All">Category: All</option>
                 {categories.map(cat => (
@@ -282,7 +282,7 @@ export default function ProductList() {
                 name="color"
                 value={filters.color || 'All'}
                 onChange={handleFilterChange}
-                className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10"
+                className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10 text-primary"
               >
                 <option value="All">Color: All</option>
                 {colors.map(color => (
@@ -293,7 +293,7 @@ export default function ProductList() {
                 name="productSize"
                 value={filters.productSize || 'All'}
                 onChange={handleFilterChange}
-                className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10"
+                className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10 text-primary"
               >
                 <option value="All">Size: All</option>
                 {sizes.map(size => (
@@ -312,7 +312,7 @@ export default function ProductList() {
               </button>
               <button 
                 onClick={() => setFilters(prev => ({ ...prev, isDeleted: !prev.isDeleted, page: 0 }))}
-                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest border transition-all cursor-pointer ${filters.isDeleted ? 'bg-red-50 text-red-600 border-red-200' : 'bg-background-soft text-primary/60 border-border-subtle'}`}
+                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest border transition-all cursor-pointer ${filters.isDeleted ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-background-soft text-primary/60 border-border-subtle'}`}
               >
                 Deleted: {filters.isDeleted ? 'Yes' : 'No'}
               </button>
@@ -345,7 +345,7 @@ export default function ProductList() {
                     name="minPrice"
                     value={filters.minPrice}
                     onChange={handleFilterChange}
-                    className="w-24 pl-6 pr-3 py-2 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all" 
+                    className="w-24 pl-6 pr-3 py-2 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all text-primary" 
                     placeholder="Min" 
                     type="number"
                   />
@@ -357,7 +357,7 @@ export default function ProductList() {
                     name="maxPrice"
                     value={filters.maxPrice}
                     onChange={handleFilterChange}
-                    className="w-24 pl-6 pr-3 py-2 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all" 
+                    className="w-24 pl-6 pr-3 py-2 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all text-primary" 
                     placeholder="Max" 
                     type="number"
                   />
@@ -384,7 +384,7 @@ export default function ProductList() {
         </div>
         
         {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl flex items-center gap-3">
+          <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl flex items-center gap-3">
             <span className="material-symbols-outlined">error</span>
             <p className="text-sm font-medium">{error}</p>
             <button 
@@ -399,7 +399,7 @@ export default function ProductList() {
 
       {/* Data Table Area */}
       <section className="flex-1 overflow-auto px-8 pb-8 custom-scrollbar">
-        <div className="bg-white border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-background-light border border-border-subtle rounded-xl shadow-sm overflow-hidden transition-colors duration-300">
           <table className="w-full text-left border-collapse">
             <thead className="bg-background-soft sticky top-0 z-10 border-b border-border-subtle">
               <tr>
@@ -418,33 +418,33 @@ export default function ProductList() {
                 Array.from({ length: filters.size || 10 }).map((_, idx) => (
                   <tr key={`skeleton-${idx}`} className="animate-pulse">
                     <td className="px-6 py-4">
-                      <div className="size-14 rounded bg-slate-200"></div>
+                      <div className="size-14 rounded bg-primary/10"></div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-2">
-                        <div className="h-4 w-32 bg-slate-200 rounded"></div>
-                        <div className="h-3 w-20 bg-slate-100 rounded"></div>
+                        <div className="h-4 w-32 bg-primary/10 rounded"></div>
+                        <div className="h-3 w-20 bg-primary/5 rounded"></div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-24 bg-slate-100 rounded"></div>
+                      <div className="h-4 w-24 bg-primary/5 rounded"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-16 bg-slate-100 rounded"></div>
+                      <div className="h-4 w-16 bg-primary/5 rounded"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-20 bg-slate-200 rounded"></div>
+                      <div className="h-4 w-20 bg-primary/10 rounded"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-24 bg-slate-100 rounded"></div>
+                      <div className="h-4 w-24 bg-primary/5 rounded"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-6 w-16 bg-slate-100 rounded-full"></div>
+                      <div className="h-6 w-16 bg-primary/5 rounded-full"></div>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <div className="size-8 bg-slate-100 rounded-lg"></div>
-                        <div className="size-8 bg-slate-100 rounded-lg"></div>
+                        <div className="size-8 bg-primary/5 rounded-lg"></div>
+                        <div className="size-8 bg-primary/5 rounded-lg"></div>
                       </div>
                     </td>
                   </tr>
@@ -481,7 +481,7 @@ export default function ProductList() {
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex flex-col">
-                              <span className="font-bold text-slate-800">{product.title}</span>
+                              <span className="font-bold text-primary">{product.title}</span>
                               <span className="text-xs text-primary/50">SKU: {product.colors[0]?.items[0]?.sku || 'N/A'}</span>
                             </div>
                           </td>
@@ -506,12 +506,12 @@ export default function ProductList() {
                           <td className="px-6 py-4">
                             <button 
                               onClick={() => handleToggleActive(product.id)}
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${isProductActive ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200'}`}
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${isProductActive ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20' : 'bg-primary/10 text-primary/40 border-primary/20 hover:bg-primary/20'}`}
                             >
                               {isProductActive ? 'Active' : 'Inactive'}
                             </button>
                             {product.isDeleted && (
-                              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-red-100 text-red-800 border-red-200">
+                              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-red-500/10 text-red-500 border-red-500/20">
                                 Deleted
                               </span>
                             )}
@@ -527,7 +527,7 @@ export default function ProductList() {
                           </button>
                           <button 
                             onClick={() => confirmDelete(product.id)}
-                            className="hover:bg-red-50 rounded-lg text-red-600 cursor-pointer" 
+                            className="hover:bg-red-500/10 rounded-lg text-red-500 cursor-pointer" 
                             title="Delete"
                           >
                             <span className="p-1.5 material-symbols-outlined text-lg">delete</span>
@@ -566,7 +566,7 @@ export default function ProductList() {
                     <button 
                       key={i}
                       onClick={() => handlePageChange(i)}
-                      className={`w-10 h-10 rounded-lg font-bold text-sm transition-all cursor-pointer ${filters.page === i ? 'bg-primary text-white' : 'border border-border-subtle hover:bg-background-soft text-primary'}`}
+                      className={`w-10 h-10 rounded-lg font-bold text-sm transition-all cursor-pointer ${filters.page === i ? 'bg-primary text-white dark:text-background-light' : 'border border-border-subtle hover:bg-background-soft text-primary'}`}
                     >
                       {i + 1}
                     </button>

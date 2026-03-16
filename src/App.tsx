@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import LoginPage from './LoginPage';
 import AdminLayout from './AdminLayout';
 import ProductList from './ProductList';
@@ -10,6 +11,7 @@ import Orders from './Orders';
 import Sales from './Sales';
 import Customers from './Customers';
 import Settings from './Settings';
+import Home from './Home';
 import storage from './services/storage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -22,31 +24,34 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route 
-          path="/admin/*" 
-          element={
-            <ProtectedRoute>
-              <AdminLayout>
-                <Routes>
-                  <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="products" element={<ProductList />} />
-                  <Route path="products/add" element={<AddProduct />} />
-                  <Route path="products/edit/:slug" element={<EditProduct />} />
-                  <Route path="orders" element={<Orders />} />
-                  <Route path="sales" element={<Sales />} />
-                  <Route path="customers" element={<Customers />} />
-                  <Route path="settings" element={<Settings />} />
-                  <Route path="*" element={<Navigate to="dashboard" replace />} />
-                </Routes>
-              </AdminLayout>
-            </ProtectedRoute>
-          } 
-        />
-        <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
-      </Routes>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route 
+            path="/admin/*" 
+            element={
+              <ProtectedRoute>
+                <AdminLayout>
+                  <Routes>
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="products" element={<ProductList />} />
+                    <Route path="products/add" element={<AddProduct />} />
+                    <Route path="products/edit/:slug" element={<EditProduct />} />
+                    <Route path="orders" element={<Orders />} />
+                    <Route path="sales" element={<Sales />} />
+                    <Route path="customers" element={<Customers />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path="*" element={<Navigate to="dashboard" replace />} />
+                  </Routes>
+                </AdminLayout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }

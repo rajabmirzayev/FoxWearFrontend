@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, AuthData } from '../types';
+import { ApiResponse, AuthData, Banner, Product, Review } from '../types';
 import storage from './storage';
 
 const API_BASE_URL = 'http://localhost:8080';
@@ -122,5 +122,18 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const bannerApi = {
+  getHomeBanner: () => api.get<ApiResponse<Banner>>('/api/v1/dynamic/banner?placement=homepage'),
+};
+
+export const productApi = {
+  getMostLiked: () => api.get<ApiResponse<Product[]>>('/api/v1/products/most-liked'),
+  like: (productId: number) => api.post(`/api/v1/products/${productId}/like`),
+};
+
+export const reviewApi = {
+  getFirst10: () => api.get<ApiResponse<Review[]>>('/api/v1/reviews/site/first-10'),
+};
 
 export default api;

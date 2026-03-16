@@ -259,7 +259,7 @@ export default function AddProduct() {
     setUploadErrors(prev => ({ ...prev, [uploadKey]: '' }));
 
     if (file.size > 5 * 1024 * 1024) {
-      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'The image cannot be larger than 5MB' }));
+      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'Şəkil 5MB-dan böyük ola bilməz' }));
       return;
     }
 
@@ -278,11 +278,11 @@ export default function AddProduct() {
       if (response.data.success) {
         handleImageChange(colorIndex, imageIndex, 'image', response.data.data);
       } else {
-        setUploadErrors(prev => ({ ...prev, [uploadKey]: response.data.message || 'Upload failed' }));
+        setUploadErrors(prev => ({ ...prev, [uploadKey]: response.data.message || 'Yükləmə uğursuz oldu' }));
       }
     } catch (err: any) {
       console.error('Upload error', err);
-      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'A loading error occurred' }));
+      setUploadErrors(prev => ({ ...prev, [uploadKey]: 'Yükləmə xətası baş verdi' }));
     } finally {
       setUploading(prev => ({ ...prev, [uploadKey]: false }));
     }
@@ -311,52 +311,52 @@ export default function AddProduct() {
 
   if (fetching) {
     return (
-      <div className="flex-1 overflow-y-auto bg-background-soft px-8 py-8 animate-pulse">
+      <div className="flex-1 overflow-y-auto bg-background-soft px-8 py-8 animate-pulse transition-colors duration-300">
         <div className="max-w-5xl mx-auto">
           {/* Skeleton Header */}
           <div className="mb-8">
-            <div className="h-4 w-32 bg-slate-200 rounded mb-4"></div>
+            <div className="h-4 w-32 bg-primary/10 rounded mb-4"></div>
             <div className="flex justify-between items-center">
-              <div className="h-10 w-64 bg-slate-200 rounded"></div>
+              <div className="h-10 w-64 bg-primary/10 rounded"></div>
               <div className="flex gap-3">
-                <div className="h-10 w-24 bg-slate-200 rounded-lg"></div>
-                <div className="h-10 w-32 bg-slate-200 rounded-lg"></div>
+                <div className="h-10 w-24 bg-primary/10 rounded-lg"></div>
+                <div className="h-10 w-32 bg-primary/10 rounded-lg"></div>
               </div>
             </div>
           </div>
 
           <div className="space-y-8">
             {/* Skeleton Section 1 */}
-            <div className="bg-white p-8 rounded-xl border border-border-subtle">
-              <div className="h-8 w-48 bg-slate-200 rounded mb-6"></div>
+            <div className="bg-background-light p-8 rounded-xl border border-border-subtle">
+              <div className="h-8 w-48 bg-primary/10 rounded mb-6"></div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2 space-y-2">
-                  <div className="h-4 w-24 bg-slate-100 rounded"></div>
-                  <div className="h-12 w-full bg-slate-50 rounded-lg"></div>
+                  <div className="h-4 w-24 bg-primary/5 rounded"></div>
+                  <div className="h-12 w-full bg-background-soft rounded-lg"></div>
                 </div>
                 <div className="md:col-span-2 space-y-2">
-                  <div className="h-4 w-24 bg-slate-100 rounded"></div>
-                  <div className="h-32 w-full bg-slate-50 rounded-lg"></div>
+                  <div className="h-4 w-24 bg-primary/5 rounded"></div>
+                  <div className="h-32 w-full bg-background-soft rounded-lg"></div>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-4 w-24 bg-slate-100 rounded"></div>
-                  <div className="h-12 w-full bg-slate-50 rounded-lg"></div>
+                  <div className="h-4 w-24 bg-primary/5 rounded"></div>
+                  <div className="h-12 w-full bg-background-soft rounded-lg"></div>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-4 w-24 bg-slate-100 rounded"></div>
-                  <div className="h-12 w-full bg-slate-50 rounded-lg"></div>
+                  <div className="h-4 w-24 bg-primary/5 rounded"></div>
+                  <div className="h-12 w-full bg-background-soft rounded-lg"></div>
                 </div>
               </div>
             </div>
 
             {/* Skeleton Section 2 */}
-            <div className="bg-white p-8 rounded-xl border border-border-subtle">
-              <div className="h-8 w-32 bg-slate-200 rounded mb-6"></div>
+            <div className="bg-background-light p-8 rounded-xl border border-border-subtle">
+              <div className="h-8 w-32 bg-primary/10 rounded mb-6"></div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[1, 2, 3].map(i => (
                   <div key={i} className="space-y-2">
-                    <div className="h-4 w-24 bg-slate-100 rounded"></div>
-                    <div className="h-12 w-full bg-slate-50 rounded-lg"></div>
+                    <div className="h-4 w-24 bg-primary/5 rounded"></div>
+                    <div className="h-12 w-full bg-background-soft rounded-lg"></div>
                   </div>
                 ))}
               </div>
@@ -381,23 +381,23 @@ export default function AddProduct() {
         isOpen={showCancelModal}
         onClose={() => setShowCancelModal(false)}
         onConfirm={() => navigate('/admin/products')}
-        title="Discard the changes?"
-        message="The changes you made will not be saved. Are you sure you want to exit?"
-        confirmLabel="Exit"
-        cancelLabel="Cancel"
+        title="Dəyişiklikləri ləğv et?"
+        message="Etdiyiniz dəyişikliklər yadda saxlanılmayacaq. Çıxmaq istədiyinizə əminsiniz?"
+        confirmLabel="Bəli, çıx"
+        cancelLabel="Xeyr, qal"
         type="warning"
       />
-      <div className="flex-1 overflow-y-auto bg-background-soft px-8 py-8 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto bg-background-soft px-8 py-8 custom-scrollbar transition-colors duration-300">
       <div className="max-w-5xl mx-auto">
         {/* Breadcrumbs & Header */}
         <div className="mb-8">
-          <nav className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+          <nav className="flex items-center gap-2 text-sm text-primary/50 mb-2">
             <button onClick={() => navigate('/admin/products')} className="hover:text-primary transition-colors cursor-pointer">Products</button>
             <span className="material-symbols-outlined text-xs">chevron_right</span>
-            <span className="text-slate-900 font-medium">Add New Product</span>
+            <span className="text-primary font-medium">Add New Product</span>
           </nav>
           <div className="flex justify-between items-center">
-            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Add New Product</h2>
+            <h2 className="text-3xl font-bold text-primary tracking-tight">Add New Product</h2>
             <div className="flex gap-3">
               <button 
                 onClick={handleCancel}
@@ -408,7 +408,7 @@ export default function AddProduct() {
               <button 
                 onClick={handleSubmit}
                 disabled={loading}
-                className="px-6 py-2 bg-primary text-white font-semibold rounded-lg shadow-md shadow-primary/20 hover:bg-primary/90 transition-all disabled:opacity-50 cursor-pointer"
+                className="px-6 py-2 bg-primary text-white dark:text-background-light font-semibold rounded-lg shadow-md shadow-primary/20 hover:bg-primary/90 transition-all disabled:opacity-50 cursor-pointer"
               >
                 {loading ? 'Saving...' : 'Save Product'}
               </button>
@@ -417,48 +417,48 @@ export default function AddProduct() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-sm font-medium">
             {error}
           </div>
         )}
 
         <div className="space-y-8">
           {/* Section 1: Basic Information */}
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-border-subtle">
+          <div className="bg-background-light p-8 rounded-xl shadow-sm border border-border-subtle">
             <div className="flex items-center gap-2 mb-6 border-b border-border-subtle pb-4">
               <span className="material-symbols-outlined text-primary">info</span>
-              <h3 className="text-xl font-bold text-slate-900">Basic Information</h3>
+              <h3 className="text-xl font-bold text-primary">Basic Information</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Product Title</label>
+                <label className="block text-sm font-semibold text-primary mb-2">Product Title</label>
                 <input 
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary transition-all" 
+                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary focus:outline-none focus:border-primary transition-all placeholder:text-primary/40" 
                   placeholder="e.g. Italian Wool Blazer" 
                   type="text"
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Description</label>
+                <label className="block text-sm font-semibold text-primary mb-2">Description</label>
                 <textarea 
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary transition-all" 
+                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary focus:outline-none focus:border-primary transition-all placeholder:text-primary/40" 
                   placeholder="Describe the luxury and materials..." 
                   rows={4}
                 ></textarea>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Category</label>
+                <label className="block text-sm font-semibold text-primary mb-2">Category</label>
                 <select 
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10"
+                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10"
                 >
                   {categories.map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -466,7 +466,7 @@ export default function AddProduct() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
+                <label className="block text-sm font-semibold text-primary mb-2">Gender</label>
                 <div className="flex gap-6 h-[50px] items-center">
                   {['MALE', 'FEMALE', 'UNISEX', 'KIDS'].map((g) => (
                     <label key={g} className="flex items-center gap-2 cursor-pointer group">
@@ -476,9 +476,9 @@ export default function AddProduct() {
                         value={g}
                         checked={formData.gender === g}
                         onChange={handleInputChange}
-                        className="w-4 h-4 accent-primary border-slate-300 focus:ring-0 focus:ring-offset-0 transition-all cursor-pointer" 
+                        className="w-4 h-4 accent-primary border-primary/20 focus:ring-0 focus:ring-offset-0 transition-all cursor-pointer" 
                       />
-                      <span className={`text-sm font-medium transition-colors ${formData.gender === g ? 'text-primary' : 'text-slate-600 group-hover:text-primary/70'}`}>
+                      <span className={`text-sm font-medium transition-colors ${formData.gender === g ? 'text-primary' : 'text-primary/60 group-hover:text-primary/70'}`}>
                         {g.charAt(0) + g.slice(1).toLowerCase()}
                       </span>
                     </label>
@@ -489,26 +489,26 @@ export default function AddProduct() {
           </div>
 
           {/* Section 2: Pricing */}
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-border-subtle">
+          <div className="bg-background-light p-8 rounded-xl shadow-sm border border-border-subtle">
             <div className="flex items-center gap-2 mb-6 border-b border-border-subtle pb-4">
               <span className="material-symbols-outlined text-primary">payments</span>
-              <h3 className="text-xl font-bold text-slate-900">Pricing</h3>
+              <h3 className="text-xl font-bold text-primary">Pricing</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Original Price (₼)</label>
+                <label className="block text-sm font-semibold text-primary mb-2">Original Price (₼)</label>
                 <input 
                   name="originalPrice"
                   value={formData.originalPrice === 0 ? '' : formData.originalPrice}
                   onChange={handleInputChange}
                   min="0"
-                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary transition-all" 
+                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary focus:outline-none focus:border-primary transition-all placeholder:text-primary/40" 
                   placeholder="0.00" 
                   type="number"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Discount Price (₼)</label>
+                <label className="block text-sm font-semibold text-primary mb-2">Discount Price (₼)</label>
                 <input 
                   name="discountPrice"
                   value={formData.discountPrice === 0 ? '' : formData.discountPrice}
@@ -516,13 +516,13 @@ export default function AddProduct() {
                   disabled={pricingMaster === 'discountRate'}
                   min="0"
                   max={formData.originalPrice}
-                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary transition-all disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed" 
+                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary focus:outline-none focus:border-primary transition-all disabled:bg-primary/5 disabled:text-primary/40 disabled:cursor-not-allowed placeholder:text-primary/40" 
                   placeholder="0.00" 
                   type="number"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Discount Rate (%)</label>
+                <label className="block text-sm font-semibold text-primary mb-2">Discount Rate (%)</label>
                 <input 
                   name="discountRate"
                   value={formData.discountRate === 0 ? '' : formData.discountRate}
@@ -530,7 +530,7 @@ export default function AddProduct() {
                   disabled={pricingMaster === 'discountPrice'}
                   min="0"
                   max="100"
-                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary transition-all disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed" 
+                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary focus:outline-none focus:border-primary transition-all disabled:bg-primary/5 disabled:text-primary/40 disabled:cursor-not-allowed placeholder:text-primary/40" 
                   placeholder="0" 
                   type="number"
                 />
@@ -541,15 +541,15 @@ export default function AddProduct() {
           {/* Section 3: Color Options */}
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-slate-900">Color Options</h3>
+              <h3 className="text-2xl font-bold text-primary">Color Options</h3>
             </div>
             
             {colors.map((color, cIdx) => (
-              <div key={cIdx} className="bg-white rounded-xl shadow-sm border-l-4 border-primary overflow-hidden border border-border-subtle relative">
+              <div key={cIdx} className="bg-background-light rounded-xl shadow-sm border-l-4 border-primary overflow-hidden border border-border-subtle relative">
                 {cIdx > 0 && (
                   <button 
                     onClick={() => removeColorOption(cIdx)}
-                    className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
+                    className="absolute top-4 right-4 text-primary/40 hover:text-red-500 transition-colors cursor-pointer"
                   >
                     <span className="material-symbols-outlined">close</span>
                   </button>
@@ -557,7 +557,7 @@ export default function AddProduct() {
                 <div className="p-8">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Select Color</label>
+                      <label className="block text-sm font-semibold text-primary mb-2">Select Color</label>
                       <select 
                         value={colorSelectionTypes[cIdx] || 'custom'}
                         onChange={(e) => {
@@ -578,7 +578,7 @@ export default function AddProduct() {
                             }
                           }
                         }}
-                        className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10"
+                        className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10"
                       >
                         <option value="custom">Custom Color</option>
                         {availableColors.map(c => (
@@ -587,25 +587,25 @@ export default function AddProduct() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Color Name</label>
+                      <label className="block text-sm font-semibold text-primary mb-2">Color Name</label>
                       <input 
                         value={color.colorName}
                         onChange={(e) => handleColorChange(cIdx, 'colorName', e.target.value)}
                         disabled={colorSelectionTypes[cIdx] !== 'custom'}
-                        className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary transition-all disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed" 
+                        className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary focus:outline-none focus:border-primary transition-all disabled:bg-primary/5 disabled:text-primary/40 disabled:cursor-not-allowed placeholder:text-primary/40" 
                         placeholder="e.g. Midnight Navy" 
                         type="text"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Color Code (Hex)</label>
+                      <label className="block text-sm font-semibold text-primary mb-2">Color Code (Hex)</label>
                       <div className="flex gap-2">
                         <div className="size-12 rounded-lg border border-border-subtle shadow-sm" style={{ backgroundColor: color.colorCode }}></div>
                         <input 
                           value={color.colorCode}
                           onChange={(e) => handleColorChange(cIdx, 'colorCode', e.target.value)}
                           disabled={colorSelectionTypes[cIdx] !== 'custom'}
-                          className="flex-1 px-4 py-3 rounded-lg border border-border-subtle bg-background-soft focus:outline-none focus:border-primary uppercase transition-all disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed" 
+                          className="flex-1 px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary focus:outline-none focus:border-primary uppercase transition-all disabled:bg-primary/5 disabled:text-primary/40 disabled:cursor-not-allowed placeholder:text-primary/40" 
                           type="text"
                         />
                       </div>
@@ -614,7 +614,7 @@ export default function AddProduct() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                                         <div>
                       <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">Product Images</h4>
+                        <h4 className="text-sm font-bold uppercase tracking-wider text-primary/50">Product Images</h4>
                         <label className="bg-primary/10 text-primary px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 hover:bg-primary/20 transition-colors cursor-pointer">
                           <span className="material-symbols-outlined text-base font-bold">upload</span> Upload Image
                           <input 
@@ -646,12 +646,12 @@ export default function AddProduct() {
                                 {img.image ? (
                                   <img className="w-full h-full object-cover" src={img.image} alt="Preview" referrerPolicy="no-referrer" />
                                 ) : (
-                                  <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                  <div className="w-full h-full flex items-center justify-center text-primary/40">
                                     <span className="material-symbols-outlined text-lg">image</span>
                                   </div>
                                 )}
                                 {isUploading && (
-                                  <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                                  <div className="absolute inset-0 bg-background-light/60 flex items-center justify-center">
                                     <div className="flex space-x-1">
                                       <div className="size-1.5 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
                                       <div className="size-1.5 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
@@ -662,7 +662,7 @@ export default function AddProduct() {
                               </div>
 
                               {/* Filename & Error */}
-                              <span className="flex-1 text-sm font-semibold text-slate-900 truncate">
+                              <span className="flex-1 text-sm font-semibold text-primary truncate">
                                 {uploadErrors[uploadKey] ? (
                                   <span className="text-red-500 font-medium">{uploadErrors[uploadKey]}</span>
                                 ) : (
@@ -677,16 +677,16 @@ export default function AddProduct() {
                                     type="checkbox" 
                                     checked={img.isMain}
                                     onChange={(e) => handleImageChange(cIdx, iIdx, 'isMain', e.target.checked)}
-                                    className="w-4 h-4 rounded accent-primary text-primary focus:ring-primary border-slate-300 cursor-pointer" 
+                                    className="w-4 h-4 rounded accent-primary text-primary focus:ring-primary border-primary/20 cursor-pointer" 
                                   />
-                                  <span className={`text-xs font-bold transition-colors ${img.isMain ? 'text-primary' : 'text-slate-600 group-hover/main:text-slate-900'}`}>
+                                  <span className={`text-xs font-bold transition-colors ${img.isMain ? 'text-primary' : 'text-primary/60 group-hover/main:text-primary'}`}>
                                     Main
                                   </span>
                                 </label>
                                 {iIdx > 0 && (
                                   <button 
                                     onClick={() => removeImage(cIdx, iIdx)}
-                                    className="text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
+                                    className="text-primary/40 hover:text-red-500 transition-colors cursor-pointer"
                                   >
                                     <span className="material-symbols-outlined text-xl">delete</span>
                                   </button>
@@ -700,7 +700,7 @@ export default function AddProduct() {
                     {/* Item List (Stock & Size) */}
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">Inventory & Sizes</h4>
+                        <h4 className="text-sm font-bold uppercase tracking-wider text-primary/50">Inventory & Sizes</h4>
                         <button 
                           onClick={() => addSize(cIdx)}
                           className="text-primary text-sm font-bold flex items-center gap-1 cursor-pointer"
@@ -716,7 +716,7 @@ export default function AddProduct() {
                                 <select 
                                   value={item.sizeId}
                                   onChange={(e) => handleItemChange(cIdx, itIdx, 'sizeId', e.target.value)}
-                                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10"
+                                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10"
                                 >
                                   {sizes.map(size => (
                                     <option key={size.id} value={size.id}>{size.sizeValue}</option>
@@ -727,7 +727,7 @@ export default function AddProduct() {
                                 <input 
                                   value={item.stockQuantity === 0 ? '' : item.stockQuantity}
                                   onChange={(e) => handleItemChange(cIdx, itIdx, 'stockQuantity', e.target.value)}
-                                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all" 
+                                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-primary text-sm focus:outline-none focus:border-primary transition-all placeholder:text-primary/40" 
                                   placeholder="Stock" 
                                   type="number"
                                 />
@@ -736,7 +736,7 @@ export default function AddProduct() {
                             {itIdx > 0 && (
                               <button 
                                 onClick={() => removeSize(cIdx, itIdx)}
-                                className="text-slate-400 hover:text-red-500 transition-colors shrink-0 cursor-pointer"
+                                className="text-primary/40 hover:text-red-500 transition-colors shrink-0 cursor-pointer"
                               >
                                 <span className="material-symbols-outlined text-lg">close</span>
                               </button>
@@ -766,14 +766,14 @@ export default function AddProduct() {
             <div className="flex gap-4">
               <button 
                 onClick={handleCancel}
-                className="px-8 py-3 bg-white border border-border-subtle text-slate-600 font-bold rounded-lg hover:bg-background-soft transition-all cursor-pointer"
+                className="px-8 py-3 bg-background-light border border-border-subtle text-primary/60 font-bold rounded-lg hover:bg-background-soft transition-all cursor-pointer"
               >
                 Cancel & Exit
               </button>
               <button 
                 onClick={handleSubmit}
                 disabled={loading}
-                className="px-10 py-3 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all disabled:opacity-50 cursor-pointer"
+                className="px-10 py-3 bg-primary text-white dark:text-background-light font-bold rounded-lg shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all disabled:opacity-50 cursor-pointer"
               >
                 {loading ? 'Publishing...' : 'Publish Product'}
               </button>
@@ -801,7 +801,7 @@ export default function AddProduct() {
             <img 
               src={selectedImage} 
               alt="Full view" 
-              className="w-full h-full object-contain bg-white" 
+              className="w-full h-full object-contain bg-background-light" 
               referrerPolicy="no-referrer" 
             />
           </div>

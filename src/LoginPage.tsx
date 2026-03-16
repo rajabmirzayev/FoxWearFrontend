@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from './services/api';
 import storage from './services/storage';
 import { ApiResponse, AuthData } from './types';
+import { useTheme } from './context/ThemeContext';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +65,16 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side: Login Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 py-12 bg-background-light">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 py-12 bg-background-light relative transition-colors duration-300">
+        <button 
+          onClick={toggleTheme}
+          className="absolute top-8 right-8 text-primary hover:opacity-70 transition-all transform hover:scale-110 cursor-pointer"
+          title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+        >
+          <span className="material-symbols-outlined">
+            {theme === 'light' ? 'dark_mode' : 'light_mode'}
+          </span>
+        </button>
         <div className="w-full max-w-md space-y-8">
           <div className="lg:hidden flex justify-center mb-8">
             <div className="flex items-center gap-2 text-primary">
@@ -72,7 +83,7 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="text-center lg:text-left">
-            <h2 className="text-4xl font-black text-slate-900 tracking-tight">Welcome Back</h2>
+            <h2 className="text-4xl font-black text-primary tracking-tight">Welcome Back</h2>
             <p className="mt-2 text-primary/60">Please enter your details to access your wardrobe.</p>
           </div>
 
@@ -85,12 +96,12 @@ export default function LoginPage() {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-slate-700" htmlFor="username">Email or Username</label>
+                <label className="text-sm font-semibold text-primary" htmlFor="username">Email or Username</label>
                 <input 
                   id="username"
                   type="text"
                   required
-                  className="block w-full h-14 px-4 bg-white border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-400"
+                  className="block w-full h-14 px-4 bg-background-light border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-primary/40"
                   placeholder="Enter your credentials"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -98,7 +109,7 @@ export default function LoginPage() {
               </div>
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-semibold text-slate-700" htmlFor="password">Password</label>
+                  <label className="text-sm font-semibold text-primary" htmlFor="password">Password</label>
                   <a className="text-xs font-medium text-primary hover:underline" href="#">Forgot password?</a>
                 </div>
                 <div className="relative flex items-center">
@@ -106,14 +117,14 @@ export default function LoginPage() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     required
-                    className="block w-full h-14 px-4 bg-white border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-400"
+                    className="block w-full h-14 px-4 bg-background-light border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-primary/40"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <button 
                     type="button"
-                    className="absolute right-4 text-slate-400 hover:text-primary transition-colors"
+                    className="absolute right-4 text-primary/40 hover:text-primary transition-colors"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     <span className="material-symbols-outlined text-xl">
@@ -133,7 +144,7 @@ export default function LoginPage() {
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
-              <label className="ml-2 block text-sm text-slate-600 cursor-pointer" htmlFor="remember-me">Remember me for 30 days</label>
+              <label className="ml-2 block text-sm text-primary/60 cursor-pointer" htmlFor="remember-me">Remember me for 30 days</label>
             </div>
 
             <div className="space-y-4">
@@ -147,13 +158,13 @@ export default function LoginPage() {
               
               <div className="relative flex items-center py-2">
                 <div className="flex-grow border-t border-primary/10"></div>
-                <span className="flex-shrink mx-4 text-xs uppercase tracking-widest text-slate-400">Or continue with</span>
+                <span className="flex-shrink mx-4 text-xs uppercase tracking-widest text-primary/40">Or continue with</span>
                 <div className="flex-grow border-t border-primary/10"></div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <button type="button" className="flex items-center justify-center gap-2 py-3 px-4 border border-primary/10 rounded-lg hover:bg-primary/5 transition-colors">
-                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYIw3BWre2ZY0lOXDezWT7Oaa56IK6BTmFemi0RLCtwE0Q1UGkSZqG2CMQd1ddSlCcQI1m669XyHXgzKWRBcR0Dg0XSDQP0ZPBmXJfbAjLs8n9Ejw6e2v1EBlNUKhLtMhCecjELKLU0c_9f0TprSSG865q1OdrH-Upjhgx_WQ7blZPzYvWSGQ_hSlvfA9nyYZhkersO6H8uLDzPAerv-lDbBtMhq7wwBx3fpn2Et-n69EATPWnkR_W9dgWy8mZQ_lx0Zgem5tBS-OA" alt="Google" className="w-5 h-5" />
+                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYIw3BWre2ZY0lOXDezWT7Oaa56IK6BTmFemi0RLCtwE0Q1UGkSZqG2CMQd1ddSlCcQI1m669XyHXgzKWRBcR0Dg0XSDQP0ZPBmXJfbAjLs8n9Ejw6e2v1EBlNUKhLtMhCecjELKLU0c_9f0TprSSG865q1OdrH-Upjhgx_WQ7blZPzYvWSGQ_hSlvfA9nyYZhkersO6H8uLDzPAerv-lDbBtMhq7wwBx3fpn2Et-n69EATPWnkR_W9dgWy8mZQ_lx0Zgem5tBS-OA" alt="Google" className="w-5 h-5" referrerPolicy="no-referrer" />
                   <span className="text-sm font-medium">Google</span>
                 </button>
                 <button type="button" className="flex items-center justify-center gap-2 py-3 px-4 border border-primary/10 rounded-lg hover:bg-primary/5 transition-colors">
@@ -164,7 +175,7 @@ export default function LoginPage() {
             </div>
           </form>
 
-          <p className="mt-10 text-center text-sm text-slate-500">
+          <p className="mt-10 text-center text-sm text-primary/50">
             Don't have an account? 
             <a className="font-bold text-primary hover:underline ml-1" href="#">Create an account</a>
           </p>

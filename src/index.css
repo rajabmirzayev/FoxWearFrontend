@@ -2,10 +2,12 @@
 
 @theme {
   --font-display: "Work Sans", sans-serif;
-  --color-primary: #49352c;
+  --color-primary: #2d1e17;
   --color-background-light: #ffffff;
   --color-background-soft: #f9f9f8;
   --color-border-subtle: #e5e7eb;
+  --color-sidebar-bg: #2d1e17;
+  --color-sidebar-text: #ffffff;
   
   --radius-DEFAULT: 0.125rem;
   --radius-lg: 0.25rem;
@@ -13,9 +15,20 @@
   --radius-full: 0.75rem;
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+.dark {
+  --color-primary: #f5f2ed;
+  --color-background-light: #1a120f;
+  --color-background-soft: #120c0a;
+  --color-border-subtle: #2d1e17;
+  --color-sidebar-bg: #1a120f;
+  --color-sidebar-text: #f5f2ed;
+}
+
 @layer base {
   body {
-    @apply font-display bg-background-light text-slate-900;
+    @apply font-display bg-background-light text-primary transition-colors duration-300;
   }
 }
 
