@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from './services/api';
-import storage from './services/storage';
-import { ApiResponse, AuthData } from './types';
-import { useTheme } from './context/ThemeContext';
+import api from '../services/api';
+import storage from '../services/storage';
+import { ApiResponse, AuthData } from '../types';
+import { useTheme } from '../context/ThemeContext';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');

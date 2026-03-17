@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import { bannerApi, productApi, reviewApi } from './services/api';
-import { Banner, Product, Review } from './types';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { bannerApi, productApi, reviewApi } from '../services/api';
+import { Banner, Product, Review } from '../types';
 
 export default function Home() {
   const [banner, setBanner] = useState<Banner | null>(null);
@@ -113,7 +113,7 @@ export default function Home() {
             <div className="pt-4 animate-in fade-in duration-1000 delay-500">
               <Link 
                 to={banner?.buttonLink || "/products"} 
-                className="inline-block bg-white dark:bg-background-light text-primary px-12 py-5 text-sm font-bold uppercase tracking-[0.2em] rounded-none transition-all hover:bg-primary hover:text-white dark:hover:text-background-light shadow-2xl"
+                className="inline-block bg-primary dark:bg-background-light text-background-light dark:text-primary px-12 py-5 text-sm font-bold uppercase tracking-[0.2em] rounded-none transition-all hover:bg-background-light dark:hover:bg-primary hover:text-primary dark:hover:text-background-light shadow-2xl"
               >
                 {banner?.buttonText || "Shop Now"}
               </Link>

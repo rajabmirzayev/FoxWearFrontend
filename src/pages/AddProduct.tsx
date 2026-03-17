@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from './services/api';
-import { ApiResponse, CreateProductRequest, Product, Category, ProductSize, Color } from './types';
-import Modal from './components/Modal';
+import api from '../services/api';
+import { ApiResponse, CreateProductRequest, Product, Category, ProductSize, Color } from '../types';
+import Modal from '../components/Modal';
 
 export default function AddProduct() {
   const navigate = useNavigate();

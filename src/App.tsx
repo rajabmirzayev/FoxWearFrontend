@@ -1,17 +1,21 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
-import LoginPage from './LoginPage';
-import AdminLayout from './AdminLayout';
-import ProductList from './ProductList';
-import AddProduct from './AddProduct';
-import EditProduct from './EditProduct';
-import Dashboard from './Dashboard';
-import Orders from './Orders';
-import Sales from './Sales';
-import Customers from './Customers';
-import Settings from './Settings';
-import Home from './Home';
+import LoginPage from './pages/LoginPage';
+import AdminLayout from './components/AdminLayout';
+import ProductList from './pages/ProductList';
+import AddProduct from './pages/AddProduct';
+import EditProduct from './pages/EditProduct';
+import Dashboard from './pages/Dashboard';
+import Orders from './pages/Orders';
+import Sales from './pages/Sales';
+import Customers from './pages/Customers';
+import Settings from './pages/Settings';
+import Home from './pages/Home';
+import Products from './pages/Products';
+import Collections from './pages/Collections';
+import AboutUs from './pages/AboutUs';
+import Contact from './pages/Contact';
 import storage from './services/storage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -28,6 +32,10 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/collections" element={<Collections />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<LoginPage />} />
           <Route 
             path="/admin/*" 

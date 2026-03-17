@@ -1,9 +1,9 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import api from './services/api';
-import storage from './services/storage';
-import { ApiResponse } from './types';
-import { useTheme } from './context/ThemeContext';
+import api from '../services/api';
+import storage from '../services/storage';
+import { ApiResponse } from '../types';
+import { useTheme } from '../context/ThemeContext';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
