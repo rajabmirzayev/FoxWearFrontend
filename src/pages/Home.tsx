@@ -81,9 +81,20 @@ export default function Home() {
       <section className="relative h-[90vh] w-full flex items-center overflow-hidden bg-background-soft">
         <div className="absolute inset-0 z-0">
           {/* Skeleton Loader / Placeholder Background */}
-          {!bannerLoaded && (
-            <div className="absolute inset-0 bg-background-soft animate-pulse flex items-center justify-center">
-              <div className="w-24 h-24 border-4 border-primary/10 border-t-primary rounded-full animate-spin"></div>
+          {!bannerLoaded && banner?.imageUrl && (
+            <div className="absolute inset-0 bg-background-soft flex items-center justify-center z-20">
+              <div className="flex items-center gap-1.5 h-12">
+                {[...Array(5)].map((_, i) => (
+                  <div 
+                    key={i}
+                    className="w-1.5 bg-primary/30 rounded-full animate-music-bar"
+                    style={{ 
+                      height: '100%',
+                      animationDelay: `${i * 0.15}s`
+                    }}
+                  ></div>
+                ))}
+              </div>
             </div>
           )}
           
@@ -92,7 +103,7 @@ export default function Home() {
             <img 
               alt={banner?.title || "Premium fashion model"} 
               className={`w-full h-full object-cover object-top transition-opacity duration-1000 ${bannerLoaded ? 'opacity-100' : 'opacity-0'}`} 
-              src={banner?.imageUrl || "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=2070&auto=format&fit=crop"} 
+              src={banner?.imageUrl || ""} 
               onLoad={() => setBannerLoaded(true)}
               referrerPolicy="no-referrer"
             />
@@ -319,6 +330,14 @@ export default function Home() {
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes music-bar {
+          0%, 100% { transform: scaleY(0.3); opacity: 0.3; }
+          50% { transform: scaleY(1); opacity: 1; }
+        }
+        .animate-music-bar {
+          animation: music-bar 1s ease-in-out infinite;
+          transform-origin: center;
+        }
       `}</style>
     </div>
   );
