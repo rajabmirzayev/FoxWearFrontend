@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import api from '../services/api';
+import api, { productApi } from '../services/api';
 import { ApiResponse, CreateProductRequest, Product, Category, ProductSize, Color } from '../types';
 import Modal from '../components/Modal';
 
@@ -40,9 +40,9 @@ export default function EditProduct() {
       try {
         setFetching(true);
         const [catRes, sizeRes, colorRes, productRes] = await Promise.all([
-          api.get<ApiResponse<Category[]>>('/api/admin/products/category'),
-          api.get<ApiResponse<ProductSize[]>>('/api/admin/products/size'),
-          api.get<ApiResponse<Color[]>>('/api/admin/products/colors'),
+          productApi.getCategories(),
+          productApi.getSizes(),
+          productApi.getColors(),
           api.get<ApiResponse<Product>>(`/api/admin/products/${slug}`)
         ]);
         

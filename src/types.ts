@@ -89,16 +89,16 @@ export interface ProductFilter {
   page?: number;
   size?: number;
   direction?: 'ASC' | 'DESC';
-  gender?: 'MALE' | 'FEMALE' | 'UNISEX' | 'KIDS' | '';
-  categoryId?: number | null;
+  gender?: ('MALE' | 'FEMALE' | 'UNISEX' | 'KIDS')[];
+  categoryId?: number[];
   keyword?: string;
-  color?: string;
-  productSize?: string;
+  color?: string[];
+  productSize?: string[];
   sortBy?: string;
   isActive?: boolean;
   isDeleted?: boolean;
-  minPrice?: number | string;
-  maxPrice?: number | string;
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 export interface CreateProductRequest {

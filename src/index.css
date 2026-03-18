@@ -1,12 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-display: "Work Sans", sans-serif;
-  --color-primary: #2d1e17;
-  --color-background-light: #ffffff;
-  --color-background-soft: #f9f9f8;
+  --font-serif: "Cormorant Garamond", serif;
+  --color-primary: #49352c;
+  --color-accent: #49352c;
+  --color-background-light: #f7f7f6;
+  --color-background-soft: #f0f0ef;
   --color-border-subtle: #e5e7eb;
-  --color-sidebar-bg: #2d1e17;
+  --color-sidebar-bg: #49352c;
   --color-sidebar-text: #ffffff;
   
   --radius-DEFAULT: 0.125rem;
@@ -18,12 +21,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 .dark {
-  --color-primary: #f5f2ed;
+  --color-primary: #f7f7f6;
   --color-background-light: #1a120f;
   --color-background-soft: #120c0a;
-  --color-border-subtle: #2d1e17;
+  --color-border-subtle: #49352c;
   --color-sidebar-bg: #1a120f;
-  --color-sidebar-text: #f5f2ed;
+  --color-sidebar-text: #f7f7f6;
 }
 
 @layer base {
@@ -41,4 +44,28 @@
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #49352c33;
   border-radius: 10px;
+}
+
+.range-slider-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary), transparent 80%);
+  border: none;
+  pointer-events: auto;
+}
+
+.range-slider-thumb::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary), transparent 80%);
+  border: none;
+  pointer-events: auto;
 }

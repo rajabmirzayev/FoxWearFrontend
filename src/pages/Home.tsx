@@ -103,7 +103,7 @@ export default function Home() {
             <img 
               alt={banner?.title || "Premium fashion model"} 
               className={`w-full h-full object-cover object-top transition-opacity duration-1000 ${bannerLoaded ? 'opacity-100' : 'opacity-0'}`} 
-              src={banner?.imageUrl || ""} 
+              src={banner?.imageUrl} 
               onLoad={() => setBannerLoaded(true)}
               referrerPolicy="no-referrer"
             />

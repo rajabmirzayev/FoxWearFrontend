@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, AuthData, Banner, Product, Review } from '../types';
+import { ApiResponse, AuthData, Banner, Product, Review, ProductPage, Category, ProductSize, Color } from '../types';
 import storage from './storage';
 
 const API_BASE_URL = 'http://localhost:8080';
@@ -130,6 +130,11 @@ export const bannerApi = {
 export const productApi = {
   getMostLiked: () => api.get<ApiResponse<Product[]>>('/api/v1/products/most-liked'),
   like: (productId: number) => api.post(`/api/v1/products/${productId}/like`),
+  getAll: (params: any) => api.get<ApiResponse<ProductPage>>('/api/v1/products', { params }),
+  getAllAdmin: (params: any) => api.get<ApiResponse<ProductPage>>('/api/admin/products', { params }),
+  getCategories: () => api.get<ApiResponse<Category[]>>('/api/v1/products/category'),
+  getSizes: () => api.get<ApiResponse<ProductSize[]>>('/api/v1/products/size'),
+  getColors: () => api.get<ApiResponse<Color[]>>('/api/v1/products/colors'),
 };
 
 export const reviewApi = {

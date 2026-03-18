@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import api, { productApi } from '../services/api';
 import { ApiResponse, Product, ProductPage, ProductFilter, Category, ProductSize, Color } from '../types';
 import Modal from '../components/Modal';
 
@@ -30,29 +30,39 @@ export default function ProductList() {
   const [filters, setFilters] = useState<ProductFilter>({
     page: 0,
     size: 10,
-    sortBy: 'updatedAt',
+    sortBy: 'createdAt',
     direction: 'DESC',
-    gender: '',
-    categoryId: null,
+    gender: [],
+    categoryId: [],
+    color: [],
+    productSize: [],
     keyword: '',
     isActive: true,
     isDeleted: false,
-    minPrice: '',
-    maxPrice: '',
+    minPrice: 0,
+    maxPrice: 0,
   });
 
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Filter out empty values for minPrice and maxPrice
-      const cleanFilters = { ...filters };
-      if (cleanFilters.minPrice === '') delete cleanFilters.minPrice;
-      if (cleanFilters.maxPrice === '') delete cleanFilters.maxPrice;
-
-      const response = await api.get<ApiResponse<ProductPage>>('/api/admin/products', {
-        params: cleanFilters
+      // Clean filters: remove empty arrays, empty strings, and handle prices
+      const cleanFilters: any = {};
+      
+      Object.entries(filters).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          if (value.length > 0) cleanFilters[key] = value;
+        } else if (value !== '' && value !== null && value !== undefined) {
+          // For prices, only send if they are greater than 0
+          if ((key === 'minPrice' || key === 'maxPrice') && value === 0) {
+            return;
+          }
+          cleanFilters[key] = value;
+        }
       });
+
+      const response = await productApi.getAllAdmin(cleanFilters);
       if (response.data.success) {
         setProducts(response.data.data.content);
         setPageInfo(response.data.data);
@@ -69,7 +79,7 @@ export default function ProductList() {
 
   const fetchCategories = async () => {
     try {
-      const response = await api.get<ApiResponse<Category[]>>('/api/admin/products/category');
+      const response = await productApi.getCategories();
       if (response.data.success) {
         setCategories(response.data.data);
       }
@@ -80,7 +90,7 @@ export default function ProductList() {
 
   const fetchSizes = async () => {
     try {
-      const response = await api.get<ApiResponse<ProductSize[]>>('/api/admin/products/size');
+      const response = await productApi.getSizes();
       if (response.data.success) {
         setSizes(response.data.data);
       }
@@ -91,7 +101,7 @@ export default function ProductList() {
 
   const fetchColors = async () => {
     try {
-      const response = await api.get<ApiResponse<Color[]>>('/api/admin/products/colors');
+      const response = await productApi.getColors();
       if (response.data.success) {
         setColors(response.data.data);
       }
@@ -128,9 +138,11 @@ export default function ProductList() {
 
     let filterValue: any = value;
     if (name === 'categoryId') {
-      filterValue = value === 'All' ? null : Number(value);
-    } else if (value === 'All') {
-      filterValue = '';
+      filterValue = value === 'All' ? [] : [Number(value)];
+    } else if (name === 'gender' || name === 'color' || name === 'productSize') {
+      filterValue = value === '' || value === 'All' ? [] : [value];
+    } else if (name === 'minPrice' || name === 'maxPrice') {
+      filterValue = value === '' ? 0 : Number(value);
     }
 
     setFilters(prev => ({
@@ -257,7 +269,7 @@ export default function ProductList() {
             <div className="flex flex-wrap gap-2">
               <select 
                 name="gender"
-                value={filters.gender}
+                value={filters.gender?.[0] || ''}
                 onChange={handleFilterChange}
                 className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10 text-primary"
               >
@@ -269,7 +281,7 @@ export default function ProductList() {
               </select>
               <select 
                 name="categoryId"
-                value={filters.categoryId || 'All'}
+                value={filters.categoryId?.[0] || 'All'}
                 onChange={handleFilterChange}
                 className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10 text-primary"
               >
@@ -280,7 +292,7 @@ export default function ProductList() {
               </select>
               <select 
                 name="color"
-                value={filters.color || 'All'}
+                value={filters.color?.[0] || 'All'}
                 onChange={handleFilterChange}
                 className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10 text-primary"
               >
@@ -291,7 +303,7 @@ export default function ProductList() {
               </select>
               <select 
                 name="productSize"
-                value={filters.productSize || 'All'}
+                value={filters.productSize?.[0] || 'All'}
                 onChange={handleFilterChange}
                 className="px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10 text-primary"
               >
