@@ -461,12 +461,12 @@ export default function Products() {
                           <button 
                             onClick={(e) => handleLike(product.id, e)}
                             className={`absolute top-4 right-4 rounded-full opacity-0 group-hover:opacity-100 transition z-10 cursor-pointer group/btn
-                              bg-white text-primary hover:bg-primary hover:text-white 
-                              dark:bg-accent dark:text-white dark:hover:bg-white dark:hover:text-accent
+                              bg-primary text-white hover:bg-white hover:text-primary
+                              dark:bg-white dark:text-background-light dark:hover:bg-background-light dark:hover:text-white
                               ${likedProducts.has(product.id) ? 'opacity-100' : ''}`}
                           >
                             <span className={`material-symbols-outlined text-xl p-2 transition-colors 
-                              group-hover/btn:text-white dark:group-hover/btn:text-accent
+                              group-hover/btn:text-black dark:group-hover/btn:text-white
                               ${likedProducts.has(product.id) ? 'text-red-500 fill-1' : ''}`}>
                               favorite
                             </span>
@@ -486,8 +486,8 @@ export default function Products() {
                             <button
                               onClick={() => setSelectedProduct(product)}
                               className="w-full py-3 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer backdrop-blur-sm
-                                bg-white text-primary hover:bg-primary hover:text-white
-                                dark:bg-accent dark:text-white dark:hover:bg-white dark:hover:text-accent"
+                                bg-primary text-white hover:bg-white hover:text-primary
+                                dark:bg-white dark:text-background-light dark:hover:bg-background-light dark:hover:text-white"
                             >
                               Quick View
                             </button>
@@ -575,7 +575,7 @@ export default function Products() {
                 onClick={() => setSelectedProduct(null)}
                 className="absolute top-4 right-4 bg-white/90 rounded-full z-20 hover:bg-primary hover:text-white dark:bg-background-light text-primary transition-all duration-300 cursor-pointer"
               >
-                <span className="dark:hover:text-accent material-symbols-outlined p-2 font-light">close</span>
+                <span className="dark:hover:text-background-light material-symbols-outlined p-2 font-light">close</span>
               </button>
 
               <div className="w-full md:w-1/2 flex flex-col bg-primary/5">
@@ -699,20 +699,20 @@ export default function Products() {
                 </div>
 
                 <div className="flex gap-4">
-                  <button className="flex-1 py-4 text-xs uppercase tracking-widest transition-all duration-300 cursor-pointer
-                    bg-white text-primary border border-primary/10 hover:bg-primary hover:text-white
-                    dark:bg-accent dark:text-white dark:hover:bg-white dark:hover:text-accent">
-                    Add to Collection
+                  <button className="flex-1 py-4 text-xs font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer
+                    bg-primary text-white border border-primary/10 hover:bg-white hover:text-primary
+                    dark:bg-white dark:text-background-light dark:hover:bg-background-light dark:hover:text-white">
+                    View Product
                   </button>
                     <button 
                       onClick={(e) => handleLike(selectedProduct.id, e)}
                       className={`px-6 border border-primary/10 transition-all flex items-center justify-center group/btn cursor-pointer
-                        bg-white text-primary hover:bg-primary hover:text-white
-                        dark:bg-accent dark:text-white dark:hover:bg-white dark:hover:text-accent
+                        bg-primary text-white hover:bg-white hover:text-primary
+                        dark:bg-white dark:text-background-light dark:hover:bg-background-light dark:hover:text-white
                         ${likedProducts.has(selectedProduct.id) ? 'text-red-500 border-red-500/20 bg-red-50/50' : ''}`}
                     >
                       <span className={`material-symbols-outlined 
-                        group-hover/btn:text-white dark:group-hover/btn:text-accent
+                        group-hover/btn:text-primary dark:group-hover/btn:text-white
                         ${likedProducts.has(selectedProduct.id) ? 'fill-1' : ''}`}>
                         favorite
                       </span>
