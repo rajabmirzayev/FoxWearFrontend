@@ -32,9 +32,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar Navigation */}
       <aside className="w-64 bg-sidebar-bg flex flex-col shadow-xl transition-colors duration-300">
         <div className="p-6 border-b border-white/10 flex items-center gap-3">
-          <div className="size-10 bg-white rounded-full flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined">forest</span>
-          </div>
+          <img 
+            src="/src/assets/icon-white.png" 
+            alt="FoxWear Logo" 
+            className="size-10 object-contain"
+            referrerPolicy="no-referrer"
+          />
           <div>
             <h1 className="text-lg font-bold text-sidebar-text leading-tight">FoxWear</h1>
             <p className="text-xs text-sidebar-text/60 font-medium uppercase tracking-wider">Admin Panel</p>

@@ -75,8 +75,13 @@ export default function LoginPage() {
         ></div>
         <div className="absolute inset-0 bg-primary/20 mix-blend-multiply"></div>
         <div className="relative z-10 flex flex-col justify-between p-12 w-full text-white">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-4xl">diamond</span>
+          <div className="flex items-center gap-3">
+            <img 
+              src="/src/assets/icon-white.png" 
+              alt="FoxWear Logo" 
+              className="h-10 w-auto object-contain"
+              referrerPolicy="no-referrer"
+            />
             <h1 className="text-2xl font-bold tracking-tight">FoxWear</h1>
           </div>
           <div>
@@ -102,8 +107,13 @@ export default function LoginPage() {
         </button>
         <div className="w-full max-w-md space-y-8">
           <div className="lg:hidden flex justify-center mb-8">
-            <div className="flex items-center gap-2 text-primary">
-              <span className="material-symbols-outlined text-4xl">diamond</span>
+            <div className="flex items-center gap-3 text-primary">
+              <img 
+                src={theme === 'light' ? '/src/assets/icon-black.png' : '/src/assets/icon-white.png'} 
+                alt="FoxWear Logo" 
+                className="h-10 w-auto object-contain"
+                referrerPolicy="no-referrer"
+              />
               <h2 className="text-2xl font-bold">FoxWear</h2>
             </div>
           </div>

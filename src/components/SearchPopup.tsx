@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { productApi } from '../services/api';
 import { Product, ProductPage } from '../types';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 interface SearchPopupProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface SearchPopupProps {
 }
 
 export default function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
+  const { theme } = useTheme();
   const [keyword, setKeyword] = useState('');
   const [results, setResults] = useState<Product[]>([]);
   const [pageInfo, setPageInfo] = useState<ProductPage | null>(null);
@@ -93,7 +95,12 @@ export default function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
                 <div className="flex items-center justify-between gap-12">
                   {/* Brand Logo */}
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="material-symbols-outlined text-primary text-2xl font-light">filter_vintage</span>
+                    <img 
+                      src={theme === 'light' ? '/src/assets/icon-black.png' : '/src/assets/icon-white.png'} 
+                      alt="FoxWear Logo" 
+                      className="h-11 w-auto object-contain transition-opacity duration-300"
+                      referrerPolicy="no-referrer"
+                    />
                     <h1 className="text-primary text-xl font-bold tracking-[0.2em] uppercase">FoxWear</h1>
                   </div>
                   {/* Refined Search Input Container */}

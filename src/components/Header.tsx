@@ -62,12 +62,13 @@ export default function Header() {
       <header className="fixed top-0 left-0 w-full z-50 bg-background-light/70 backdrop-blur-xl border-b border-primary/10 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group cursor-pointer">
-          <div className="text-primary">
-            <span className="material-symbols-outlined text-3xl font-bold">
-              interests
-            </span>
-          </div>
+        <Link to="/" className="flex items-center gap-3 group cursor-pointer">
+          <img 
+            src={theme === 'light' ? '/src/assets/icon-black.png' : '/src/assets/icon-white.png'} 
+            alt="FoxWear Logo" 
+            className="h-11 w-auto object-contain transition-opacity duration-300"
+            referrerPolicy="no-referrer"
+          />
           <h1 className="text-primary text-xl font-black tracking-tighter uppercase">FoxWear</h1>
         </Link>
 

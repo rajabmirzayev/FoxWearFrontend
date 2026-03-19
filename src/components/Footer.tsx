@@ -1,14 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Footer() {
+  const { theme } = useTheme();
   return (
     <footer className="py-20 px-6 lg:px-10 bg-primary text-white/90 dark:text-background-light/90">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="col-span-1 md:col-span-1">
-          <div className="flex items-center gap-2 mb-6">
-            <span className="material-symbols-outlined text-2xl font-bold text-white dark:text-background-light">interests</span>
-            <h5 className="text-white dark:text-background-light text-lg font-black tracking-tighter uppercase">FoxWear</h5>
+          <div className="flex items-center gap-3 mb-8">
+            <img 
+              src={theme === 'light' ? '/src/assets/icon-white.png' : '/src/assets/icon-black.png'} 
+              alt="FoxWear Logo" 
+              className="h-11 w-auto object-contain transition-opacity duration-300"
+              referrerPolicy="no-referrer"
+            />
+            <h5 className="text-white dark:text-background-light text-xl font-black tracking-tighter uppercase italic">FoxWear</h5>
           </div>
           <p className="text-white/70 dark:text-background-light/70 text-sm leading-relaxed mb-6 font-light">
             Redefining premium modern fashion with a focus on quality and minimalist aesthetics.
