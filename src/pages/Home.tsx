@@ -59,7 +59,9 @@ export default function Home() {
   const handleLike = async (productId: number) => {
     try {
       await productApi.like(productId);
-      // Optionally update local state if needed, but the API might not return the new like count
+      setMostLikedProducts(prev => prev.map(p => 
+        p.id === productId ? { ...p, liked: !p.liked } : p
+      ));
     } catch (error) {
       console.error('Error liking product:', error);
     }
@@ -103,7 +105,7 @@ export default function Home() {
             <img 
               alt={banner?.title || "Premium fashion model"} 
               className={`w-full h-full object-cover object-top transition-opacity duration-1000 ${bannerLoaded ? 'opacity-100' : 'opacity-0'}`} 
-              src={banner?.imageUrl} 
+              src={banner?.imageUrl || ""} 
               onLoad={() => setBannerLoaded(true)}
               referrerPolicy="no-referrer"
             />
@@ -183,7 +185,7 @@ export default function Home() {
                     onClick={() => handleLike(product.id)}
                     className="absolute top-4 right-4 z-20 size-10 bg-white/90 hover:bg-white dark:bg-black/50 dark:hover:bg-black/70 backdrop-blur-md rounded-full flex items-center justify-center text-primary transition-all duration-300 group/wishlist cursor-pointer shadow-lg"
                   >
-                    <span className="material-symbols-outlined text-xl leading-none group-hover/wishlist:[font-variation-settings:'FILL'_1] transition-all">favorite</span>
+                    <span className={`material-symbols-outlined text-xl leading-none transition-all ${product.liked ? '[font-variation-settings:"FILL"_1] text-red-500' : 'group-hover/wishlist:[font-variation-settings:"FILL"_1]'}`}>favorite</span>
                   </button>
                   {product.hasDiscount && (
                     <div className="absolute top-4 left-4 bg-primary text-white dark:text-background-light text-[10px] font-bold uppercase tracking-widest px-3 py-1.5">

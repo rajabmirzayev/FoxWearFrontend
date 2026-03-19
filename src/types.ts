@@ -64,11 +64,12 @@ export interface Product {
   hasDiscount: boolean;
   slug: string;
   gender: 'MALE' | 'FEMALE' | 'UNISEX' | 'KIDS';
-  category: Category;
+  category?: Category;
   categoryName: string;
   description?: string;
-  isActive: boolean;
+  isActive?: boolean;
   active?: boolean;
+  liked?: boolean;
   isDeleted: boolean;
   colors: ProductColor[];
 }
@@ -106,9 +107,10 @@ export interface CreateProductRequest {
   originalPrice: number;
   discountPrice: number;
   discountRate: number;
-  gender: 'MALE' | 'FEMALE' | 'UNISEX';
+  gender: 'MALE' | 'FEMALE' | 'UNISEX' | 'KIDS';
   description: string;
   categoryId: number;
+  isActive?: boolean;
   colors: {
     colorName: string;
     colorCode: string;
@@ -119,6 +121,7 @@ export interface CreateProductRequest {
     items: {
       sizeId: number;
       stockQuantity: number;
+      sku?: string;
     }[];
   }[];
 }

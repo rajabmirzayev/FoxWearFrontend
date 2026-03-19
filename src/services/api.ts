@@ -132,6 +132,7 @@ export const productApi = {
   like: (productId: number) => api.post(`/api/v1/products/${productId}/like`),
   getAll: (params: any) => api.get<ApiResponse<ProductPage>>('/api/v1/products', { params }),
   getAllAdmin: (params: any) => api.get<ApiResponse<ProductPage>>('/api/admin/products', { params }),
+  getBySlug: (slug: string) => api.get<ApiResponse<Product>>(`/api/v1/products/${slug}`),
   getCategories: () => api.get<ApiResponse<Category[]>>('/api/v1/products/category'),
   getSizes: () => api.get<ApiResponse<ProductSize[]>>('/api/v1/products/size'),
   getColors: () => api.get<ApiResponse<Color[]>>('/api/v1/products/colors'),

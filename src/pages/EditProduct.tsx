@@ -25,6 +25,7 @@ export default function EditProduct() {
     discountRate: 0,
     gender: 'MALE',
     categoryId: 0,
+    isActive: true,
   });
 
   const [colors, setColors] = useState<CreateProductRequest['colors']>([]);
@@ -53,29 +54,38 @@ export default function EditProduct() {
         if (productRes.data.success) {
           const p = productRes.data.data;
           setProductId(p.id);
+          
+          let catId = p.category?.id || 0;
+          if (catId === 0 && p.categoryName && catRes.data.success) {
+            const found = catRes.data.data.find(c => c.name === p.categoryName);
+            if (found) catId = found.id;
+          }
+
           setFormData({
-            title: p.title,
-            description: p.description,
-            originalPrice: p.originalPrice,
-            discountPrice: p.discountPrice,
-            discountRate: p.discountRate,
-            gender: p.gender,
-            categoryId: p.category.id
+            title: p.title || '',
+            description: p.description || '',
+            originalPrice: p.originalPrice || 0,
+            discountPrice: p.discountPrice || 0,
+            discountRate: p.discountRate || 0,
+            gender: p.gender || 'MALE',
+            categoryId: catId,
+            isActive: p.isActive ?? p.active ?? true
           });
 
           if (p.discountRate > 0) setPricingMaster('discountRate');
           else if (p.discountPrice > 0) setPricingMaster('discountPrice');
 
           const mappedColors = p.colors.map(c => ({
-            colorName: c.colorName,
-            colorCode: c.colorCode,
+            colorName: c.colorName || '',
+            colorCode: c.colorCode || '#000000',
             images: c.images.map(img => ({
-              image: img.image,
-              isMain: img.main
+              image: img.image || '',
+              isMain: img.main || false
             })),
             items: c.items.map(item => ({
-              sizeId: item.productSize.id,
-              stockQuantity: item.stockQuantity
+              sizeId: item.productSize?.id || 0,
+              stockQuantity: item.stockQuantity || 0,
+              sku: item.sku || ''
             }))
           }));
           setColors(mappedColors);
@@ -104,7 +114,14 @@ export default function EditProduct() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setIsDirty(true);
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => ({ ...prev, [name]: checked }));
+      return;
+    }
+
     if (name.includes('Price') || name === 'discountRate' || name === 'categoryId') {
       const sanitized = value.replace(/^0+(?=\d)/, '');
       const numValue = sanitized === '' ? 0 : Number(sanitized);
@@ -519,6 +536,26 @@ export default function EditProduct() {
                   ))}
                 </div>
               </div>
+              <div>
+                <label className="block text-sm font-semibold text-primary/70 mb-2">Status</label>
+                <div className="flex items-center h-[50px]">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <div className="relative inline-flex items-center">
+                      <input 
+                        type="checkbox" 
+                        name="isActive"
+                        checked={formData.isActive}
+                        onChange={handleInputChange}
+                        className="sr-only peer" 
+                      />
+                      <div className="w-11 h-6 bg-primary/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </div>
+                    <span className={`text-sm font-bold transition-colors ${formData.isActive ? 'text-emerald-500' : 'text-primary/40'}`}>
+                      {formData.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -744,37 +781,49 @@ export default function EditProduct() {
                       </div>
                       <div className="space-y-3">
                         {color.items.map((item, itIdx) => (
-                          <div key={itIdx} className="flex items-center gap-3">
-                            <div className="flex-1 grid grid-cols-12 gap-3">
-                              <div className="col-span-6">
-                                <select 
-                                  value={item.sizeId}
-                                  onChange={(e) => handleItemChange(cIdx, itIdx, 'sizeId', e.target.value)}
-                                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%232d1e17%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_1rem_center] bg-[size:1.5em_1.5em] bg-no-repeat pr-10 text-primary"
+                          <div key={itIdx} className="flex flex-col gap-2 p-3 bg-background-soft rounded-lg border border-border-subtle/50">
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1 grid grid-cols-12 gap-3">
+                                <div className="col-span-6">
+                                  <select 
+                                    value={item.sizeId}
+                                    onChange={(e) => handleItemChange(cIdx, itIdx, 'sizeId', e.target.value)}
+                                    className="w-full px-3 py-2 rounded-lg border border-border-subtle bg-background-light text-sm focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20stroke%3D%22%232d1e17%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_0.75rem_center] bg-[size:1.2em_1.2em] bg-no-repeat pr-8 text-primary"
+                                  >
+                                    {sizes.map(size => (
+                                      <option key={size.id} value={size.id}>{size.sizeValue}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div className="col-span-6">
+                                  <input 
+                                    value={item.stockQuantity === 0 ? '' : item.stockQuantity}
+                                    onChange={(e) => handleItemChange(cIdx, itIdx, 'stockQuantity', e.target.value)}
+                                    className="w-full px-3 py-2 rounded-lg border border-border-subtle bg-background-light text-sm focus:outline-none focus:border-primary transition-all text-primary placeholder:text-primary/40" 
+                                    placeholder="Stock" 
+                                    type="number"
+                                  />
+                                </div>
+                              </div>
+                              {itIdx > 0 && (
+                                <button 
+                                  onClick={() => removeSize(cIdx, itIdx)}
+                                  className="text-primary/40 hover:text-red-500 transition-colors shrink-0 cursor-pointer"
                                 >
-                                  {sizes.map(size => (
-                                    <option key={size.id} value={size.id}>{size.sizeValue}</option>
-                                  ))}
-                                </select>
-                              </div>
-                              <div className="col-span-6">
-                                <input 
-                                  value={item.stockQuantity === 0 ? '' : item.stockQuantity}
-                                  onChange={(e) => handleItemChange(cIdx, itIdx, 'stockQuantity', e.target.value)}
-                                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-background-soft text-sm focus:outline-none focus:border-primary transition-all text-primary placeholder:text-primary/40" 
-                                  placeholder="Stock" 
-                                  type="number"
-                                />
-                              </div>
+                                  <span className="material-symbols-outlined text-lg">close</span>
+                                </button>
+                              )}
                             </div>
-                            {itIdx > 0 && (
-                              <button 
-                                onClick={() => removeSize(cIdx, itIdx)}
-                                className="text-primary/40 hover:text-red-500 transition-colors shrink-0 cursor-pointer"
-                              >
-                                <span className="material-symbols-outlined text-lg">close</span>
-                              </button>
-                            )}
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-bold uppercase text-primary/40 shrink-0">SKU</span>
+                              <input 
+                                value={item.sku}
+                                onChange={(e) => handleItemChange(cIdx, itIdx, 'sku', e.target.value)}
+                                className="flex-1 px-3 py-1.5 rounded-md border border-border-subtle bg-background-light text-xs focus:outline-none focus:border-primary transition-all text-primary placeholder:text-primary/30" 
+                                placeholder="e.g. FW-BLZ-NVY-M" 
+                                type="text"
+                              />
+                            </div>
                           </div>
                         ))}
                       </div>

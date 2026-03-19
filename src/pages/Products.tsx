@@ -91,8 +91,16 @@ export default function Products() {
 
       const response = await productApi.getAll(apiFilters);
       if (response.data.success) {
-        setProducts(response.data.data.content);
+        const fetchedProducts = response.data.data.content;
+        setProducts(fetchedProducts);
         setPageInfo(response.data.data);
+        
+        // Initialize likedProducts set from fetched products
+        const initialLiked = new Set<number>();
+        fetchedProducts.forEach((p: Product) => {
+          if (p.liked) initialLiked.add(p.id);
+        });
+        setLikedProducts(initialLiked);
       }
     } catch (err) {
       console.error('Error fetching products', err);
@@ -352,7 +360,7 @@ export default function Products() {
                     min="0"
                     max="500"
                     value={activeFilters.priceRange[1]}
-                    onChange={(e) => handlePriceChange(1, Number(e.target.value))}
+                    onChange={(e) => handlePriceChange(1, Number(e.target.value)) }
                     className="absolute inset-x-0 w-full pointer-events-none appearance-none bg-transparent accent-primary [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto z-10 range-slider-thumb"
                   />
                 </div>
@@ -460,14 +468,14 @@ export default function Products() {
 
                           <button 
                             onClick={(e) => handleLike(product.id, e)}
-                            className={`absolute top-4 right-4 rounded-full opacity-0 group-hover:opacity-100 transition z-10 cursor-pointer group/btn
-                              bg-primary text-white hover:bg-white hover:text-primary
+                            className={`absolute top-4 right-4 rounded-full transition z-10 cursor-pointer group/btn
+                              bg-white text-black hover:text-primary
                               dark:bg-white dark:text-background-light dark:hover:bg-background-light dark:hover:text-white
-                              ${likedProducts.has(product.id) ? 'opacity-100' : ''}`}
+                              ${likedProducts.has(product.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
                           >
                             <span className={`material-symbols-outlined text-xl p-2 transition-colors 
                               group-hover/btn:text-black dark:group-hover/btn:text-white
-                              ${likedProducts.has(product.id) ? 'text-red-500 fill-1' : ''}`}>
+                              ${likedProducts.has(product.id) ? 'text-red-500 [font-variation-settings:"FILL"_1]' : 'group-hover/btn:[font-variation-settings:"FILL"_1]'}`}>
                               favorite
                             </span>
                           </button>
@@ -713,7 +721,7 @@ export default function Products() {
                     >
                       <span className={`material-symbols-outlined 
                         group-hover/btn:text-primary dark:group-hover/btn:text-white
-                        ${likedProducts.has(selectedProduct.id) ? 'fill-1' : ''}`}>
+                        ${likedProducts.has(selectedProduct.id) ? '[font-variation-settings:"FILL"_1]' : 'group-hover/btn:[font-variation-settings:"FILL"_1]'}`}>
                         favorite
                       </span>
                     </button>
