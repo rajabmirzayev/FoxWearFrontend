@@ -44,7 +44,7 @@ export default function EditProduct() {
           productApi.getCategories(),
           productApi.getSizes(),
           productApi.getColors(),
-          api.get<ApiResponse<Product>>(`/api/admin/products/${slug}`)
+          api.get<ApiResponse<Product>>(`/api/v1/products/${slug}`)
         ]);
         
         if (catRes.data.success) setCategories(catRes.data.data);
@@ -536,26 +536,7 @@ export default function EditProduct() {
                   ))}
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-primary/70 mb-2">Status</label>
-                <div className="flex items-center h-[50px]">
-                  <label className="flex items-center gap-3 cursor-pointer group">
-                    <div className="relative inline-flex items-center">
-                      <input 
-                        type="checkbox" 
-                        name="isActive"
-                        checked={formData.isActive}
-                        onChange={handleInputChange}
-                        className="sr-only peer" 
-                      />
-                      <div className="w-11 h-6 bg-primary/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                    </div>
-                    <span className={`text-sm font-bold transition-colors ${formData.isActive ? 'text-emerald-500' : 'text-primary/40'}`}>
-                      {formData.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </label>
-                </div>
-              </div>
+
             </div>
           </div>
 
@@ -813,16 +794,6 @@ export default function EditProduct() {
                                   <span className="material-symbols-outlined text-lg">close</span>
                                 </button>
                               )}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-bold uppercase text-primary/40 shrink-0">SKU</span>
-                              <input 
-                                value={item.sku}
-                                onChange={(e) => handleItemChange(cIdx, itIdx, 'sku', e.target.value)}
-                                className="flex-1 px-3 py-1.5 rounded-md border border-border-subtle bg-background-light text-xs focus:outline-none focus:border-primary transition-all text-primary placeholder:text-primary/30" 
-                                placeholder="e.g. FW-BLZ-NVY-M" 
-                                type="text"
-                              />
                             </div>
                           </div>
                         ))}
