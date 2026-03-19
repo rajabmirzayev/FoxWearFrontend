@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, useScroll, useTransform } from 'motion/react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
@@ -18,6 +19,12 @@ export default function Home() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const reviewsScrollRef = useRef<HTMLDivElement>(null);
 
+  const { scrollYProgress } = useScroll();
+  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 1.1]);
+  const heroTextY = useTransform(scrollYProgress, [0, 0.2], [0, -50]);
+
   useEffect(() => {
     if (loading || reviews.length === 0) return;
 
@@ -26,8 +33,6 @@ export default function Home() {
         const container = reviewsScrollRef.current;
         container.scrollLeft += 1;
         
-        // If we've scrolled past the first set of reviews, reset to the beginning
-        // We use a small buffer to ensure smooth transition
         if (container.scrollLeft >= container.scrollWidth / 2) {
           container.scrollLeft = 0;
         }
@@ -82,14 +87,44 @@ export default function Home() {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1.0,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+
   return (
     <div className="bg-background-light text-primary antialiased overflow-x-hidden transition-colors duration-300 pt-20">
       <Header />
+      
+      {/* Scroll Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-primary z-[100] origin-left"
+        style={{ scaleX }}
+      />
 
       {/* Hero Section */}
       <section className="relative h-[90vh] w-full flex items-center overflow-hidden bg-background-soft">
-        <div className="absolute inset-0 z-0">
-          {/* Skeleton Loader / Placeholder Background */}
+        <motion.div 
+          style={{ opacity: heroOpacity, scale: heroScale }}
+          className="absolute inset-0 z-0"
+        >
           {!bannerLoaded && banner?.imageUrl && (
             <div className="absolute inset-0 bg-background-soft flex items-center justify-center z-20">
               <div className="flex items-center gap-1.5 h-12">
@@ -117,40 +152,66 @@ export default function Home() {
               referrerPolicy="no-referrer"
             />
           </picture>
-          {/* Enhanced Overlay for Legibility */}
           <div className="absolute inset-0 bg-linear-to-r from-black/60 via-black/30 to-transparent"></div>
-        </div>
+        </motion.div>
+        
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 w-full">
-          <div className="max-w-2xl flex flex-col gap-8">
-            <div className="overflow-hidden">
-              <h2 className="text-white text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter uppercase drop-shadow-2xl animate-in slide-in-from-bottom-10 duration-1000">
+          <motion.div 
+            style={{ y: heroTextY }}
+            className="max-w-2xl flex flex-col gap-8"
+          >
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <h2 className="text-white text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter uppercase drop-shadow-2xl">
                 {banner?.title || "Define Your Style"}
               </h2>
-            </div>
-            <p className="text-white/95 text-xl md:text-2xl font-light leading-relaxed max-w-lg tracking-wide drop-shadow-lg animate-in fade-in duration-1000 delay-300">
+            </motion.div>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="text-white/95 text-xl md:text-2xl font-light leading-relaxed max-w-lg tracking-wide drop-shadow-lg"
+            >
               {banner?.subtitle || "Curated collections for the modern individual. Experience the pinnacle of minimalist premium fashion."}
-            </p>
-            <div className="pt-4 animate-in fade-in duration-1000 delay-500">
+            </motion.p>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.5, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="pt-4"
+            >
               <Link 
                 to={banner?.buttonLink || "/products"} 
                 className="inline-block bg-primary dark:bg-background-light text-background-light dark:text-primary px-12 py-5 text-sm font-bold uppercase tracking-[0.2em] rounded-none transition-all hover:bg-background-light dark:hover:bg-primary hover:text-primary dark:hover:text-background-light shadow-2xl"
               >
                 {banner?.buttonText || "Shop Now"}
               </Link>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Featured Collections */}
       <section className="py-32 px-6 lg:px-10 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
-          <div className="max-w-xl">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+          className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8"
+        >
+          <motion.div variants={itemVariants} className="max-w-xl">
             <span className="text-primary text-xs font-bold uppercase tracking-[0.5em] block mb-4">The Selection</span>
             <h3 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-4">Top 10 Products</h3>
             <p className="text-primary/70 font-light text-lg">Our most coveted pieces, handpicked for their exceptional design and quality.</p>
-          </div>
-          <div className="flex items-center gap-6">
+          </motion.div>
+          
+          <motion.div variants={itemVariants} className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => scroll('left')}
@@ -166,31 +227,46 @@ export default function Home() {
               </button>
             </div>
             <Link className="text-sm font-bold uppercase tracking-[0.2em] border-b-2 border-primary pb-1 hover:text-primary/70 hover:border-primary/70 transition-all" to="/products">Explore All</Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         
-        <div 
+        <motion.div 
           ref={scrollRef}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
           className="flex overflow-x-auto gap-10 pb-12 no-scrollbar scroll-smooth snap-x"
         >
           {mostLikedProducts.map((product) => (
-            <div key={product.id} className="flex-shrink-0 snap-start w-[85vw] md:w-[calc(33.333%-1.75rem)] lg:w-[calc(25%-1.875rem)]">
+            <motion.div 
+              key={product.id} 
+              variants={itemVariants}
+              className="flex-shrink-0 snap-start w-[85vw] md:w-[calc(33.333%-1.75rem)] lg:w-[calc(25%-1.875rem)]"
+            >
               <ProductCard
                 product={product}
                 isLiked={product.liked}
                 onLike={handleLike}
                 onQuickView={setSelectedProduct}
               />
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* Category Section */}
       <section className="py-16 px-6 lg:px-10 bg-background-soft">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-7xl mx-auto">
           {/* Men Category */}
-          <div className="relative aspect-[16/9] md:aspect-[4/5] group overflow-hidden cursor-pointer">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -10 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative aspect-[16/9] md:aspect-[4/5] group overflow-hidden cursor-pointer shadow-xl"
+          >
             <img 
               alt="Men's Collection" 
               className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110" 
@@ -205,9 +281,17 @@ export default function Home() {
                 <Link to="/products?gender=MALE" className="inline-block bg-white dark:bg-background-light text-primary px-10 py-4 text-xs font-bold uppercase tracking-[0.3em] hover:bg-primary hover:text-white dark:hover:text-background-light transition-all shadow-xl">Shop Now</Link>
               </div>
             </div>
-          </div>
+          </motion.div>
+          
           {/* Women Category */}
-          <div className="relative aspect-[16/9] md:aspect-[4/5] group overflow-hidden cursor-pointer">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -10 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="relative aspect-[16/9] md:aspect-[4/5] group overflow-hidden cursor-pointer shadow-xl"
+          >
             <img 
               alt="Women's Collection" 
               className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110" 
@@ -222,28 +306,38 @@ export default function Home() {
                 <Link to="/products?gender=FEMALE" className="inline-block bg-white dark:bg-background-light text-primary px-10 py-4 text-xs font-bold uppercase tracking-[0.3em] hover:bg-primary hover:text-white dark:hover:text-background-light transition-all shadow-xl">Shop Now</Link>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Reviews Section */}
       <section className="py-32 px-6 lg:px-10 border-b border-primary/5 bg-background-light">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-            <div className="max-w-xl">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+            className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8"
+          >
+            <motion.div variants={itemVariants} className="max-w-xl">
               <span className="text-primary text-xs font-bold uppercase tracking-[0.5em] block mb-4">Community</span>
               <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-6">What Our Customers Say</h2>
               <p className="text-primary/70 font-light text-lg">Join thousands of satisfied customers who have experienced the FoxWear difference in quality and style.</p>
-            </div>
-            <div className="flex items-center gap-6">
+            </motion.div>
+            <motion.div variants={itemVariants} className="flex items-center gap-6">
               <Link className="text-sm font-bold uppercase tracking-[0.2em] border-b-2 border-primary pb-1 hover:text-primary/70 hover:border-primary/70 transition-all" to="#">View All</Link>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
           
-          <div 
+          <motion.div 
             ref={reviewsScrollRef}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
             className="flex overflow-x-auto gap-10 pb-12 no-scrollbar"
           >
             {[...reviews, ...reviews].map((review, index) => (
@@ -278,14 +372,20 @@ export default function Home() {
                 </div>
               </div>
             ))}
-          </div>
+          </motion.div>
 
-          <div className="flex justify-center mt-12">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.0, delay: 0.5 }}
+            className="flex justify-center mt-12"
+          >
             <button className="group flex items-center gap-3 border-2 border-primary text-primary px-12 py-5 rounded-none font-bold uppercase tracking-[0.2em] hover:bg-primary hover:text-white dark:hover:text-background-light transition-all cursor-pointer shadow-xl">
               <span className="material-symbols-outlined group-hover:rotate-90 transition-transform">add</span>
               Write a Review
             </button>
-          </div>
+          </motion.div>
         </div>
       </section>
 
