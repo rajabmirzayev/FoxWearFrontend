@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import storage from '../services/storage';
 import { ApiResponse, AuthData } from '../types';
@@ -13,7 +13,20 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+
+  React.useEffect(() => {
+    const token = storage.getItem('accessToken');
+    const role = storage.getItem('role');
+    if (token) {
+      if (role === 'ADMIN') {
+        navigate('/admin/products', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +42,19 @@ export default function LoginPage() {
         storage.setItem('accessToken', response.data.data.accessToken, rememberMe);
         storage.setItem('refreshToken', response.data.data.refreshToken, rememberMe);
         storage.setItem('username', response.data.data.username, rememberMe);
-        navigate('/admin/products');
+        storage.setItem('role', response.data.data.role, rememberMe);
+        
+        // Redirection logic:
+        // 1. If there's a 'from' path in location state, go there
+        // 2. Otherwise, if ADMIN go to admin panel, if USER go to home
+        const from = location.state?.from?.pathname;
+        if (from) {
+          navigate(from, { replace: true });
+        } else if (response.data.data.role === 'ADMIN') {
+          navigate('/admin/products', { replace: true });
+        } else {
+          navigate('/', { replace: true });
+        }
       } else {
         setError(response.data.message || 'Login failed');
       }
@@ -101,7 +126,7 @@ export default function LoginPage() {
                   id="username"
                   type="text"
                   required
-                  className="block w-full h-14 px-4 bg-background-light border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-primary/40"
+                  className="block w-full h-14 px-4 bg-background-light border border-primary/20 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-primary/40"
                   placeholder="Enter your credentials"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -117,14 +142,14 @@ export default function LoginPage() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     required
-                    className="block w-full h-14 px-4 bg-background-light border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-primary/40"
+                    className="block w-full h-14 px-4 bg-background-light border border-primary/20 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-primary/40"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <button 
                     type="button"
-                    className="absolute right-4 text-primary/40 hover:text-primary transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-primary/40 hover:text-primary transition-colors cursor-pointer"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     <span className="material-symbols-outlined text-xl">
@@ -140,7 +165,7 @@ export default function LoginPage() {
                 id="remember-me" 
                 name="remember-me" 
                 type="checkbox" 
-                className="h-4 w-4 rounded border-primary/20 text-primary focus:ring-primary cursor-pointer" 
+                className="h-4 w-4 rounded border-primary/20 accent-primary cursor-pointer" 
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
@@ -151,7 +176,7 @@ export default function LoginPage() {
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-50"
+                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white dark:text-background-light bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-50 cursor-pointer"
               >
                 {loading ? 'Signing In...' : 'Sign In'}
               </button>
@@ -163,12 +188,19 @@ export default function LoginPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <button type="button" className="flex items-center justify-center gap-2 py-3 px-4 border border-primary/10 rounded-lg hover:bg-primary/5 transition-colors">
-                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYIw3BWre2ZY0lOXDezWT7Oaa56IK6BTmFemi0RLCtwE0Q1UGkSZqG2CMQd1ddSlCcQI1m669XyHXgzKWRBcR0Dg0XSDQP0ZPBmXJfbAjLs8n9Ejw6e2v1EBlNUKhLtMhCecjELKLU0c_9f0TprSSG865q1OdrH-Upjhgx_WQ7blZPzYvWSGQ_hSlvfA9nyYZhkersO6H8uLDzPAerv-lDbBtMhq7wwBx3fpn2Et-n69EATPWnkR_W9dgWy8mZQ_lx0Zgem5tBS-OA" alt="Google" className="w-5 h-5" referrerPolicy="no-referrer" />
+                <button type="button" className="flex items-center justify-center gap-2 py-3 px-4 border border-primary/10 rounded-lg hover:bg-primary/5 transition-colors cursor-pointer">
+                  <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
                   <span className="text-sm font-medium">Google</span>
                 </button>
-                <button type="button" className="flex items-center justify-center gap-2 py-3 px-4 border border-primary/10 rounded-lg hover:bg-primary/5 transition-colors">
-                  <span className="material-symbols-outlined text-xl">ios</span>
+                <button type="button" className="flex items-center justify-center gap-2 py-3 px-4 border border-primary/10 rounded-lg hover:bg-primary/5 transition-colors cursor-pointer">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.05 20.28c-.98.95-2.05 1.61-3.22 1.61-1.14 0-1.55-.67-2.85-.67-1.31 0-1.89.65-2.88.67-1.15.03-2.36-.83-3.41-2.03-2.14-2.43-2.77-6.84-1.18-9.28 1.09-1.67 2.82-2.72 4.39-2.72 1.21 0 2.1.75 2.91.75.78 0 1.9-.89 3.31-.89 1.58 0 3.11.89 4.02 2.22-3.25 1.61-2.72 5.86.53 7.25-.66 1.64-1.59 3.17-2.62 4.09zM12.03 7.25c-.08-2.01 1.67-3.89 3.51-4.05.18 2.25-2.13 4.13-3.51 4.05z"/>
+                  </svg>
                   <span className="text-sm font-medium">Apple</span>
                 </button>
               </div>
@@ -181,7 +213,7 @@ export default function LoginPage() {
           </p>
 
           <div className="mt-auto pt-10">
-            <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/5 text-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary hover:text-white transition-all">
+            <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/5 text-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary hover:text-white dark:hover:text-background-light transition-all">
               <span className="material-symbols-outlined mr-2 text-sm">help</span>
               <span className="truncate">Help Center</span>
             </button>

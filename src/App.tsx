@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import LoginPage from './pages/LoginPage';
 import AdminLayout from './components/AdminLayout';
@@ -18,11 +18,19 @@ import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import storage from './services/storage';
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
   const token = storage.getItem('accessToken');
+  const role = storage.getItem('role');
+  const location = useLocation();
+
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
+
+  if (requireAdmin && role !== 'ADMIN') {
+    return <Navigate to="/" replace />;
+  }
+
   return <>{children}</>;
 }
 
@@ -40,7 +48,7 @@ export default function App() {
           <Route 
             path="/admin/*" 
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requireAdmin={true}>
                 <AdminLayout>
                   <Routes>
                     <Route path="dashboard" element={<Dashboard />} />
