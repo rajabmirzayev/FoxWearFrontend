@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ProductCard from '../components/ProductCard';
+import QuickViewModal from '../components/QuickViewModal';
 import { bannerApi, productApi, reviewApi } from '../services/api';
 import { Banner, Product, Review } from '../types';
 
@@ -12,6 +14,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [bannerLoaded, setBannerLoaded] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const reviewsScrollRef = useRef<HTMLDivElement>(null);
 
@@ -56,12 +59,16 @@ export default function Home() {
     fetchData();
   }, []);
 
-  const handleLike = async (productId: number) => {
+  const handleLike = async (productId: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     try {
       await productApi.like(productId);
       setMostLikedProducts(prev => prev.map(p => 
         p.id === productId ? { ...p, liked: !p.liked } : p
       ));
+      if (selectedProduct?.id === productId) {
+        setSelectedProduct(prev => prev ? { ...prev, liked: !prev.liked } : null);
+      }
     } catch (error) {
       console.error('Error liking product:', error);
     }
@@ -166,61 +173,16 @@ export default function Home() {
           ref={scrollRef}
           className="flex overflow-x-auto gap-10 pb-12 no-scrollbar scroll-smooth snap-x"
         >
-          {mostLikedProducts.map((product) => {
-            const mainColor = product.colors[0];
-            const mainImage = mainColor?.images.find(img => img.main)?.image || mainColor?.images[0]?.image;
-
-            return (
-              <div key={product.id} className="flex-shrink-0 group cursor-pointer snap-start w-[85vw] md:w-[calc(33.333%-1.75rem)] lg:w-[calc(25%-1.875rem)]">
-                <div className="aspect-[3/4] overflow-hidden mb-6 relative bg-background-soft">
-                  <Link to={`/products/${product.slug}`}>
-                    <img 
-                      alt={product.title} 
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
-                      src={mainImage} 
-                      referrerPolicy="no-referrer"
-                    />
-                  </Link>
-                  <button 
-                    onClick={() => handleLike(product.id)}
-                    className="absolute top-4 right-4 z-20 size-10 bg-white/90 hover:bg-white dark:bg-black/50 dark:hover:bg-black/70 backdrop-blur-md rounded-full flex items-center justify-center text-primary transition-all duration-300 group/wishlist cursor-pointer shadow-lg"
-                  >
-                    <span className={`material-symbols-outlined text-xl leading-none transition-all ${product.liked ? '[font-variation-settings:"FILL"_1] text-red-500' : 'group-hover/wishlist:[font-variation-settings:"FILL"_1]'}`}>favorite</span>
-                  </button>
-                  {product.hasDiscount && (
-                    <div className="absolute top-4 left-4 bg-primary text-white dark:text-background-light text-[10px] font-bold uppercase tracking-widest px-3 py-1.5">
-                      Sale -{product.discountRate}%
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex justify-between items-start gap-4">
-                    <h4 className="text-sm font-bold uppercase tracking-widest truncate flex-grow group-hover:text-primary transition-colors">{product.title}</h4>
-                    <div className="flex gap-1.5 pt-0.5">
-                      {product.colors.slice(0, 3).map((color) => (
-                        <span 
-                          key={color.id} 
-                          className="size-3 rounded-full border border-black/10 shadow-xs" 
-                          style={{ backgroundColor: color.colorCode }}
-                          title={color.colorName}
-                        ></span>
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-primary font-bold text-lg">
-                    {product.hasDiscount ? (
-                      <span className="flex items-center gap-3">
-                        <span className="line-through text-primary/40 text-sm font-light">₼{product.originalPrice}</span>
-                        <span>₼{product.discountPrice}</span>
-                      </span>
-                    ) : (
-                      `₼${product.originalPrice}`
-                    )}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
+          {mostLikedProducts.map((product) => (
+            <div key={product.id} className="flex-shrink-0 snap-start w-[85vw] md:w-[calc(33.333%-1.75rem)] lg:w-[calc(25%-1.875rem)]">
+              <ProductCard
+                product={product}
+                isLiked={product.liked}
+                onLike={handleLike}
+                onQuickView={setSelectedProduct}
+              />
+            </div>
+          ))}
         </div>
       </section>
 
@@ -328,6 +290,13 @@ export default function Home() {
       </section>
 
       <Footer />
+
+      <QuickViewModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onLike={handleLike}
+        isLiked={selectedProduct?.liked || false}
+      />
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }

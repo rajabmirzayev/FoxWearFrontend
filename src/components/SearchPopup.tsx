@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { productApi } from '../services/api';
 import { Product, ProductPage } from '../types';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import ProductCard from './ProductCard';
+import QuickViewModal from './QuickViewModal';
 
 interface SearchPopupProps {
   isOpen: boolean;
@@ -17,6 +19,8 @@ export default function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
   const [results, setResults] = useState<Product[]>([]);
   const [pageInfo, setPageInfo] = useState<ProductPage | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -58,6 +62,15 @@ export default function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
           setResults(newContent);
         }
         setPageInfo(response.data.data);
+
+        // Sync likedProducts set
+        setLikedProducts(prev => {
+          const next = new Set(prev);
+          newContent.forEach(p => {
+            if (p.liked) next.add(p.id);
+          });
+          return next;
+        });
       }
     } catch (error) {
       console.error('SearchPopup: Search error:', error);
@@ -78,6 +91,27 @@ export default function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
 
     return () => clearTimeout(delayDebounceFn);
   }, [keyword]);
+
+  const handleLike = useCallback(async (productId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await productApi.like(productId);
+      setLikedProducts(prev => {
+        const next = new Set(prev);
+        if (next.has(productId)) {
+          next.delete(productId);
+        } else {
+          next.add(productId);
+        }
+        return next;
+      });
+      if (selectedProduct?.id === productId) {
+        setSelectedProduct(prev => prev ? { ...prev, liked: !prev.liked } : null);
+      }
+    } catch (err) {
+      console.error('SearchPopup: Like error:', err);
+    }
+  }, [selectedProduct]);
 
   const popupContent = (
     <AnimatePresence>
@@ -166,56 +200,13 @@ export default function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
               ) : results.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16">
                   {results.map((product) => (
-                    <div key={product.id} className="flex flex-col group cursor-pointer">
-                      <Link to={`/products/${product.slug}`} onClick={onClose}>
-                        <div className="relative aspect-[3/4] overflow-hidden bg-primary/5 mb-4">
-                          <div
-                            className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
-                            style={{
-                              backgroundImage: `url("${product.colors[0]?.images.find(img => img.main)?.image || product.colors[0]?.images[0]?.image || 'https://picsum.photos/seed/product/800/1000'}")`
-                            }}
-                          ></div>
-                          <button className="absolute top-4 right-4 h-10 w-10 flex items-center justify-center bg-background-light/80 backdrop-blur rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary hover:text-white">
-                            <span className="material-symbols-outlined text-xl">favorite</span>
-                          </button>
-                          {product.hasDiscount && (
-                            <div className="absolute bottom-4 left-4">
-                              <span className="bg-background-light px-3 py-1 text-[10px] uppercase tracking-widest font-bold">Sale</span>
-                            </div>
-                          )}
-                        </div>
-                      </Link>
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1 min-w-0 pr-4">
-                          <Link to={`/products/${product.slug}`} onClick={onClose}>
-                            <h3 className="text-lg font-medium leading-tight mb-1 group-hover:underline decoration-primary/30 truncate">
-                              {product.title}
-                            </h3>
-                          </Link>
-                          <p className="text-primary/60 text-sm mb-3">{product.categoryName}</p>
-                          <div className="flex gap-1.5 overflow-x-auto pb-1">
-                            {product.colors.map((color, idx) => (
-                              <div
-                                key={idx}
-                                className="w-3 h-3 rounded-full border border-primary/20 shrink-0"
-                                style={{ backgroundColor: color.colorCode }}
-                                title={color.colorName}
-                              ></div>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="text-right shrink-0">
-                          {product.hasDiscount ? (
-                            <>
-                              <p className="text-lg font-semibold">₼{product.discountPrice}</p>
-                              <p className="text-sm text-primary/40 line-through">₼{product.originalPrice}</p>
-                            </>
-                          ) : (
-                            <p className="text-lg font-semibold">₼{product.originalPrice}</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      isLiked={likedProducts.has(product.id)}
+                      onLike={handleLike}
+                      onQuickView={setSelectedProduct}
+                    />
                   ))}
                 </div>
               ) : keyword.trim().length >= 2 && !loading ? (
@@ -263,6 +254,13 @@ export default function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
           </div>
         </motion.div>
       )}
+
+      <QuickViewModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onLike={handleLike}
+        isLiked={selectedProduct ? likedProducts.has(selectedProduct.id) : false}
+      />
     </AnimatePresence>
   );
 
