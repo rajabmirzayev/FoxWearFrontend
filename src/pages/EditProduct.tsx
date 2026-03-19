@@ -92,7 +92,7 @@ export default function EditProduct() {
           
           // Determine selection types
           const selectionTypes = p.colors.map(c => {
-            const match = colorRes.data.data.find(ac => ac.colorCode.toLowerCase() === c.colorCode.toLowerCase());
+            const match = availableColors.find(ac => ac.colorCode.toLowerCase() === c.colorCode.toLowerCase());
             return match ? String(match.id) : 'custom';
           });
           setColorSelectionTypes(selectionTypes);
