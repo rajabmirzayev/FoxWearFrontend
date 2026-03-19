@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, AuthData, Banner, Product, Review, ProductPage, Category, ProductSize, Color } from '../types';
+import { ApiResponse, AuthData, Banner, Product, Review, ProductPage, Category, ProductSize, Color, UserProfile } from '../types';
 import storage from './storage';
 
 const API_BASE_URL = 'http://localhost:8080';
@@ -140,6 +140,10 @@ export const productApi = {
 
 export const reviewApi = {
   getFirst10: () => api.get<ApiResponse<Review[]>>('/api/v1/reviews/site/first-10'),
+};
+
+export const userApi = {
+  getProfile: () => api.get<ApiResponse<UserProfile>>('/api/v1/users/me'),
 };
 
 export default api;
