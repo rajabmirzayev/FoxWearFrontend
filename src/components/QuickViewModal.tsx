@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, ProductSize } from '../types';
 import { productApi } from '../services/api';
@@ -38,10 +39,10 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
     fetchSizes();
   }, []);
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {product && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 md:p-12">
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-6 md:p-12">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -207,4 +208,6 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
       )}
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 }
