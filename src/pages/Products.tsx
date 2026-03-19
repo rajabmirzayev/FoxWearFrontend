@@ -32,7 +32,8 @@ export default function Products() {
     category: [] as number[],
     color: [] as string[],
     size: [] as string[],
-    priceRange: [0, 500] as [number, number]
+    priceRange: [0, 500] as [number, number],
+    searchKeyword: ''
   });
 
   const [sortBy, setSortBy] = useState('newest');
@@ -88,6 +89,7 @@ export default function Products() {
       
       if (activeFilters.priceRange[0] > 0) apiFilters.minPrice = activeFilters.priceRange[0];
       if (activeFilters.priceRange[1] < 500) apiFilters.maxPrice = activeFilters.priceRange[1];
+      if (activeFilters.searchKeyword) apiFilters.keyword = activeFilters.searchKeyword;
 
       const response = await productApi.getAll(apiFilters);
       if (response.data.success) {
@@ -171,7 +173,8 @@ export default function Products() {
       category: [],
       color: [],
       size: [],
-      priceRange: [0, 500]
+      priceRange: [0, 500],
+      searchKeyword: ''
     });
     setFilters(prev => ({ ...prev, page: 0 }));
   };
@@ -213,14 +216,19 @@ export default function Products() {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Sidebar Filters */}
           <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
-            {/* Mobile Search */}
-            <div className="lg:hidden block">
-              <div className="flex items-center border border-primary/10 rounded-lg px-4 py-3">
+            {/* Search Bar */}
+            <div className="block">
+              <div className="flex items-center border border-primary/10 focus-within:border-primary transition-colors rounded-lg px-4 py-3">
                 <span className="material-symbols-outlined text-primary/40 mr-2">search</span>
                 <input
-                  className="bg-transparent border-none focus:ring-0 text-sm w-full"
+                  className="bg-transparent border-none focus:ring-0 focus:outline-none text-sm w-full"
                   placeholder="Search keywords..."
                   type="text"
+                  value={activeFilters.searchKeyword}
+                  onChange={(e) => {
+                    setActiveFilters(prev => ({ ...prev, searchKeyword: e.target.value }));
+                    setFilters(prev => ({ ...prev, page: 0 }));
+                  }}
                 />
               </div>
             </div>
@@ -469,7 +477,7 @@ export default function Products() {
                           <button 
                             onClick={(e) => handleLike(product.id, e)}
                             className={`absolute top-4 right-4 rounded-full transition z-10 cursor-pointer group/btn
-                              bg-white text-black hover:text-primary
+                              bg-primary text-white hover:bg-white hover:text-primary
                               dark:bg-white dark:text-background-light dark:hover:bg-background-light dark:hover:text-white
                               ${likedProducts.has(product.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
                           >

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -7,6 +8,7 @@
   --color-primary: #49352c;
   --color-accent: #49352c;
   --color-background-light: #f7f7f6;
+  --color-background-dark: #1c1816;
   --color-background-soft: #f0f0ef;
   --color-border-subtle: #e5e7eb;
   --color-sidebar-bg: #49352c;
@@ -22,10 +24,10 @@
 
 .dark {
   --color-primary: #f7f7f6;
-  --color-background-light: #1a120f;
+  --color-background-light: #1c1816;
   --color-background-soft: #120c0a;
   --color-border-subtle: #49352c;
-  --color-sidebar-bg: #1a120f;
+  --color-sidebar-bg: #1c1816;
   --color-sidebar-text: #f7f7f6;
 }
 

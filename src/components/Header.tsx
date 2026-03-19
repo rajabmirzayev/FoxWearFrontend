@@ -4,12 +4,14 @@ import { useTheme } from '../context/ThemeContext';
 import storage from '../services/storage';
 import { userApi } from '../services/api';
 import { UserProfile } from '../types';
+import SearchPopup from './SearchPopup';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -56,7 +58,8 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-background-light/70 backdrop-blur-xl border-b border-primary/10 transition-colors duration-300">
+    <>
+      <header className="fixed top-0 left-0 w-full z-50 bg-background-light/70 backdrop-blur-xl border-b border-primary/10 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group cursor-pointer">
@@ -99,7 +102,10 @@ export default function Header() {
               {theme === 'light' ? 'dark_mode' : 'light_mode'}
             </span>
           </button>
-          <button className="hover:opacity-70 transition-all cursor-pointer">
+          <button 
+            onClick={() => setIsSearchOpen(true)}
+            className="hover:opacity-70 transition-all cursor-pointer"
+          >
             <span className="material-symbols-outlined">search</span>
           </button>
           <button className="hover:opacity-70 transition-all relative cursor-pointer">
@@ -149,5 +155,7 @@ export default function Header() {
         </div>
       </div>
     </header>
-  );
+    <SearchPopup isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+  </>
+);
 }
