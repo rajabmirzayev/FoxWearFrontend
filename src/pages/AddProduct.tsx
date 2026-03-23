@@ -600,7 +600,19 @@ export default function AddProduct() {
                     <div>
                       <label className="block text-sm font-semibold text-primary mb-2">Color Code (Hex)</label>
                       <div className="flex gap-2">
-                        <div className="size-12 rounded-lg border border-border-subtle shadow-sm" style={{ backgroundColor: color.colorCode }}></div>
+                        <label 
+                          className={`size-12 rounded-lg border border-border-subtle shadow-sm shrink-0 cursor-pointer relative overflow-hidden transition-transform hover:scale-105 active:scale-95 ${colorSelectionTypes[cIdx] !== 'custom' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          title={colorSelectionTypes[cIdx] === 'custom' ? 'Click to pick color' : 'Select "Custom Color" to edit'}
+                        >
+                          <div className="w-full h-full" style={{ backgroundColor: color.colorCode }}></div>
+                          <input 
+                            type="color"
+                            value={color.colorCode}
+                            onChange={(e) => handleColorChange(cIdx, 'colorCode', e.target.value)}
+                            disabled={colorSelectionTypes[cIdx] !== 'custom'}
+                            className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                          />
+                        </label>
                         <input 
                           value={color.colorCode}
                           onChange={(e) => handleColorChange(cIdx, 'colorCode', e.target.value)}

@@ -33,7 +33,7 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const response = await api.post<ApiResponse<AuthData>>('/api/auth/login', {
+      const response = await api.post<ApiResponse<AuthData>>('/api/v1/auth/login', {
         username,
         password,
       });

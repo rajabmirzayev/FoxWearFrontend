@@ -5,8 +5,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
-import { bannerApi, productApi, reviewApi } from '../services/api';
-import { Banner, Product, Review } from '../types';
+import { bannerApi, productApi, reviewApi, userApi } from '../services/api';
+import { Banner, Product, Review, User } from '../types';
 
 export default function Home() {
   const [banner, setBanner] = useState<Banner | null>(null);
@@ -53,7 +53,39 @@ export default function Home() {
 
         if (bannerRes.data.success) setBanner(bannerRes.data.data);
         if (productsRes.data.success) setMostLikedProducts(productsRes.data.data);
-        if (reviewsRes.data.success) setReviews(reviewsRes.data.data);
+        
+        if (reviewsRes.data.success) {
+          const reviewsData = reviewsRes.data.data;
+          // Fetch users for each review in parallel
+          const reviewsWithUsers = await Promise.all(reviewsData.map(async (review) => {
+            try {
+              const userRes = await userApi.getUserById(review.userId);
+              return { ...review, user: userRes.data.data };
+            } catch (err) {
+              console.error(`Error fetching user ${review.userId}:`, err);
+              return { 
+                ...review, 
+                user: { 
+                  firstName: 'User', 
+                  lastName: '', 
+                  profilePicture: null,
+                  id: review.userId,
+                  username: '',
+                  email: '',
+                  phoneNumber: '',
+                  gender: 'MALE',
+                  birthDate: '',
+                  role: 'USER',
+                  status: 'ACTIVE',
+                  twoFactorEnabled: false,
+                  emailVerified: false,
+                  phoneNumberVerified: false
+                } as User
+              };
+            }
+          }));
+          setReviews(reviewsWithUsers);
+        }
       } catch (error) {
         console.error('Error fetching home data:', error);
       } finally {
@@ -359,14 +391,14 @@ export default function Home() {
                 <p className="text-primary/80 italic text-lg leading-relaxed font-light">"{review.description}"</p>
                 <div className="flex items-center gap-4 mt-auto">
                   <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary overflow-hidden border border-primary/10">
-                    {review.user.profilePicture ? (
+                    {review.user?.profilePicture ? (
                       <img src={review.user.profilePicture} alt={review.user.firstName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     ) : (
                       <span className="material-symbols-outlined text-2xl">person</span>
                     )}
                   </div>
                   <div>
-                    <span className="font-bold text-sm uppercase tracking-widest block">{review.user.firstName} {review.user.lastName.charAt(0)}.</span>
+                    <span className="font-bold text-sm uppercase tracking-widest block">{review.user?.firstName} {review.user?.lastName?.charAt(0)}.</span>
                     <span className="text-xs text-primary/40 uppercase tracking-widest">Verified Buyer</span>
                   </div>
                 </div>

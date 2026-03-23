@@ -139,6 +139,23 @@ export interface Banner {
   active: boolean;
 }
 
+export interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  phoneNumber: string;
+  gender: 'MALE' | 'FEMALE';
+  birthDate: string;
+  profilePicture: string | null;
+  role: string;
+  status: string;
+  twoFactorEnabled: boolean;
+  emailVerified: boolean;
+  phoneNumberVerified: boolean;
+}
+
 export interface UserProfile {
   firstName: string;
   lastName: string;
@@ -146,8 +163,10 @@ export interface UserProfile {
 }
 
 export interface Review {
+  id?: number;
   active: boolean;
   description: string;
   rate: number;
-  user: UserProfile;
+  userId: number;
+  user?: User;
 }

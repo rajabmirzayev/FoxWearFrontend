@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { productApi } from '../services/api';
 import { Product, Category, ProductSize, Color, ProductPage, ProductFilter } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -9,6 +9,7 @@ import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
 
 export default function Products() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [sizes, setSizes] = useState<ProductSize[]>([]);
@@ -29,19 +30,36 @@ export default function Products() {
     maxPrice: 500,
   });
 
-  const [activeFilters, setActiveFilters] = useState({
-    gender: [] as string[],
-    category: [] as number[],
-    color: [] as string[],
-    size: [] as string[],
-    priceRange: [0, 500] as [number, number],
-    searchKeyword: ''
+  const [activeFilters, setActiveFilters] = useState(() => {
+    const genderParam = searchParams.get('gender');
+    const categoryParam = searchParams.get('category');
+    const colorParam = searchParams.get('color');
+    const sizeParam = searchParams.get('size');
+    const minPriceParam = searchParams.get('minPrice');
+    const maxPriceParam = searchParams.get('maxPrice');
+    const keywordParam = searchParams.get('keyword');
+
+    return {
+      gender: genderParam ? [genderParam] : [] as string[],
+      category: categoryParam ? [Number(categoryParam)] : [] as number[],
+      color: colorParam ? [colorParam] : [] as string[],
+      size: sizeParam ? [sizeParam] : [] as string[],
+      priceRange: [
+        minPriceParam ? Number(minPriceParam) : 0,
+        maxPriceParam ? Number(maxPriceParam) : 500
+      ] as [number, number],
+      searchKeyword: keywordParam || ''
+    };
   });
 
   const [sortBy, setSortBy] = useState('newest');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -60,6 +78,52 @@ export default function Products() {
     };
     fetchInitialData();
   }, []);
+
+  useEffect(() => {
+    const genderParam = searchParams.get('gender');
+    const categoryParam = searchParams.get('category');
+    const colorParam = searchParams.get('color');
+    const sizeParam = searchParams.get('size');
+    const minPriceParam = searchParams.get('minPrice');
+    const maxPriceParam = searchParams.get('maxPrice');
+    const keywordParam = searchParams.get('keyword');
+
+    setActiveFilters(prev => {
+      const next = {
+        gender: genderParam ? [genderParam] : [],
+        category: categoryParam ? [Number(categoryParam)] : [],
+        color: colorParam ? [colorParam] : [],
+        size: sizeParam ? [sizeParam] : [],
+        priceRange: [
+          minPriceParam ? Number(minPriceParam) : 0,
+          maxPriceParam ? Number(maxPriceParam) : 500
+        ] as [number, number],
+        searchKeyword: keywordParam || ''
+      };
+      
+      if (JSON.stringify(prev) !== JSON.stringify(next)) {
+        window.scrollTo(0, 0);
+        return next;
+      }
+      return prev;
+    });
+  }, [searchParams]);
+
+  useEffect(() => {
+    const newParams = new URLSearchParams();
+    if (activeFilters.gender.length === 1) newParams.set('gender', activeFilters.gender[0]);
+    if (activeFilters.category.length === 1) newParams.set('category', activeFilters.category[0].toString());
+    if (activeFilters.color.length === 1) newParams.set('color', activeFilters.color[0]);
+    if (activeFilters.size.length === 1) newParams.set('size', activeFilters.size[0]);
+    if (activeFilters.priceRange[0] > 0) newParams.set('minPrice', activeFilters.priceRange[0].toString());
+    if (activeFilters.priceRange[1] < 500) newParams.set('maxPrice', activeFilters.priceRange[1].toString());
+    if (activeFilters.searchKeyword) newParams.set('keyword', activeFilters.searchKeyword);
+    
+    // Only update if params actually changed to avoid unnecessary history entries
+    if (newParams.toString() !== searchParams.toString()) {
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [activeFilters, setSearchParams, searchParams]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -99,6 +163,10 @@ export default function Products() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [filters.page]);
 
   useEffect(() => {
     fetchProducts();
