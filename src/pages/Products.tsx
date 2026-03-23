@@ -31,19 +31,19 @@ export default function Products() {
   });
 
   const [activeFilters, setActiveFilters] = useState(() => {
-    const genderParam = searchParams.get('gender');
-    const categoryParam = searchParams.get('category');
-    const colorParam = searchParams.get('color');
-    const sizeParam = searchParams.get('size');
+    const genderParams = searchParams.getAll('gender');
+    const categoryParams = searchParams.getAll('category');
+    const colorParams = searchParams.getAll('color');
+    const sizeParams = searchParams.getAll('size');
     const minPriceParam = searchParams.get('minPrice');
     const maxPriceParam = searchParams.get('maxPrice');
     const keywordParam = searchParams.get('keyword');
 
     return {
-      gender: genderParam ? [genderParam] : [] as string[],
-      category: categoryParam ? [Number(categoryParam)] : [] as number[],
-      color: colorParam ? [colorParam] : [] as string[],
-      size: sizeParam ? [sizeParam] : [] as string[],
+      gender: genderParams,
+      category: categoryParams.map(Number),
+      color: colorParams,
+      size: sizeParams,
       priceRange: [
         minPriceParam ? Number(minPriceParam) : 0,
         maxPriceParam ? Number(maxPriceParam) : 500
@@ -80,20 +80,20 @@ export default function Products() {
   }, []);
 
   useEffect(() => {
-    const genderParam = searchParams.get('gender');
-    const categoryParam = searchParams.get('category');
-    const colorParam = searchParams.get('color');
-    const sizeParam = searchParams.get('size');
+    const genderParams = searchParams.getAll('gender');
+    const categoryParams = searchParams.getAll('category');
+    const colorParams = searchParams.getAll('color');
+    const sizeParams = searchParams.getAll('size');
     const minPriceParam = searchParams.get('minPrice');
     const maxPriceParam = searchParams.get('maxPrice');
     const keywordParam = searchParams.get('keyword');
 
     setActiveFilters(prev => {
       const next = {
-        gender: genderParam ? [genderParam] : [],
-        category: categoryParam ? [Number(categoryParam)] : [],
-        color: colorParam ? [colorParam] : [],
-        size: sizeParam ? [sizeParam] : [],
+        gender: genderParams,
+        category: categoryParams.map(Number),
+        color: colorParams,
+        size: sizeParams,
         priceRange: [
           minPriceParam ? Number(minPriceParam) : 0,
           maxPriceParam ? Number(maxPriceParam) : 500
@@ -102,7 +102,6 @@ export default function Products() {
       };
       
       if (JSON.stringify(prev) !== JSON.stringify(next)) {
-        window.scrollTo(0, 0);
         return next;
       }
       return prev;
@@ -111,16 +110,22 @@ export default function Products() {
 
   useEffect(() => {
     const newParams = new URLSearchParams();
-    if (activeFilters.gender.length === 1) newParams.set('gender', activeFilters.gender[0]);
-    if (activeFilters.category.length === 1) newParams.set('category', activeFilters.category[0].toString());
-    if (activeFilters.color.length === 1) newParams.set('color', activeFilters.color[0]);
-    if (activeFilters.size.length === 1) newParams.set('size', activeFilters.size[0]);
+    
+    activeFilters.gender.forEach(g => newParams.append('gender', g));
+    activeFilters.category.forEach(c => newParams.append('category', c.toString()));
+    activeFilters.color.forEach(c => newParams.append('color', c));
+    activeFilters.size.forEach(s => newParams.append('size', s));
+    
     if (activeFilters.priceRange[0] > 0) newParams.set('minPrice', activeFilters.priceRange[0].toString());
     if (activeFilters.priceRange[1] < 500) newParams.set('maxPrice', activeFilters.priceRange[1].toString());
     if (activeFilters.searchKeyword) newParams.set('keyword', activeFilters.searchKeyword);
     
-    // Only update if params actually changed to avoid unnecessary history entries
-    if (newParams.toString() !== searchParams.toString()) {
+    // Sort params to ensure consistent string comparison
+    newParams.sort();
+    const currentParams = new URLSearchParams(searchParams);
+    currentParams.sort();
+
+    if (newParams.toString() !== currentParams.toString()) {
       setSearchParams(newParams, { replace: true });
     }
   }, [activeFilters, setSearchParams, searchParams]);
