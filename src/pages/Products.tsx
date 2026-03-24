@@ -52,14 +52,75 @@ export default function Products() {
     };
   });
 
-  const [sortBy, setSortBy] = useState('newest');
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
+  const [ sortBy, setSortBy ] = useState('newest');
+  const [ isFilterOpen, setIsFilterOpen ] = useState(false);
+  const [ selectedProduct, setSelectedProduct ] = useState<Product | null>(null);
+  const [ likedProducts, setLikedProducts ] = useState<Set<number>>(new Set());
+  const [ expandedCategories, setExpandedCategories ] = useState<Set<string>>(new Set());
+
+  const groupedCategories = useMemo(() => {
+    const groups: { [key: string]: Category[] } = {};
+    const mainNames = new Set<string>();
+    
+    categories.forEach(cat => {
+      const pName = cat.parentName || 'Other';
+      if (!groups[pName]) {
+        groups[pName] = [];
+      }
+      groups[pName].push(cat);
+      mainNames.add(pName);
+    });
+    
+    const main = Array.from(mainNames).sort().map((name, index) => ({
+      id: -1 - index,
+      name: name,
+      parentName: ""
+    }));
+    
+    return { main, groups };
+  }, [categories]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    const parentParam = searchParams.get('parent');
+    if (parentParam && categories.length > 0) {
+      const parentNames = parentParam.split(',').map(p => p.trim());
+      const children = categories.filter(c => parentNames.includes(c.parentName || 'Other'));
+      
+      if (children.length > 0) {
+        const childIds = children.map(c => c.id);
+        
+        // Update activeFilters directly.
+        setActiveFilters(prev => ({
+          ...prev,
+          category: childIds
+        }));
+
+        // Expand the parent categories in the sidebar
+        setExpandedCategories(prev => {
+          const next = new Set(prev);
+          parentNames.forEach(p => next.add(p));
+          return next;
+        });
+
+        // Explicitly remove the parent param now that we've processed it
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('parent');
+        // We also add the category IDs to the URL immediately to be safe
+        newParams.delete('category');
+        childIds.forEach(id => newParams.append('category', id.toString()));
+        setSearchParams(newParams, { replace: true });
+      } else {
+        // If no children found, still remove the param to avoid infinite loops
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('parent');
+        setSearchParams(newParams, { replace: true });
+      }
+    }
+  }, [categories, searchParams, setSearchParams]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -109,8 +170,17 @@ export default function Products() {
   }, [searchParams]);
 
   useEffect(() => {
-    const newParams = new URLSearchParams();
+    const newParams = new URLSearchParams(searchParams);
     
+    // Only manage the parameters we are responsible for
+    newParams.delete('gender');
+    newParams.delete('category');
+    newParams.delete('color');
+    newParams.delete('size');
+    newParams.delete('minPrice');
+    newParams.delete('maxPrice');
+    newParams.delete('keyword');
+
     activeFilters.gender.forEach(g => newParams.append('gender', g));
     activeFilters.category.forEach(c => newParams.append('category', c.toString()));
     activeFilters.color.forEach(c => newParams.append('color', c));
@@ -209,6 +279,38 @@ export default function Products() {
       }
     });
     setFilters(prev => ({ ...prev, page: 0 }));
+  };
+
+  const toggleParentCategory = (parentName: string) => {
+    const children = groupedCategories.groups[parentName] || [];
+    const childIds = children.map(c => c.id);
+    
+    setActiveFilters(prev => {
+      const current = prev.category;
+      const allSelected = childIds.length > 0 && childIds.every(id => current.includes(id));
+      
+      if (allSelected) {
+        // Unselect all children
+        return { ...prev, category: current.filter(id => !childIds.includes(id)) };
+      } else {
+        // Select all children (avoid duplicates)
+        const next = new Set([...current, ...childIds]);
+        return { ...prev, category: Array.from(next) };
+      }
+    });
+    setFilters(prev => ({ ...prev, page: 0 }));
+  };
+
+  const toggleExpand = (parentName: string) => {
+    setExpandedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(parentName)) {
+        next.delete(parentName);
+      } else {
+        next.add(parentName);
+      }
+      return next;
+    });
   };
 
   const handlePriceChange = (index: number, value: number) => {
@@ -333,20 +435,59 @@ export default function Products() {
               {/* Category */}
               <div>
                 <h4 className="text-sm font-bold uppercase tracking-widest mb-4">Category</h4>
-                <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                  {categories.map(cat => (
-                    <label key={cat.id} className="flex items-center gap-3 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={activeFilters.category.includes(cat.id)}
-                        onChange={() => toggleFilter('category', cat.id)}
-                        className="rounded-sm border-primary/20 text-primary focus:ring-primary/20 accent-primary"
-                      />
-                      <span className={`text-sm transition-colors group-hover:text-primary ${activeFilters.category.includes(cat.id) ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-400'}`}>
-                        {cat.name}
-                      </span>
-                    </label>
-                  ))}
+                <div className="space-y-2 text-sm">
+                  {groupedCategories.main.map(mainCat => {
+                    const children = groupedCategories.groups[mainCat.name] || [];
+                    const isExpanded = expandedCategories.has(mainCat.name);
+                    const childIds = children.map(c => c.id);
+                    const isAllSelected = childIds.length > 0 && childIds.every(id => activeFilters.category.includes(id));
+
+                    return (
+                      <div key={mainCat.id} className="space-y-1">
+                        <div className="flex items-center justify-between group">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={isAllSelected}
+                              onChange={() => toggleParentCategory(mainCat.name)}
+                              className="rounded-sm border-primary/20 text-primary focus:ring-primary/20 accent-primary"
+                            />
+                            <span className={`text-sm font-bold transition-colors group-hover:text-primary ${isAllSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>
+                              {mainCat.name}
+                            </span>
+                          </label>
+                          {children.length > 0 && (
+                            <button
+                              onClick={() => toggleExpand(mainCat.name)}
+                              className="hover:bg-primary/5 rounded transition-colors"
+                            >
+                              <span className={`p-1 material-symbols-outlined text-sm transition-transform cursor-pointer duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+                                keyboard_arrow_down
+                              </span>
+                            </button>
+                          )}
+                        </div>
+
+                        {isExpanded && children.length > 0 && (
+                          <div className="pl-6 space-y-1 border-l border-primary/10 ml-2">
+                            {children.map(child => (
+                              <label key={child.id} className="flex items-center gap-3 cursor-pointer group">
+                                <input
+                                  type="checkbox"
+                                  checked={activeFilters.category.includes(child.id)}
+                                  onChange={() => toggleFilter('category', child.id)}
+                                  className="rounded-sm border-primary/20 text-primary focus:ring-primary/20 accent-primary"
+                                />
+                                <span className={`text-sm transition-colors group-hover:text-primary ${activeFilters.category.includes(child.id) ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-400'}`}>
+                                  {child.name}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

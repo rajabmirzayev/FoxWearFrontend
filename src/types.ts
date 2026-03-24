@@ -1,10 +1,7 @@
 export interface Category {
   id: number;
   name: string;
-  subtitle: string;
-  link: string;
-  mainImage: string;
-  parent: string | null;
+  parentName: string;
 }
 
 export interface ApiResponse<T> {
