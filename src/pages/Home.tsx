@@ -8,6 +8,7 @@ import QuickViewModal from '../components/QuickViewModal';
 import AddReviewModal from '../components/AddReviewModal';
 import { bannerApi, productApi, reviewApi, userApi } from '../services/api';
 import { Banner, Product, Review, User } from '../types';
+import { formatRelativeTime, isUpdated } from '../services/dateUtils';
 
 export default function Home() {
   const [banner, setBanner] = useState<Banner | null>(null);
@@ -409,7 +410,14 @@ export default function Home() {
                   </div>
                   <div>
                     <span className="font-bold text-sm uppercase tracking-widest block">{review.user?.firstName} {review.user?.lastName?.charAt(0)}.</span>
-                    <span className="text-xs text-primary/40 uppercase tracking-widest">Verified Buyer</span>
+                    <div className="flex flex-wrap items-center gap-x-2">
+                      <span className="text-xs text-primary/40 uppercase tracking-widest">Verified Buyer</span>
+                      <span className="text-[10px] text-primary/20">•</span>
+                      <span className="text-[10px] text-primary/40 uppercase tracking-widest">
+                        {isUpdated(review.createdAt, review.updatedAt) && <span className="text-primary/60 font-bold mr-1">(UPDATED)</span>}
+                        {formatRelativeTime(review.updatedAt)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

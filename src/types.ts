@@ -181,4 +181,6 @@ export interface Review {
   rate: number;
   userId: number;
   user?: User;
+  createdAt?: string;
+  updatedAt?: string;
 }
