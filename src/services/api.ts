@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, AuthData, Banner, Product, Review, ProductPage, Category, ProductSize, Color, UserProfile, User } from '../types';
+import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User } from '../types';
 import storage from './storage';
 
 const API_BASE_URL = 'http://localhost:8080';
@@ -166,7 +166,7 @@ export const productApi = {
 };
 
 export const reviewApi = {
-  getFirst10: () => api.get<ApiResponse<Review[]>>('/api/v1/reviews/site/first-10'),
+  getSiteReviews: (params?: { page?: number; size?: number }) => api.get<ApiResponse<ReviewPage>>('/api/v1/reviews/site', { params }),
 };
 
 export const userApi = {

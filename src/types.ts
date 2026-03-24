@@ -162,6 +162,18 @@ export interface UserProfile {
   profilePicture: string | null;
 }
 
+export interface ReviewPage {
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+  size: number;
+  content: Review[];
+  number: number;
+  numberOfElements: number;
+  empty: boolean;
+}
+
 export interface Review {
   id?: number;
   active: boolean;

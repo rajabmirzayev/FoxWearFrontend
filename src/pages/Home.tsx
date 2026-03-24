@@ -48,14 +48,14 @@ export default function Home() {
         const [bannerRes, productsRes, reviewsRes] = await Promise.all([
           bannerApi.getHomeBanner(),
           productApi.getMostLiked(),
-          reviewApi.getFirst10()
+          reviewApi.getSiteReviews({ page: 0, size: 10 })
         ]);
 
         if (bannerRes.data.success) setBanner(bannerRes.data.data);
         if (productsRes.data.success) setMostLikedProducts(productsRes.data.data);
         
         if (reviewsRes.data.success) {
-          const reviewsData = reviewsRes.data.data;
+          const reviewsData = reviewsRes.data.data.content;
           // Fetch users for each review in parallel
           const reviewsWithUsers = await Promise.all(reviewsData.map(async (review) => {
             try {
