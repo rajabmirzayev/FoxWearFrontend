@@ -229,7 +229,7 @@ export default function Collections() {
           <div className="relative h-full flex flex-col items-center justify-center text-center px-6">
             <span className="text-white text-sm tracking-[0.3em] uppercase mb-4">Edition 2024</span>
             <h2 className="text-white text-6xl md:text-8xl font-black mb-8 tracking-tighter uppercase leading-[0.9]">The Quiet<br/>Luxury Edit</h2>
-            <Link className="bg-white text-primary px-10 py-4 font-bold rounded-lg hover:bg-primary hover:text-white transition-colors uppercase text-sm tracking-widest" to="/products">Explore Lookbook</Link>
+            <Link className="bg-white text-primary dark:text-background-dark px-10 py-4 font-bold rounded-lg hover:bg-primary hover:text-white dark:hover:bg-black dark:hover:text-white transition-colors uppercase text-sm tracking-widest" to="/products">Explore Lookbook</Link>
           </div>
         </section>
 

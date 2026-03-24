@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, ProductSize } from '../types';
@@ -14,30 +14,32 @@ interface QuickViewModalProps {
 export default function QuickViewModal({ product, onClose, onLike, isLiked }: QuickViewModalProps) {
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [sizes, setSizes] = useState<ProductSize[]>([]);
+  const [selectedSizeId, setSelectedSizeId] = useState<number | null>(null);
+
+  const productSizes = useMemo(() => {
+    if (!product) return [];
+    const sizeMap = new Map<number, ProductSize>();
+    product.colors.forEach(color => {
+      color.items.forEach(item => {
+        if (item.productSize) {
+          sizeMap.set(item.productSize.id, item.productSize);
+        }
+      });
+    });
+    return Array.from(sizeMap.values()).sort((a, b) => a.id - b.id);
+  }, [product]);
 
   useEffect(() => {
     if (product) {
       setSelectedColorIndex(0);
       setSelectedImageIndex(0);
+      setSelectedSizeId(null);
     }
   }, [product]);
 
   useEffect(() => {
     setSelectedImageIndex(0);
   }, [selectedColorIndex]);
-
-  useEffect(() => {
-    const fetchSizes = async () => {
-      try {
-        const res = await productApi.getSizes();
-        if (res.data.success) setSizes(res.data.data);
-      } catch (err) {
-        console.error('Error fetching sizes', err);
-      }
-    };
-    fetchSizes();
-  }, []);
 
   const modalContent = (
     <AnimatePresence>
@@ -170,14 +172,26 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
                 <div className="space-y-2">
                   <span className="text-xs font-bold text-primary/40 uppercase tracking-widest">Select Size</span>
                   <div className="grid grid-cols-5 gap-2">
-                    {sizes.map(s => (
-                      <button
-                        key={s.id}
-                        className="border border-primary/10 text-xs py-2 hover:border-primary hover:text-primary transition-all uppercase tracking-wider cursor-pointer"
-                      >
-                        {s.sizeValue}
-                      </button>
-                    ))}
+                    {productSizes.map(s => {
+                      const isAvailableForColor = product.colors[selectedColorIndex]?.items.some(item => item.productSize.id === s.id && item.stockRemaining > 0);
+                      
+                      return (
+                        <button
+                          key={s.id}
+                          onClick={() => isAvailableForColor && setSelectedSizeId(s.id)}
+                          disabled={!isAvailableForColor}
+                          className={`border text-xs py-2 transition-all uppercase tracking-wider cursor-pointer ${
+                            selectedSizeId === s.id
+                              ? 'bg-primary text-white border-primary'
+                              : isAvailableForColor
+                                ? 'border-primary/10 hover:border-primary hover:text-primary'
+                                : 'border-primary/5 text-slate-300 cursor-not-allowed opacity-50'
+                          }`}
+                        >
+                          {s.sizeValue}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
