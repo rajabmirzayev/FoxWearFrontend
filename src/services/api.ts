@@ -167,6 +167,7 @@ export const productApi = {
 
 export const reviewApi = {
   getSiteReviews: (params?: { page?: number; size?: number }) => api.get<ApiResponse<ReviewPage>>('/api/v1/reviews/site', { params }),
+  createSiteReview: (data: { rate: number; description: string; isActive: boolean }) => api.post<ApiResponse<Review>>('/api/v1/reviews/site', data),
 };
 
 export const userApi = {

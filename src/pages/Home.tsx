@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
+import AddReviewModal from '../components/AddReviewModal';
 import { bannerApi, productApi, reviewApi, userApi } from '../services/api';
 import { Banner, Product, Review, User } from '../types';
 
@@ -16,6 +17,7 @@ export default function Home() {
   const [bannerLoaded, setBannerLoaded] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const reviewsScrollRef = useRef<HTMLDivElement>(null);
 
@@ -42,50 +44,58 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [isPaused, loading, reviews.length]);
 
+  const fetchReviews = async () => {
+    try {
+      const reviewsRes = await reviewApi.getSiteReviews({ page: 0, size: 10 });
+      if (reviewsRes.data.success) {
+        const reviewsData = reviewsRes.data.data.content;
+        // Fetch users for each review in parallel
+        const reviewsWithUsers = await Promise.all(reviewsData.map(async (review) => {
+          try {
+            const userRes = await userApi.getUserById(review.userId);
+            return { ...review, user: userRes.data.data };
+          } catch (err) {
+            console.error(`Error fetching user ${review.userId}:`, err);
+            return { 
+              ...review, 
+              user: { 
+                firstName: 'User', 
+                lastName: '', 
+                profilePicture: null,
+                id: review.userId,
+                username: '',
+                email: '',
+                phoneNumber: '',
+                gender: 'MALE',
+                birthDate: '',
+                role: 'USER',
+                status: 'ACTIVE',
+                twoFactorEnabled: false,
+                emailVerified: false,
+                phoneNumberVerified: false
+              } as User
+            };
+          }
+        }));
+        setReviews(reviewsWithUsers);
+      }
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [bannerRes, productsRes, reviewsRes] = await Promise.all([
+        const [bannerRes, productsRes] = await Promise.all([
           bannerApi.getHomeBanner(),
-          productApi.getMostLiked(),
-          reviewApi.getSiteReviews({ page: 0, size: 10 })
+          productApi.getMostLiked()
         ]);
 
         if (bannerRes.data.success) setBanner(bannerRes.data.data);
         if (productsRes.data.success) setMostLikedProducts(productsRes.data.data);
         
-        if (reviewsRes.data.success) {
-          const reviewsData = reviewsRes.data.data.content;
-          // Fetch users for each review in parallel
-          const reviewsWithUsers = await Promise.all(reviewsData.map(async (review) => {
-            try {
-              const userRes = await userApi.getUserById(review.userId);
-              return { ...review, user: userRes.data.data };
-            } catch (err) {
-              console.error(`Error fetching user ${review.userId}:`, err);
-              return { 
-                ...review, 
-                user: { 
-                  firstName: 'User', 
-                  lastName: '', 
-                  profilePicture: null,
-                  id: review.userId,
-                  username: '',
-                  email: '',
-                  phoneNumber: '',
-                  gender: 'MALE',
-                  birthDate: '',
-                  role: 'USER',
-                  status: 'ACTIVE',
-                  twoFactorEnabled: false,
-                  emailVerified: false,
-                  phoneNumberVerified: false
-                } as User
-              };
-            }
-          }));
-          setReviews(reviewsWithUsers);
-        }
+        await fetchReviews();
       } catch (error) {
         console.error('Error fetching home data:', error);
       } finally {
@@ -179,7 +189,7 @@ export default function Home() {
             <img 
               alt={banner?.title || "Premium fashion model"} 
               className={`w-full h-full object-cover object-top transition-opacity duration-1000 ${bannerLoaded ? 'opacity-100' : 'opacity-0'}`} 
-              src={banner?.imageUrl} 
+              src={banner?.imageUrl || "https://foxwear-images.s3.eu-north-1.amazonaws.com/fa447b7d-ad7b-4a29-a331-4b8f995f0fe9_homepage-main-2.jpg"} 
               onLoad={() => setBannerLoaded(true)}
               referrerPolicy="no-referrer"
             />
@@ -413,9 +423,12 @@ export default function Home() {
             transition={{ duration: 1.0, delay: 0.5 }}
             className="flex justify-center mt-12"
           >
-            <button className="group flex items-center gap-3 border-2 border-primary text-primary px-12 py-5 rounded-none font-bold uppercase tracking-[0.2em] hover:bg-primary hover:text-white dark:hover:text-background-light transition-all cursor-pointer shadow-xl">
+            <button 
+              onClick={() => setIsReviewModalOpen(true)}
+              className="group flex items-center gap-3 border-2 border-primary text-primary px-12 py-5 rounded-none font-bold uppercase tracking-[0.2em] hover:bg-primary hover:text-white dark:hover:text-background-light transition-all cursor-pointer shadow-xl"
+            >
               <span className="material-symbols-outlined group-hover:rotate-90 transition-transform">add</span>
-              Write a Review
+              Add Review
             </button>
           </motion.div>
         </div>
@@ -428,6 +441,12 @@ export default function Home() {
         onClose={() => setSelectedProduct(null)}
         onLike={handleLike}
         isLiked={selectedProduct?.liked || false}
+      />
+
+      <AddReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        onSuccess={fetchReviews}
       />
 
       <style>{`
