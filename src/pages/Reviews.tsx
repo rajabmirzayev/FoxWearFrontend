@@ -118,7 +118,7 @@ export default function Reviews() {
     setEditingReview(null);
   };
 
-  const renderStars = (rate: number, className = "star-fill text-sm") => {
+  const renderStars = (rate: number, className = "icon-fill text-sm") => {
     return (
       <div className="flex gap-1 text-primary">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -153,7 +153,7 @@ export default function Reviews() {
                   return (
                     <span 
                       key={star} 
-                      className={`material-symbols-outlined ${isFull || isHalf ? 'star-fill' : ''}`}
+                      className={`material-symbols-outlined ${isFull || isHalf ? 'icon-fill' : ''}`}
                     >
                       {isFull ? 'star' : isHalf ? 'star_half' : 'star'}
                     </span>
@@ -257,7 +257,7 @@ export default function Reviews() {
                   {[1, 2, 3, 4, 5].map((star) => (
                     <span 
                       key={star} 
-                      className={`material-symbols-outlined text-sm ${star <= review.rate ? 'star-fill' : ''}`}
+                      className={`material-symbols-outlined text-sm ${star <= review.rate ? 'icon-fill' : ''}`}
                     >
                       star
                     </span>

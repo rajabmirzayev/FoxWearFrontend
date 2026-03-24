@@ -112,7 +112,7 @@ export default function UpdateReviewModal({ isOpen, onClose, onSuccess, review }
                     >
                       <span 
                         className={`material-symbols-outlined text-4xl transition-all ${
-                          star <= displayRate ? '[font-variation-settings:"FILL"_1]' : 'text-primary/20'
+                          star <= displayRate ? 'icon-fill' : 'text-primary/20'
                         }`}
                       >
                         star

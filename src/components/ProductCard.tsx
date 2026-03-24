@@ -55,8 +55,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, isLiked, onLi
         >
           <span className={`material-symbols-outlined text-xl p-2 transition-all duration-300
             ${isLiked 
-              ? 'text-red-500 [font-variation-settings:"FILL"_1]' 
-              : 'text-slate-900 dark:text-slate-100 group-hover/btn:[font-variation-settings:"FILL"_1]'}`}>
+              ? 'text-red-500 icon-fill' 
+              : 'text-slate-900 dark:text-slate-100 group-hover/btn:icon-fill'}`}>
             favorite
           </span>
         </button>

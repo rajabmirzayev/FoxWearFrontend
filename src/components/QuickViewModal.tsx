@@ -196,8 +196,8 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
                 >
                   <span className={`material-symbols-outlined transition-all duration-300
                     ${isLiked 
-                      ? 'text-red-500 [font-variation-settings:"FILL"_1]' 
-                      : 'text-slate-900 dark:text-slate-100 group-hover/btn:[font-variation-settings:"FILL"_1]'}`}>
+                      ? 'text-red-500 icon-fill' 
+                      : 'text-slate-900 dark:text-slate-100 group-hover/btn:icon-fill'}`}>
                     favorite
                   </span>
                 </button>

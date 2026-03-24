@@ -190,7 +190,7 @@ export default function Home() {
             <img 
               alt={banner?.title || "Premium fashion model"} 
               className={`w-full h-full object-cover object-top transition-opacity duration-1000 ${bannerLoaded ? 'opacity-100' : 'opacity-0'}`} 
-              src={banner?.imageUrl || "https://foxwear-images.s3.eu-north-1.amazonaws.com/fa447b7d-ad7b-4a29-a331-4b8f995f0fe9_homepage-main-2.jpg"} 
+              src={banner?.imageUrl} 
               onLoad={() => setBannerLoaded(true)}
               referrerPolicy="no-referrer"
             />
@@ -391,7 +391,7 @@ export default function Home() {
                       key={i} 
                       className={`material-symbols-outlined text-xl ${
                         i < review.rate 
-                          ? 'text-yellow-500 [font-variation-settings:"FILL"_1]' 
+                          ? 'text-yellow-500 icon-fill' 
                           : 'text-primary/20'
                       }`}
                     >

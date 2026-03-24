@@ -103,7 +103,7 @@ export default function AddReviewModal({ isOpen, onClose, onSuccess }: AddReview
                     >
                       <span 
                         className={`material-symbols-outlined text-4xl transition-all ${
-                          star <= displayRate ? '[font-variation-settings:"FILL"_1]' : 'text-primary/20'
+                          star <= displayRate ? 'icon-fill' : 'text-primary/20'
                         }`}
                       >
                         star
