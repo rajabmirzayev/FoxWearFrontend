@@ -16,6 +16,7 @@ import Products from './pages/Products';
 import Collections from './pages/Collections';
 import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
+import Reviews from './pages/Reviews';
 import storage from './services/storage';
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/collections" element={<Collections />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/reviews" element={<Reviews />} />
           <Route path="/login" element={<LoginPage />} />
           <Route 
             path="/admin/*" 

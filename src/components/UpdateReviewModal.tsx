@@ -1,24 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { reviewApi } from '../services/api';
+import { Review } from '../types';
 
-interface AddReviewModalProps {
+interface UpdateReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  review: Review;
 }
 
-export default function AddReviewModal({ isOpen, onClose, onSuccess }: AddReviewModalProps) {
-  const [rate, setRate] = useState(0);
+export default function UpdateReviewModal({ isOpen, onClose, onSuccess, review }: UpdateReviewModalProps) {
+  const [rate, setRate] = useState(review.rate);
   const [hoverRate, setHoverRate] = useState(0);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState(review.description);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setRate(review.rate);
+      setDescription(review.description);
+    }
+  }, [isOpen, review]);
 
   const displayRate = hoverRate || rate;
 
   const handleSubmit = async () => {
+    console.log('Updating review:', review);
     if (rate === 0) {
       setError('Please select a rating');
       return;
@@ -31,23 +41,22 @@ export default function AddReviewModal({ isOpen, onClose, onSuccess }: AddReview
     setLoading(true);
     setError('');
     try {
-      const response = await reviewApi.createSiteReview({
+      if (review.id === undefined || review.id === null) {
+        throw new Error('Review ID is missing');
+      }
+
+      const response = await reviewApi.updateSiteReview(review.id, {
         rate,
-        description,
-        isActive: true
+        description
       });
 
       if (response.data.success) {
         onSuccess();
         onClose();
-        // Reset form
-        setRate(0);
-        setHoverRate(0);
-        setDescription('');
       }
     } catch (err) {
-      console.error('Error submitting review:', err);
-      setError('Failed to submit review. Please try again.');
+      console.error('Error updating review:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update review. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -86,7 +95,7 @@ export default function AddReviewModal({ isOpen, onClose, onSuccess }: AddReview
             <div className="flex flex-col items-center text-center gap-6">
               <div className="flex flex-col gap-2">
                 <h3 className="text-primary text-3xl font-bold leading-tight font-display tracking-tight">
-                  Share Your Experience
+                  Update Your Review
                 </h3>
               </div>
 
@@ -142,7 +151,7 @@ export default function AddReviewModal({ isOpen, onClose, onSuccess }: AddReview
                   {loading ? (
                     <div className="size-5 border-2 border-background-light/30 border-t-background-light rounded-full animate-spin"></div>
                   ) : (
-                    <span>Submit Review</span>
+                    <span>Update Review</span>
                   )}
                 </button>
                 <button 

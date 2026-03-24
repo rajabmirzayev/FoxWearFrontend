@@ -176,7 +176,7 @@ export interface ReviewPage {
 
 export interface Review {
   id?: number;
-  active: boolean;
+  isActive: boolean;
   description: string;
   rate: number;
   userId: number;

@@ -369,7 +369,7 @@ export default function Home() {
               <p className="text-primary/70 font-light text-lg">Join thousands of satisfied customers who have experienced the FoxWear difference in quality and style.</p>
             </motion.div>
             <motion.div variants={itemVariants} className="flex items-center gap-6">
-              <Link className="text-sm font-bold uppercase tracking-[0.2em] border-b-2 border-primary pb-1 hover:text-primary/70 hover:border-primary/70 transition-all" to="#">View All</Link>
+              <Link className="text-sm font-bold uppercase tracking-[0.2em] border-b-2 border-primary pb-1 hover:text-primary/70 hover:border-primary/70 transition-all" to="/reviews">View All</Link>
             </motion.div>
           </motion.div>
           
