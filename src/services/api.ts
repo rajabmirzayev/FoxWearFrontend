@@ -185,6 +185,7 @@ export const reviewApi = {
 export const userApi = {
   getProfile: () => api.get<ApiResponse<UserProfile>>('/api/v1/users/me'),
   getUserById: (id: number) => api.get<ApiResponse<User>>(`/api/v1/users/${id}`),
+  checkUsernameExists: (username: string) => api.get<ApiResponse<boolean>>(`/api/v1/users/username-exists/${username}`),
 };
 
 export default api;

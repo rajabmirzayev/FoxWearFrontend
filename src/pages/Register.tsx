@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authApi } from '../services/api';
+import { authApi, userApi } from '../services/api';
 import { RegisterRequest } from '../types';
 import { useTheme } from '../context/ThemeContext';
 
@@ -31,10 +31,44 @@ export default function Register() {
   const [error, setError] = useState<string | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   
+  // Username Check State
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
+  const [usernameMessage, setUsernameMessage] = useState<string | null>(null);
+
   // Calendar State
   const [showCalendar, setShowCalendar] = useState(false);
   const [viewDate, setViewDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (!formData.username || formData.username.length < 3) {
+      setUsernameStatus('idle');
+      setUsernameMessage(null);
+      return;
+    }
+
+    setUsernameStatus('checking');
+    const timer = setTimeout(async () => {
+      try {
+        const response = await userApi.checkUsernameExists(formData.username);
+        if (response.data.success) {
+          const exists = response.data.data;
+          if (exists) {
+            setUsernameStatus('taken');
+            setUsernameMessage('This username is already taken');
+          } else {
+            setUsernameStatus('available');
+            setUsernameMessage('Username is available');
+          }
+        }
+      } catch (err) {
+        console.error('Error checking username:', err);
+        setUsernameStatus('idle');
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [formData.username]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -354,14 +388,33 @@ export default function Register() {
                         value={formData.username}
                         onChange={handleChange}
                         autoComplete="off"
-                        className="form-input w-full rounded-lg border border-primary/20 bg-background-light dark:bg-slate-800/50 h-14 pl-11 pr-4 text-base transition-all outline-none" 
+                        className={`form-input w-full rounded-lg border bg-background-light dark:bg-slate-800/50 h-14 pl-11 pr-12 text-base transition-all outline-none 
+                          ${usernameStatus === 'available' ? 'border-green-500 ring-1 ring-green-500/20' : 
+                            usernameStatus === 'taken' ? 'border-red-500 ring-1 ring-red-500/20' : 
+                            'border-primary/20 focus:border-primary'}`} 
                         maxLength={50} 
                         minLength={3} 
                         placeholder="Your unique handle" 
                         required 
                         type="text"
                       />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
+                        {usernameStatus === 'checking' && (
+                          <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full"></div>
+                        )}
+                        {usernameStatus === 'available' && (
+                          <span className="material-symbols-outlined text-green-500 font-bold">check_circle</span>
+                        )}
+                        {usernameStatus === 'taken' && (
+                          <span className="material-symbols-outlined text-red-500 font-bold">cancel</span>
+                        )}
+                      </div>
                     </div>
+                    {usernameMessage && (
+                      <span className={`text-[10px] mt-1 font-bold uppercase tracking-widest ${usernameStatus === 'available' ? 'text-green-600' : 'text-red-600'}`}>
+                        {usernameMessage}
+                      </span>
+                    )}
                   </label>
                   <label className="flex flex-col">
                     <span className="text-primary text-sm font-bold uppercase tracking-wider mb-2">Email Address</span>
@@ -560,7 +613,7 @@ export default function Register() {
                 {/* Submit Button */}
                 <div className="mt-4">
                   <button 
-                    disabled={loading || !termsAccepted}
+                    disabled={loading || !termsAccepted || usernameStatus === 'taken' || usernameStatus === 'checking'}
                     className="w-full flex h-16 items-center justify-center rounded-xl bg-primary text-white text-lg font-black uppercase tracking-[0.2em] shadow-lg hover:shadow-primary/20 hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" 
                     type="submit"
                   >
