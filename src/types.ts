@@ -156,6 +156,8 @@ export interface User {
 export interface UserProfile {
   firstName: string;
   lastName: string;
+  username: string;
+  role: 'USER' | 'ADMIN';
   profilePicture: string | null;
 }
 
@@ -180,4 +182,16 @@ export interface Review {
   user?: User;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+  gender: 'MALE' | 'FEMALE';
+  birthDate: string;
 }

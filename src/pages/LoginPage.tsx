@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import api from '../services/api';
 import storage from '../services/storage';
 import { ApiResponse, AuthData } from '../types';
@@ -219,7 +219,7 @@ export default function LoginPage() {
 
           <p className="mt-10 text-center text-sm text-primary/50">
             Don't have an account? 
-            <a className="font-bold text-primary hover:underline ml-1" href="#">Create an account</a>
+            <Link className="font-bold text-primary hover:underline ml-1" to="/register">Create an account</Link>
           </p>
 
           <div className="mt-auto pt-10">

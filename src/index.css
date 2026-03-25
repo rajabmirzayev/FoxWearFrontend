@@ -86,20 +86,41 @@
   body {
     @apply font-display bg-background-light text-primary transition-colors duration-300;
   }
+  input {
+    position: relative;
+  }
 }
 
-      .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
-      }
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Ensure icons and buttons positioned absolutely inside relative containers are on top of inputs */
+.relative > .material-symbols-outlined,
+.relative > button {
+  z-index: 10;
+}
       .icon-fill {
         font-variation-settings: 'FILL' 1, 'wght' 200, 'GRAD' 0, 'opsz' 24;
       }
+      .tracking-editorial { letter-spacing: 0.3em; }
+      .tracking-tight-display { letter-spacing: -0.05em; }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #49352c33;
   border-radius: 10px;
+}
+
+.form-input:focus {
+  border-color: #49352c !important;
+  box-shadow: 0 0 0 1px rgba(73, 53, 44, 0.1) !important;
+  outline: none !important;
+}
+
+input[type="checkbox"] {
+  accent-color: #49352c;
 }
 
 .range-slider-thumb::-webkit-slider-thumb {
@@ -126,6 +147,24 @@
   pointer-events: auto;
 }
 
+/* Prevent browser autofill background from showing */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: inherit !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #1e293b inset !important;
+  -webkit-text-fill-color: #f1f5f9 !important;
+}
+
 /* Hide browser-specific password reveal and clear icons */
 input::-ms-reveal,
 input::-ms-clear {
@@ -134,10 +173,28 @@ input::-ms-clear {
 
 /* Safari specific for the key/autofill icon */
 input::-webkit-contacts-auto-fill-button,
-input::-webkit-credentials-auto-fill-button {
-  visibility: hidden;
-  display: none !important;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
+input::-webkit-credentials-auto-fill-button,
+input::-webkit-caps-lock-indicator,
+input::-webkit-strong-password-auto-fill-button,
+input::-webkit-autofill-button {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  right: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important; /* Using block instead of none to prevent potential input collapse in some WebKit versions */
+}
+
+/* Hide spin buttons and search icons */
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button,
+input::-webkit-search-cancel-button,
+input::-webkit-search-decoration,
+input::-webkit-search-results-button,
+input::-webkit-search-results-decoration {
+  display: none;
 }

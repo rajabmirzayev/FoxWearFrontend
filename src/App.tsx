@@ -17,6 +17,8 @@ import Collections from './pages/Collections';
 import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import Reviews from './pages/Reviews';
+import Register from './pages/Register';
+import AuthCallback from './pages/AuthCallback';
 import storage from './services/storage';
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
@@ -47,6 +49,8 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route 
             path="/admin/*" 
             element={

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User } from '../types';
+import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest } from '../types';
 import storage from './storage';
 
 const API_BASE_URL = 'http://localhost:8080';
@@ -149,6 +149,14 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const authApi = {
+  login: (data: any) => api.post<ApiResponse<AuthData>>('/api/v1/auth/login', data),
+  register: (data: RegisterRequest) => api.post<ApiResponse<null>>('/api/v1/auth/register', data),
+  refresh: (refreshToken: string) => axios.post<ApiResponse<AuthData>>(`${API_BASE_URL}/api/v1/auth/refresh`, null, {
+    params: { refreshToken }
+  }),
+};
 
 export const bannerApi = {
   getHomeBanner: () => api.get<ApiResponse<Banner>>('/api/v1/dynamic/banner?placement=homepage'),
