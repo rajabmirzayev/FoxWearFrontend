@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authApi, userApi } from '../services/api';
+import { authApi, userApi, API_BASE_URL } from '../services/api';
 import { RegisterRequest } from '../types';
 import { useTheme } from '../context/ThemeContext';
 
@@ -21,7 +21,7 @@ export default function Register() {
     email: '',
     phoneNumber: '',
     birthDate: '',
-    gender: 'MALE',
+    gender: 'UNKNOWN',
     password: '',
     confirmPassword: '',
   });
@@ -190,10 +190,6 @@ export default function Register() {
     years.push(y);
   }
 
-  const handleGenderChange = (gender: 'MALE' | 'FEMALE') => {
-    setFormData(prev => ({ ...prev, gender }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!termsAccepted) {
@@ -316,7 +312,7 @@ export default function Register() {
                 <div className="flex flex-col gap-4">
                   <div className="flex justify-center">
                     <button 
-                      onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
+                      onClick={() => window.location.href = `${API_BASE_URL}/oauth2/authorization/google`}
                       className="flex items-center justify-center gap-3 h-14 w-full rounded-lg border border-primary/20 bg-white dark:bg-slate-800/50 hover:bg-background-light dark:hover:bg-slate-700 transition-all group cursor-pointer" 
                       type="button"
                     >
@@ -532,7 +528,7 @@ export default function Register() {
                     <label className="flex-1 min-w-[120px] cursor-pointer group">
                       <input 
                         checked={formData.gender === 'MALE'} 
-                        onChange={() => handleGenderChange('MALE')}
+                        onChange={() => setFormData(prev => ({ ...prev, gender: 'MALE' }))}
                         className="peer hidden" 
                         name="gender" 
                         type="radio" 
@@ -546,7 +542,7 @@ export default function Register() {
                     <label className="flex-1 min-w-[120px] cursor-pointer group">
                       <input 
                         checked={formData.gender === 'FEMALE'} 
-                        onChange={() => handleGenderChange('FEMALE')}
+                        onChange={() => setFormData(prev => ({ ...prev, gender: 'FEMALE' }))}
                         className="peer hidden" 
                         name="gender" 
                         type="radio" 
@@ -555,6 +551,20 @@ export default function Register() {
                       <div className="flex items-center justify-center gap-2 h-14 rounded-lg border border-primary/20 bg-background-light peer-checked:bg-primary peer-checked:text-white transition-all group-hover:border-primary/50">
                         <span className="material-symbols-outlined text-xl">female</span>
                         <span className="font-medium">Female</span>
+                      </div>
+                    </label>
+                    <label className="flex-1 min-w-[120px] cursor-pointer group">
+                      <input 
+                        checked={formData.gender === 'UNKNOWN'} 
+                        onChange={() => setFormData(prev => ({ ...prev, gender: 'UNKNOWN' }))}
+                        className="peer hidden" 
+                        name="gender" 
+                        type="radio" 
+                        value="UNKNOWN"
+                      />
+                      <div className="flex items-center justify-center gap-2 h-14 rounded-lg border border-primary/20 bg-background-light peer-checked:bg-primary peer-checked:text-white transition-all group-hover:border-primary/50">
+                        <span className="material-symbols-outlined text-xl">person</span>
+                        <span className="font-medium">Preferred Not say</span>
                       </div>
                     </label>
                   </div>

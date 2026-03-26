@@ -89,7 +89,7 @@ export default function Header() {
             <div className="relative" ref={menuRef}>
               <button 
                 onClick={() => setShowMenu(!showMenu)}
-                className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary overflow-hidden border border-primary/10 hover:opacity-70 transition-all cursor-pointer"
+                className={`size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary overflow-hidden border border-primary/10 hover:opacity-70 transition-all cursor-pointer ${window.location.pathname === '/profile' ? 'ring-2 ring-primary' : ''}`}
               >
                 {userProfile?.profilePicture ? (
                   <img 
@@ -109,6 +109,14 @@ export default function Header() {
                     <p className="text-[10px] font-bold uppercase tracking-widest text-primary/40">Logged in as</p>
                     <p className="text-xs font-bold truncate text-primary">{userProfile?.firstName} {userProfile?.lastName}</p>
                   </div>
+                  <Link 
+                    to="/profile"
+                    onClick={() => setShowMenu(false)}
+                    className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">person</span>
+                    Profile
+                  </Link>
                   <button 
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"

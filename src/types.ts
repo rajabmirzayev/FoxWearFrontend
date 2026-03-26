@@ -143,7 +143,7 @@ export interface User {
   username: string;
   email: string;
   phoneNumber: string;
-  gender: 'MALE' | 'FEMALE';
+  gender: 'MALE' | 'FEMALE' | 'UNKNOWN';
   birthDate: string;
   profilePicture: string | null;
   role: string;
@@ -154,11 +154,17 @@ export interface User {
 }
 
 export interface UserProfile {
+  id: number;
   firstName: string;
   lastName: string;
   username: string;
-  role: 'USER' | 'ADMIN';
+  email: string;
+  phoneNumber: string;
+  gender: 'MALE' | 'FEMALE' | 'UNKNOWN';
+  birthDate: string;
   profilePicture: string | null;
+  role: 'USER' | 'ADMIN';
+  status: string;
 }
 
 export interface ReviewPage {
@@ -192,6 +198,6 @@ export interface RegisterRequest {
   phoneNumber: string;
   password: string;
   confirmPassword: string;
-  gender: 'MALE' | 'FEMALE';
+  gender: 'MALE' | 'FEMALE' | 'UNKNOWN';
   birthDate: string;
 }

@@ -119,7 +119,8 @@
   outline: none !important;
 }
 
-input[type="checkbox"] {
+input[type="checkbox"],
+input[type="radio"] {
   accent-color: #49352c;
 }
 

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest } from '../types';
 import storage from './storage';
 
-const API_BASE_URL = 'http://localhost:8080';
+export const API_BASE_URL = 'http://localhost:8080';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -187,6 +187,7 @@ export const userApi = {
   getProfileWithToken: (token: string) => axios.get<ApiResponse<UserProfile>>(`${API_BASE_URL}/api/v1/users/me`, {
     headers: { Authorization: `Bearer ${token}` }
   }),
+  updateProfile: (data: any) => api.put<ApiResponse<User>>('/api/v1/users', data),
   getUserById: (id: number) => api.get<ApiResponse<User>>(`/api/v1/users/${id}`),
   checkUsernameExists: (username: string) => api.get<ApiResponse<boolean>>(`/api/v1/users/username-exists/${username}`),
 };

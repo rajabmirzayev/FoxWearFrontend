@@ -17,7 +17,7 @@ export default function Footer() {
             />
             <h5 className="text-white dark:text-background-light text-xl font-black tracking-tighter uppercase italic">FoxWear</h5>
           </div>
-          <p className="text-white/70 dark:text-background-light/70 text-sm leading-relaxed mb-6 font-light">
+          <p className="text-white/50 dark:text-background-light/50 text-sm leading-relaxed mb-8 font-medium max-w-xs">
             Redefining premium modern fashion with a focus on quality and minimalist aesthetics.
           </p>
           <div className="flex gap-4">
