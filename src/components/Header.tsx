@@ -1,48 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import storage from '../services/storage';
-import { userApi } from '../services/api';
-import { UserProfile } from '../types';
+import { useAuth } from '../context/AuthContext';
 import SearchPopup from './SearchPopup';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const { isLoggedIn, userProfile, logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = storage.getItem('accessToken');
-    if (token) {
-      setIsLoggedIn(true);
-      fetchProfile();
-    } else {
-      setIsLoggedIn(false);
-      setUserProfile(null);
-    }
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const response = await userApi.getProfile();
-      if (response.data.success) {
-        setUserProfile(response.data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
-
   const handleLogout = () => {
-    storage.removeItem('accessToken');
-    storage.removeItem('refreshToken');
-    storage.removeItem('username');
-    setIsLoggedIn(false);
-    setUserProfile(null);
+    logout();
     setShowMenu(false);
     navigate('/login');
   };

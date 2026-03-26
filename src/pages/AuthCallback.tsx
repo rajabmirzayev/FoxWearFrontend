@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import storage from '../services/storage';
 import { userApi } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 export default function AuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [status, setStatus] = useState('Authenticating...');
 
   useEffect(() => {
@@ -16,36 +17,40 @@ export default function AuthCallback() {
       if (token && refreshToken) {
         try {
           setStatus('Finalizing your session...');
-          // 1. Store tokens first so subsequent API calls can use them
-          storage.setItem('accessToken', token, true);
-          storage.setItem('refreshToken', refreshToken, true);
           
-          // 2. Fetch profile to get role and username
-          // This ensures the app doesn't redirect to login due to missing role/username
-          const response = await userApi.getProfile();
+          // Fetch profile to get role and username
+          const response = await userApi.getProfileWithToken(token);
           if (response.data.success) {
             const profile = response.data.data;
-            storage.setItem('role', profile.role, true);
-            storage.setItem('username', profile.username, true);
+            
+            // Use global login function to update state and storage
+            login(token, refreshToken, profile, true);
+            
             setStatus('Login successful!');
+          } else {
+            throw new Error('Failed to fetch profile');
           }
         } catch (error) {
           console.error('Error completing auth callback:', error);
-          setStatus('Session check failed, but redirecting to home...');
+          setStatus('Authentication failed. Redirecting to login...');
+          setTimeout(() => navigate('/login', { replace: true }), 2000);
+          return;
         }
       } else {
         console.warn('Auth tokens missing in URL');
-        setStatus('Invalid authentication link.');
+        setStatus('Invalid authentication link. Redirecting to login...');
+        setTimeout(() => navigate('/login', { replace: true }), 2000);
+        return;
       }
       
-      // Small delay to ensure storage is updated and user sees the status
+      // Redirect to home page
       setTimeout(() => {
         navigate('/', { replace: true });
       }, 500);
     };
 
     completeAuth();
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, login]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark">
