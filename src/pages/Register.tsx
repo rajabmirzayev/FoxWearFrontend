@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authApi, userApi, API_BASE_URL } from '../services/api';
 import { RegisterRequest } from '../types';
 import { useTheme } from '../context/ThemeContext';
+import EmailSent from '../components/EmailSent';
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -220,61 +221,11 @@ export default function Register() {
 
   if (isSuccess) {
     return (
-      <div className="bg-[#f9f7f2] font-body text-[#49352c] antialiased min-h-screen">
-        <header className="fixed top-0 w-full z-50 bg-[#f9f7f2]/80 backdrop-blur-md flex justify-between items-center px-8 md:px-12 py-8">
-          <div className="flex items-center gap-3">
-            <img 
-              src="/src/assets/icon-black.png" 
-              alt="FoxWear Logo" 
-              className="h-8 w-auto object-contain"
-              referrerPolicy="no-referrer"
-            />
-            <div className="text-2xl font-black tracking-tighter text-[#49352c] uppercase">
-              FOXWEAR
-            </div>
-          </div>
-          <div></div>
-        </header>
-        <main className="min-h-screen flex items-center justify-center px-6 pt-24 pb-12">
-          <div className="max-w-xl w-full text-center">
-            <div className="mb-12 flex justify-center">
-              <div className="w-16 h-16 rounded-full border border-[#49352c]/10 flex items-center justify-center relative">
-                <span className="material-symbols-outlined text-3xl text-[#49352c]" style={{ fontVariationSettings: "'wght' 200" }}>mail</span>
-                <div className="absolute -top-1 -right-1 bg-[#49352c] text-white w-5 h-5 rounded-full flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[10px]" style={{ fontVariationSettings: "'FILL' 1" }}>check</span>
-                </div>
-              </div>
-            </div>
-            <h1 className="font-headline font-black text-3xl md:text-5xl tracking-tight-display uppercase text-[#49352c] mb-8 leading-tight">
-              Registration<br />Successful
-            </h1>
-            <p className="font-body font-light text-[#49352c]/70 leading-relaxed text-sm md:text-base mb-12 max-w-sm mx-auto">
-              Thank you for joining our signature series. To access your exclusive collections and complete your account setup, please verify your email address via the link we've sent to your inbox.
-            </p>
-            <div className="flex flex-col gap-4 w-full max-w-xs mx-auto">
-              <button className="bg-[#49352c] text-white font-label text-[11px] tracking-editorial py-4 px-8 uppercase transition-all duration-300 hover:opacity-90 active:scale-[0.98]">
-                Check My Inbox
-              </button>
-              <button 
-                onClick={() => navigate('/')}
-                className="border border-[#49352c]/20 text-[#49352c] font-label text-[11px] tracking-editorial py-4 px-8 uppercase transition-all duration-300 hover:bg-[#49352c]/5"
-              >
-                Go to Homepage
-              </button>
-            </div>
-            <div className="mt-16">
-              <p className="font-body font-light text-xs text-[#49352c]/40 italic mb-3">Didn't receive the email?</p>
-              <a className="group relative inline-block font-label text-[10px] tracking-editorial uppercase text-[#49352c] transition-colors" href="#">
-                Resend verification
-                <span className="absolute -bottom-1 left-0 w-full h-[1px] bg-[#49352c]/30 group-hover:bg-[#49352c] transition-colors"></span>
-              </a>
-            </div>
-          </div>
-        </main>
-        <footer className="fixed bottom-8 w-full flex justify-center pointer-events-none">
-          <p className="font-label text-[10px] tracking-[0.4em] uppercase text-[#49352c]/30">FoxWear © 2024 Signature Series</p>
-        </footer>
-      </div>
+      <EmailSent 
+        email={formData.email}
+        title="Registration Successful"
+        description="Thank you for joining our signature series. To access your exclusive collections and complete your account setup, please verify your email address via the link we've sent to your inbox."
+      />
     );
   }
 
@@ -295,7 +246,7 @@ export default function Register() {
             </div>
             <div className="flex items-center gap-6">
               <span className="text-sm font-medium text-slate-500 hidden md:inline">Already have an account?</span>
-              <Link to="/login" className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-stone-50 text-sm font-bold uppercase tracking-widest transition-all hover:opacity-90 active:scale-95">
+              <Link to="/login" className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-stone-50 dark:text-stone-950 text-sm font-bold uppercase tracking-widest transition-all hover:opacity-90 active:scale-95">
                 Log In
               </Link>
             </div>
@@ -347,7 +298,7 @@ export default function Register() {
                       value={formData.firstName}
                       onChange={handleChange}
                       autoComplete="off"
-                      className="form-input w-full rounded-lg border border-primary/20 bg-background-light dark:bg-slate-800/50 h-14 px-4 text-base transition-all outline-none" 
+                      className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white" 
                       maxLength={30} 
                       minLength={3} 
                       placeholder="3-30 characters" 
@@ -362,7 +313,7 @@ export default function Register() {
                       value={formData.lastName}
                       onChange={handleChange}
                       autoComplete="off"
-                      className="form-input w-full rounded-lg border border-primary/20 bg-background-light dark:bg-slate-800/50 h-14 px-4 text-base transition-all outline-none" 
+                      className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white" 
                       maxLength={50} 
                       minLength={3} 
                       placeholder="3-50 characters" 
@@ -376,16 +327,16 @@ export default function Register() {
                   <label className="flex flex-col">
                     <span className="text-primary text-sm font-bold uppercase tracking-wider mb-2">Username</span>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40">person</span>
                       <input 
                         name="username"
                         value={formData.username}
                         onChange={handleChange}
                         autoComplete="off"
-                        className={`form-input w-full rounded-lg border bg-background-light dark:bg-slate-800/50 h-14 pl-11 pr-12 text-base transition-all outline-none 
-                          ${usernameStatus === 'available' ? 'border-green-500 ring-1 ring-green-500/20' : 
-                            usernameStatus === 'taken' ? 'border-red-500 ring-1 ring-red-500/20' : 
-                            'border-primary/20 focus:border-primary'}`} 
+                        className={`w-full bg-transparent border-0 border-b ${
+                          usernameStatus === 'available' ? 'border-green-500' : 
+                          usernameStatus === 'taken' ? 'border-red-500' : 
+                          'border-primary/20'
+                        } focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white`} 
                         maxLength={50} 
                         minLength={3} 
                         placeholder="Your unique handle" 
@@ -413,13 +364,12 @@ export default function Register() {
                   <label className="flex flex-col">
                     <span className="text-primary text-sm font-bold uppercase tracking-wider mb-2">Email Address</span>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40">mail</span>
                       <input 
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
                         autoComplete="off"
-                        className="form-input w-full rounded-lg border border-primary/20 bg-background-light dark:bg-slate-800/50 h-14 pl-11 pr-4 text-base transition-all outline-none" 
+                        className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white" 
                         placeholder="email@example.com" 
                         required 
                         type="email"
@@ -432,13 +382,12 @@ export default function Register() {
                   <label className="flex flex-col">
                     <span className="text-primary text-sm font-bold uppercase tracking-wider mb-2">Phone Number</span>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40">call</span>
                       <input 
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleChange}
                         autoComplete="off"
-                        className="form-input w-full rounded-lg border border-primary/20 bg-background-light dark:bg-slate-800/50 h-14 pl-11 pr-4 text-base transition-all outline-none" 
+                        className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white" 
                         placeholder="+994 12 345 67 89" 
                         maxLength={17}
                         required 
@@ -450,17 +399,17 @@ export default function Register() {
                   <label className="flex flex-col relative" ref={calendarRef}>
                     <span className="text-primary text-sm font-bold uppercase tracking-wider mb-2">Birth Date</span>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40">calendar_today</span>
                       <input 
                         name="birthDate"
                         value={formData.birthDate}
                         onClick={() => setShowCalendar(!showCalendar)}
                         readOnly
-                        className="form-input w-full rounded-lg border border-primary/20 bg-background-light dark:bg-slate-800/50 h-14 pl-11 pr-4 text-base transition-all outline-none cursor-pointer" 
+                        className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white cursor-pointer" 
                         placeholder="Select Date" 
                         required 
                         type="text"
                       />
+                      <span className="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-primary/40 pointer-events-none text-sm">calendar_today</span>
                     </div>
                     
                     {showCalendar && (
@@ -534,7 +483,7 @@ export default function Register() {
                         type="radio" 
                         value="MALE"
                       />
-                      <div className="flex items-center justify-center gap-2 h-14 rounded-lg border border-primary/20 bg-background-light peer-checked:bg-primary peer-checked:text-white transition-all group-hover:border-primary/50">
+                      <div className="flex items-center justify-center gap-2 h-14 rounded-lg border border-primary/20 bg-background-light peer-checked:bg-primary peer-checked:text-white dark:peer-checked:text-stone-950 transition-all group-hover:border-primary/50">
                         <span className="material-symbols-outlined text-xl">male</span>
                         <span className="font-medium">Male</span>
                       </div>
@@ -548,7 +497,7 @@ export default function Register() {
                         type="radio" 
                         value="FEMALE"
                       />
-                      <div className="flex items-center justify-center gap-2 h-14 rounded-lg border border-primary/20 bg-background-light peer-checked:bg-primary peer-checked:text-white transition-all group-hover:border-primary/50">
+                      <div className="flex items-center justify-center gap-2 h-14 rounded-lg border border-primary/20 bg-background-light peer-checked:bg-primary peer-checked:text-white dark:peer-checked:text-stone-950 transition-all group-hover:border-primary/50">
                         <span className="material-symbols-outlined text-xl">female</span>
                         <span className="font-medium">Female</span>
                       </div>
@@ -562,7 +511,7 @@ export default function Register() {
                         type="radio" 
                         value="UNKNOWN"
                       />
-                      <div className="flex items-center justify-center gap-2 h-14 rounded-lg border border-primary/20 bg-background-light peer-checked:bg-primary peer-checked:text-white transition-all group-hover:border-primary/50">
+                      <div className="flex items-center justify-center gap-2 h-14 rounded-lg border border-primary/20 bg-background-light peer-checked:bg-primary peer-checked:text-white dark:peer-checked:text-stone-950 transition-all group-hover:border-primary/50">
                         <span className="material-symbols-outlined text-xl">person</span>
                         <span className="font-medium">Preferred Not say</span>
                       </div>
@@ -574,13 +523,12 @@ export default function Register() {
                   <label className="flex flex-col">
                     <span className="text-primary text-sm font-bold uppercase tracking-wider mb-2">Password</span>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40">lock</span>
                       <input 
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
                         autoComplete="new-password"
-                        className="form-input w-full rounded-lg border border-primary/20 bg-background-light dark:bg-slate-800/50 h-14 pl-11 pr-4 text-base transition-all outline-none" 
+                        className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white" 
                         placeholder="Enter secure password" 
                         required 
                         type="password"
@@ -591,13 +539,12 @@ export default function Register() {
                   <label className="flex flex-col">
                     <span className="text-primary text-sm font-bold uppercase tracking-wider mb-2">Confirm Password</span>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40">lock_reset</span>
                       <input 
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         autoComplete="new-password"
-                        className="form-input w-full rounded-lg border border-primary/20 bg-background-light dark:bg-slate-800/50 h-14 pl-11 pr-4 text-base transition-all outline-none" 
+                        className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white" 
                         placeholder="Repeat password" 
                         required 
                         type="password"
@@ -622,7 +569,7 @@ export default function Register() {
                 <div className="mt-4">
                   <button 
                     disabled={loading || !termsAccepted || usernameStatus === 'taken' || usernameStatus === 'checking'}
-                    className="w-full flex h-16 items-center justify-center rounded-xl bg-primary text-white text-lg font-black uppercase tracking-[0.2em] shadow-lg hover:shadow-primary/20 hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" 
+                    className="w-full flex h-16 items-center justify-center rounded-lg bg-primary text-white dark:text-stone-950 text-lg font-black uppercase tracking-[0.2em] shadow-lg hover:shadow-primary/20 hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" 
                     type="submit"
                   >
                     {loading ? 'Creating Account...' : 'Create Account'}

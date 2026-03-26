@@ -385,7 +385,7 @@ export default function Profile() {
                   disabled={uploading}
                   className="absolute inset-0 flex items-center justify-center bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-full backdrop-blur-[2px] cursor-pointer disabled:cursor-not-allowed"
                 >
-                  <span className="bg-surface px-4 py-2 text-[10px] font-headline font-bold uppercase tracking-widest text-primary shadow-sm">
+                  <span className="bg-surface px-4 py-2 text-[10px] font-headline font-bold uppercase tracking-widest text-primary dark:text-stone-950 shadow-sm rounded-lg">
                     {uploading ? 'Uploading...' : 'Edit'}
                   </span>
                 </button>
@@ -588,14 +588,14 @@ export default function Profile() {
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row items-center gap-8 pt-12">
                   <button 
-                    className="w-full sm:w-auto px-12 py-5 bg-primary text-white font-headline font-black uppercase tracking-[0.3em] text-[10px] hover:bg-primary/90 transition-colors duration-300 disabled:opacity-50 cursor-pointer" 
+                    className="w-full sm:w-auto px-12 py-5 bg-primary text-white dark:text-stone-950 font-headline font-black uppercase tracking-[0.3em] text-[10px] hover:bg-primary/90 transition-colors duration-300 disabled:opacity-50 cursor-pointer rounded-lg" 
                     type="submit"
                     disabled={saving || uploading || usernameStatus === 'taken' || usernameStatus === 'checking'}
                   >
                     {saving ? 'Saving...' : 'Save Changes'}
                   </button>
                   <button 
-                    className="w-full sm:w-auto px-12 py-5 border border-outline-variant font-headline font-light uppercase tracking-[0.3em] text-[10px] text-primary hover:bg-surface-container transition-colors dark:text-white dark:hover:bg-stone-800 cursor-pointer" 
+                    className="w-full sm:w-auto px-12 py-5 border border-outline-variant font-headline font-light uppercase tracking-[0.3em] text-[10px] text-primary hover:bg-surface-container transition-colors dark:text-white dark:hover:bg-stone-800 cursor-pointer rounded-lg" 
                     type="button"
                     onClick={() => navigate(-1)}
                   >

@@ -156,6 +156,8 @@ export const authApi = {
   refresh: (refreshToken: string) => axios.post<ApiResponse<AuthData>>(`${API_BASE_URL}/api/v1/auth/refresh`, null, {
     params: { refreshToken }
   }),
+  forgotPassword: (email: string) => api.post<ApiResponse<null>>('/api/v1/auth/forgot-password', { email }),
+  resetPassword: (token: string, data: any) => api.post<ApiResponse<null>>(`/api/v1/auth/reset?token=${token}`, data),
 };
 
 export const bannerApi = {

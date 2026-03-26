@@ -136,7 +136,7 @@ export default function LoginPage() {
                   id="username"
                   type="text"
                   required
-                  className="block w-full h-14 px-4 bg-background-light border border-primary/20 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-primary/40"
+                  className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all placeholder:text-primary/40 text-primary"
                   placeholder="Enter your credentials"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -145,14 +145,14 @@ export default function LoginPage() {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-semibold text-primary" htmlFor="password">Password</label>
-                  <a className="text-xs font-medium text-primary hover:underline" href="#">Forgot password?</a>
+                  <Link className="text-xs font-medium text-primary hover:underline" to="/forgot-password">Forgot password?</Link>
                 </div>
                 <div className="relative flex items-center">
                   <input 
                     id="password"
                     type={showPassword ? "text" : "password"}
                     required
-                    className="block w-full h-14 px-4 bg-background-light border border-primary/20 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-primary/40"
+                    className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all placeholder:text-primary/40 text-primary"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -186,7 +186,7 @@ export default function LoginPage() {
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white dark:text-background-light bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white dark:text-stone-950 bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-50 cursor-pointer"
               >
                 {loading ? 'Signing In...' : 'Sign In'}
               </button>
