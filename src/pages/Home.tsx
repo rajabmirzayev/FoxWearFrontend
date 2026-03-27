@@ -48,33 +48,21 @@ export default function Home() {
   const fetchReviews = async () => {
     try {
       const reviewsRes = await reviewApi.getSiteReviews({ page: 0, size: 10 });
-      if (reviewsRes.data.success) {
+      if (reviewsRes.data.success && reviewsRes.data.data && Array.isArray(reviewsRes.data.data.content)) {
         const reviewsData = reviewsRes.data.data.content;
         // Fetch users for each review in parallel
         const reviewsWithUsers = await Promise.all(reviewsData.map(async (review) => {
           try {
             const userRes = await userApi.getUserById(review.userId);
             return { ...review, user: userRes.data.data };
-          } catch (err) {
-            console.error(`Error fetching user ${review.userId}:`, err);
+          } catch (err: any) {
+            // Only log if it's not a 404 (user not found)
+            if (err.response?.status !== 404) {
+              console.error(`Error fetching user ${review.userId}:`, err);
+            }
             return { 
               ...review, 
-              user: { 
-                firstName: 'User', 
-                lastName: '', 
-                profilePicture: null,
-                id: review.userId,
-                username: '',
-                email: '',
-                phoneNumber: '',
-                gender: 'MALE',
-                birthDate: '',
-                role: 'USER',
-                status: 'ACTIVE',
-                twoFactorEnabled: false,
-                emailVerified: false,
-                phoneNumberVerified: false
-              } as User
+              user: null
             };
           }
         }));
@@ -93,8 +81,10 @@ export default function Home() {
           productApi.getMostLiked()
         ]);
 
-        if (bannerRes.data.success) setBanner(bannerRes.data.data);
-        if (productsRes.data.success) setMostLikedProducts(productsRes.data.data);
+        if (bannerRes.data.success && bannerRes.data.data) setBanner(bannerRes.data.data);
+        if (productsRes.data.success && Array.isArray(productsRes.data.data)) {
+          setMostLikedProducts(productsRes.data.data);
+        }
         
         await fetchReviews();
       } catch (error) {
@@ -405,11 +395,15 @@ export default function Home() {
                     {review.user?.profilePicture ? (
                       <img src={review.user.profilePicture} alt={review.user.firstName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     ) : (
-                      <span className="material-symbols-outlined text-2xl">person</span>
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-headline font-black text-sm uppercase tracking-tighter select-none">
+                        {review.user?.firstName?.charAt(0) || 'U'}
+                      </div>
                     )}
                   </div>
                   <div>
-                    <span className="font-bold text-sm uppercase tracking-widest block">{review.user?.firstName} {review.user?.lastName?.charAt(0)}.</span>
+                    <span className="font-bold text-sm uppercase tracking-widest block">
+                      {review.user ? `${review.user.firstName} ${review.user.lastName?.charAt(0)}.` : 'Anonymous'}
+                    </span>
                     <div className="flex flex-wrap items-center gap-x-2">
                       <span className="text-xs text-primary/40 uppercase tracking-widest">Verified Buyer</span>
                       <span className="text-[10px] text-primary/20">•</span>

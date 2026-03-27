@@ -193,8 +193,8 @@ export const userApi = {
     headers: { Authorization: `Bearer ${token}` }
   }),
   updateProfile: (data: any) => api.put<ApiResponse<User>>('/api/v1/users', data),
-  getUserById: (id: number) => api.get<ApiResponse<User>>(`/api/v1/users/${id}`),
-  checkUsernameExists: (username: string) => api.get<ApiResponse<boolean>>(`/api/v1/users/username-exists/${username}`),
+  getUserById: (id: number) => api.get<ApiResponse<User>>(`/api/v1/users/public/${id}`),
+  checkUsernameExists: (username: string) => api.get<ApiResponse<boolean>>(`/api/v1/users/public/username-exists/${username}`),
 };
 
 export const addressApi = {

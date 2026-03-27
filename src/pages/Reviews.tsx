@@ -74,8 +74,11 @@ export default function Reviews() {
                 if (userRes.data.success) {
                   return { ...review, user: userRes.data.data };
                 }
-              } catch (err) {
-                console.error('Error fetching user for review:', err);
+              } catch (err: any) {
+                // Only log if it's not a 404 (user not found)
+                if (err.response?.status !== 404) {
+                  console.error('Error fetching user for review:', err);
+                }
               }
             }
             return review;
@@ -267,13 +270,19 @@ export default function Reviews() {
                   "{review.description}"
                 </p>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full overflow-hidden bg-background-soft">
-                    <img 
-                      className="w-full h-full object-cover" 
-                      src={review.user?.profilePicture || `https://ui-avatars.com/api/?name=${review.user?.firstName || 'User'}&background=random`} 
-                      alt={review.user?.firstName || 'User'}
-                      referrerPolicy="no-referrer"
-                    />
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-background-soft flex items-center justify-center">
+                    {review.user?.profilePicture ? (
+                      <img 
+                        className="w-full h-full object-cover" 
+                        src={review.user.profilePicture} 
+                        alt={review.user.firstName || 'User'}
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-headline font-black text-xs uppercase tracking-tighter select-none">
+                        {review.user?.firstName?.charAt(0) || 'U'}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <span className="block font-label text-[10px] tracking-widest uppercase font-bold">

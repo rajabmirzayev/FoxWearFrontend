@@ -99,7 +99,9 @@ export default function Header() {
                     referrerPolicy="no-referrer" 
                   />
                 ) : (
-                  <span className="material-symbols-outlined text-2xl">person</span>
+                  <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-headline font-black text-xs uppercase tracking-tighter select-none">
+                    {userProfile?.firstName?.charAt(0) || userProfile?.username?.charAt(0) || '?'}
+                  </div>
                 )}
               </button>
               

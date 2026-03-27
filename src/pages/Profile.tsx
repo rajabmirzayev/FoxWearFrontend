@@ -374,15 +374,21 @@ export default function Profile() {
                   accept="image/*"
                   className="hidden"
                 />
-                <div className="w-full h-full rounded-full overflow-hidden bg-surface-container relative">
-                  <img 
-                    alt="User Profile" 
-                    className={`w-full h-full object-cover transition-opacity duration-300 ${uploading ? 'opacity-50' : 'opacity-100'}`} 
-                    src={formData.profilePicture || "https://lh3.googleusercontent.com/aida-public/AB6AXuCupq9D1pKma1VfSehv_vtT3IU5fJGjAfaHPwxeSrhd9yLR_PmZrrt-TKAT8c7IaSBmCy5z12QrMRRumv05rwXZV9mJIl_6bITRdKkctC_sRYgVJG4FIHJk5mDIwcQAUbKMm0xk73d7KvGU56IsgXTEcm9zHovo6RXY1vSdP09VuK9owBFEvMPFHpnI9uu_53n3lJgCzdYfD7WYbVp04TLwMPfKkjSfiTa4IyeqRtnZjR7uQZyeqiXZGJ6U1FQS6BCss3Qac7e9YuNL"}
-                    referrerPolicy="no-referrer"
-                  />
+                <div className="w-full h-full rounded-full overflow-hidden bg-primary/5 relative flex items-center justify-center">
+                  {formData.profilePicture ? (
+                    <img 
+                      alt="User Profile" 
+                      className={`w-full h-full object-cover transition-opacity duration-300 ${uploading ? 'opacity-50' : 'opacity-100'}`} 
+                      src={formData.profilePicture}
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-headline font-black text-5xl uppercase tracking-tighter select-none">
+                      {formData.firstName?.charAt(0) || formData.username?.charAt(0) || '?'}
+                    </div>
+                  )}
                   {uploading && (
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center bg-background-light/40 backdrop-blur-[1px]">
                       <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                     </div>
                   )}
