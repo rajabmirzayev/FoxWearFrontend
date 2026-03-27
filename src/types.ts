@@ -165,6 +165,8 @@ export interface UserProfile {
   profilePicture: string | null;
   role: 'USER' | 'ADMIN';
   status: string;
+  emailVerified: boolean;
+  phoneNumberVerified: boolean;
 }
 
 export interface ReviewPage {

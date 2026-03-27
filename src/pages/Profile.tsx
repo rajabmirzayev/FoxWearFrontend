@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import api, { userApi } from '../services/api';
+import api, { userApi, authApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { UserProfile, ApiResponse } from '../types';
 
@@ -42,6 +42,15 @@ export default function Profile() {
     gender: 'UNKNOWN',
     profilePicture: ''
   });
+
+  const [verificationStatus, setVerificationStatus] = useState({
+    emailVerified: true,
+    phoneNumberVerified: true
+  });
+
+  // Verification State
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
   const formatPhoneNumber = (value: string) => {
     if (!value) return '';
@@ -108,6 +117,11 @@ export default function Profile() {
             gender: profile.gender || 'UNKNOWN',
             profilePicture: profile.profilePicture || ''
           });
+
+          setVerificationStatus({
+            emailVerified: profile.emailVerified ?? true,
+            phoneNumberVerified: profile.phoneNumberVerified ?? true
+          });
         }
       } catch (err) {
         console.error('Error fetching profile:', err);
@@ -170,6 +184,26 @@ export default function Profile() {
     }
     
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleVerifyEmail = async () => {
+    setVerifying(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      const response = await authApi.verifyEmail();
+      if (response.data.success) {
+        setSuccess('Verification email has been sent. Please check your inbox.');
+        setShowVerifyModal(false);
+      } else {
+        setError(response.data.message || 'Failed to send verification email.');
+      }
+    } catch (err: any) {
+      console.error('Error sending verification email:', err);
+      setError(err.response?.data?.message || 'An error occurred while sending verification email.');
+    } finally {
+      setVerifying(false);
+    }
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -465,12 +499,24 @@ export default function Profile() {
                   </div>
                   {/* Email */}
                   <div className="space-y-2 group">
-                    <label className="block font-headline font-bold uppercase tracking-[0.2em] text-[10px] text-primary/60 group-focus-within:text-primary transition-colors">Email Address</label>
+                    <div className="flex items-center justify-between">
+                      <label className="block font-headline font-bold uppercase tracking-[0.2em] text-[10px] text-primary/60 group-focus-within:text-primary transition-colors">Email Address</label>
+                      {!verificationStatus.emailVerified && (
+                        <button 
+                          type="button" 
+                          className="text-[9px] font-headline font-black uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors flex items-center gap-1 cursor-pointer"
+                          onClick={() => setShowVerifyModal(true)}
+                        >
+                          <span className="material-symbols-outlined text-[12px]">verified_user</span>
+                          Verify
+                        </button>
+                      )}
+                    </div>
                     <input 
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white" 
+                      className={`w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white ${!verificationStatus.emailVerified ? 'text-red-500 dark:text-red-400' : ''}`} 
                       placeholder="Email Address" 
                       type="email"
                       required
@@ -478,12 +524,24 @@ export default function Profile() {
                   </div>
                   {/* Phone Number */}
                   <div className="space-y-2 group">
-                    <label className="block font-headline font-bold uppercase tracking-[0.2em] text-[10px] text-primary/60 group-focus-within:text-primary transition-colors">Phone Number</label>
+                    <div className="flex items-center justify-between">
+                      <label className="block font-headline font-bold uppercase tracking-[0.2em] text-[10px] text-primary/60 group-focus-within:text-primary transition-colors">Phone Number</label>
+                      {!verificationStatus.phoneNumberVerified && formData.phoneNumber && (
+                        <button 
+                          type="button" 
+                          className="text-[9px] font-headline font-black uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors flex items-center gap-1 cursor-pointer"
+                          onClick={() => console.log('Verify phone')}
+                        >
+                          <span className="material-symbols-outlined text-[12px]">verified_user</span>
+                          Verify
+                        </button>
+                      )}
+                    </div>
                     <input 
                       name="phoneNumber"
                       value={formData.phoneNumber}
                       onChange={handleChange}
-                      className="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white" 
+                      className={`w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white ${!verificationStatus.phoneNumberVerified && formData.phoneNumber ? 'text-red-500 dark:text-red-400' : ''}`} 
                       maxLength={17} 
                       placeholder="+994 12 345 67 89" 
                       type="tel"
@@ -611,6 +669,35 @@ export default function Profile() {
         </div>
       </main>
       <Footer />
+
+      {/* Verification Modal */}
+      {showVerifyModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="absolute inset-0 bg-stone-950/60 backdrop-blur-sm" onClick={() => !verifying && setShowVerifyModal(false)}></div>
+          <div className="relative bg-white dark:bg-stone-900 w-full max-w-md p-10 shadow-2xl animate-in fade-in zoom-in duration-300 rounded-2xl border border-outline-variant">
+            <h3 className="font-headline font-black text-2xl uppercase tracking-tighter text-primary mb-4">Verify Email</h3>
+            <p className="font-body font-light text-secondary leading-relaxed mb-8">
+              We will send a verification link to <span className="font-bold text-primary">{formData.email}</span>. Are you ready to proceed?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={handleVerifyEmail}
+                disabled={verifying}
+                className="flex-1 px-8 py-4 bg-primary text-white dark:text-stone-950 font-headline font-black uppercase tracking-[0.2em] text-[10px] hover:bg-primary/90 transition-all disabled:opacity-50 rounded-lg cursor-pointer"
+              >
+                {verifying ? 'Sending...' : 'Yes, Send Link'}
+              </button>
+              <button
+                onClick={() => setShowVerifyModal(false)}
+                disabled={verifying}
+                className="flex-1 px-8 py-4 border border-outline-variant font-headline font-light uppercase tracking-[0.2em] text-[10px] text-primary hover:bg-surface-container transition-all dark:text-white dark:hover:bg-stone-800 rounded-lg cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
