@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import AccountSidebar from '../components/AccountSidebar';
 import api, { userApi, authApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { UserProfile, ApiResponse } from '../types';
@@ -354,37 +355,7 @@ export default function Profile() {
       <main className="flex-1 pt-40 pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
           {/* Sidebar Navigation */}
-          <aside className="lg:col-span-3">
-            <div className="sticky top-40 space-y-8">
-              <h2 className="font-headline font-black uppercase tracking-widest text-xs text-primary mb-12">Account Settings</h2>
-              <ul className="space-y-6">
-                <li>
-                  <Link className="font-headline font-bold uppercase tracking-[0.2em] text-[10px] text-primary flex items-center gap-3" to="/profile">
-                    <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
-                    Profile Details
-                  </Link>
-                </li>
-                <li>
-                  <Link className="font-headline font-light uppercase tracking-[0.2em] text-[10px] text-stone-400 hover:text-primary transition-colors" to="/change-password">Change Password</Link>
-                </li>
-                <li>
-                  <Link className="font-headline font-light uppercase tracking-[0.2em] text-[10px] text-stone-400 hover:text-primary transition-colors" to="/orders">My Orders</Link>
-                </li>
-                <li>
-                  <Link className="font-headline font-light uppercase tracking-[0.2em] text-[10px] text-stone-400 hover:text-primary transition-colors" to="/reviews">My Reviews</Link>
-                </li>
-                <li>
-                  <Link className="font-headline font-light uppercase tracking-[0.2em] text-[10px] text-stone-400 hover:text-primary transition-colors" to="/messages">My Messages</Link>
-                </li>
-                <li>
-                  <Link className="font-headline font-light uppercase tracking-[0.2em] text-[10px] text-stone-400 hover:text-primary transition-colors" to="/addresses">My Addresses</Link>
-                </li>
-                <li>
-                  <Link className="font-headline font-light uppercase tracking-[0.2em] text-[10px] text-stone-400 hover:text-primary transition-colors" to="/cards">My Cards</Link>
-                </li>
-              </ul>
-            </div>
-          </aside>
+          <AccountSidebar />
 
           {/* Main Profile Section */}
           <section className="lg:col-span-9">

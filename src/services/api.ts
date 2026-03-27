@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest } from '../types';
+import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest, Address, AddressRequest } from '../types';
 import storage from './storage';
 
 export const API_BASE_URL = 'http://localhost:8080';
@@ -34,6 +34,7 @@ function isTokenExpired(token: string): boolean {
     
     // Adding a 30-second "security margin"
     const expired = Date.now() >= (exp * 1000) - 30000;
+    if (expired) console.log('Token is expired based on JWT exp claim');
     return expired;
   } catch (e) {
     console.error('Error parsing token for expiry', e);
@@ -194,6 +195,14 @@ export const userApi = {
   updateProfile: (data: any) => api.put<ApiResponse<User>>('/api/v1/users', data),
   getUserById: (id: number) => api.get<ApiResponse<User>>(`/api/v1/users/${id}`),
   checkUsernameExists: (username: string) => api.get<ApiResponse<boolean>>(`/api/v1/users/username-exists/${username}`),
+};
+
+export const addressApi = {
+  getAll: () => api.get<ApiResponse<Address[]>>('/api/v1/addresses'),
+  getById: (id: number) => api.get<ApiResponse<Address>>(`/api/v1/addresses/${id}`),
+  create: (data: AddressRequest) => api.post<ApiResponse<Address>>('/api/v1/addresses', data),
+  update: (id: number, data: AddressRequest) => api.put<ApiResponse<Address>>(`/api/v1/addresses/${id}`, data),
+  delete: (id: number) => api.delete<ApiResponse<{}>>(`/api/v1/addresses/${id}`),
 };
 
 export default api;

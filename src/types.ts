@@ -169,6 +169,37 @@ export interface UserProfile {
   phoneNumberVerified: boolean;
 }
 
+export interface Address {
+  id: number;
+  title: string;
+  city: string;
+  region: string;
+  street: string;
+  block: string;
+  floor: string;
+  doorNumber: string;
+  doorCode: string;
+  fullAddressText: string;
+  latitude: number;
+  longitude: number;
+  isDefault: boolean;
+}
+
+export interface AddressRequest {
+  title: string;
+  city: string;
+  region: string;
+  street: string;
+  block: string;
+  floor: string;
+  doorNumber: string;
+  doorCode: string;
+  fullAddressText: string;
+  latitude: number;
+  longitude: number;
+  isDefault: boolean;
+}
+
 export interface ReviewPage {
   totalElements: number;
   totalPages: number;
