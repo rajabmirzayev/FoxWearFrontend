@@ -331,6 +331,9 @@ export default function Profile() {
                   </Link>
                 </li>
                 <li>
+                  <Link className="font-headline font-light uppercase tracking-[0.2em] text-[10px] text-stone-400 hover:text-primary transition-colors" to="/change-password">Change Password</Link>
+                </li>
+                <li>
                   <Link className="font-headline font-light uppercase tracking-[0.2em] text-[10px] text-stone-400 hover:text-primary transition-colors" to="/orders">My Orders</Link>
                 </li>
                 <li>

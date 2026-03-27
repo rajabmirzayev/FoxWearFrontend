@@ -158,6 +158,7 @@ export const authApi = {
   }),
   forgotPassword: (email: string) => api.post<ApiResponse<null>>('/api/v1/auth/forgot-password', { email }),
   resetPassword: (token: string, data: any) => api.post<ApiResponse<null>>(`/api/v1/auth/reset?token=${token}`, data),
+  changePassword: (data: any) => api.patch<ApiResponse<null>>('/api/v1/auth/change-password', data),
 };
 
 export const bannerApi = {

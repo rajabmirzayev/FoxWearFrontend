@@ -23,6 +23,7 @@ import AuthCallback from './pages/AuthCallback';
 import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import ChangePassword from './pages/ChangePassword';
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
   const { isLoggedIn, userProfile, loading } = useAuth();
@@ -63,6 +64,11 @@ export default function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/change-password" element={
+              <ProtectedRoute>
+                <ChangePassword />
+              </ProtectedRoute>
+            } />
             <Route path="/oauth2/callback" element={<AuthCallback />} />
             <Route path="/profile" element={
               <ProtectedRoute>
