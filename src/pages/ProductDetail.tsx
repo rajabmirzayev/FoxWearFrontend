@@ -262,11 +262,11 @@ export default function ProductDetail() {
               <p className="text-primary font-medium tracking-widest text-[10px] uppercase mb-4 opacity-70">FoxWear Signature Collection</p>
               <div className="flex items-center gap-4 mb-2">
                 <span className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                  ${product.hasDiscount ? product.discountPrice.toFixed(2) : product.originalPrice.toFixed(2)}
+                  ₼{product.hasDiscount ? product.discountPrice.toFixed(2) : product.originalPrice.toFixed(2)}
                 </span>
                 {product.hasDiscount && (
                   <>
-                    <span className="text-base text-slate-400 line-through">${product.originalPrice.toFixed(2)}</span>
+                    <span className="text-base text-slate-400 line-through">₼{product.originalPrice.toFixed(2)}</span>
                     <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded">SAVE {product.discountRate}%</span>
                   </>
                 )}
