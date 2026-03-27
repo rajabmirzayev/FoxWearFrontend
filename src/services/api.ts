@@ -185,6 +185,18 @@ export const reviewApi = {
   updateSiteReview: (id: number, data: { rate: number; description: string }) => api.put<ApiResponse<Review>>(`/api/v1/reviews/site/${id}`, data),
   deleteSiteReview: (id: number) => api.delete<ApiResponse<{}>>(`/api/v1/reviews/site/${id}`),
   getAverageRate: () => api.get<ApiResponse<number>>('/api/v1/reviews/site/average-rate'),
+  
+  // Product Reviews
+  getProductReviews: (productId: number, params?: { page?: number; size?: number }) => 
+    api.get<ApiResponse<ReviewPage>>(`/api/v1/reviews/product/${productId}`, { params }),
+  createProductReview: (productId: number, data: { rate: number; description: string }) => 
+    api.post<ApiResponse<Review>>(`/api/v1/reviews/product/${productId}`, { ...data, productId }),
+  updateProductReview: (reviewId: number, data: { rate: number; description: string }) => 
+    api.put<ApiResponse<Review>>(`/api/v1/reviews/product/${reviewId}`, data),
+  deleteProductReview: (reviewId: number) => 
+    api.delete<ApiResponse<{}>>(`/api/v1/reviews/product/${reviewId}`),
+  getProductAverageRate: (productId: number) => 
+    api.get<ApiResponse<number>>(`/api/v1/reviews/product/average-rate/${productId}`),
 };
 
 export const userApi = {

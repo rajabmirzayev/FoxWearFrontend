@@ -40,7 +40,7 @@ export default function Reviews() {
       try {
         const avgRes = await reviewApi.getAverageRate();
         if (avgRes.data.success) {
-          setAverageRate(avgRes.data.data);
+          setAverageRate(avgRes.data.data ?? 0);
         }
       } catch (err) {
         console.error('Error fetching average rate:', err);

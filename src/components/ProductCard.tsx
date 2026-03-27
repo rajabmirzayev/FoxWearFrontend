@@ -11,8 +11,8 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, isLiked, onLike, onQuickView }) => {
-  const mainImage = product.colors[0]?.images.find(img => img.main)?.image || product.colors[0]?.images[0]?.image;
-  const hoverImage = product.colors[0]?.images.find(img => !img.main)?.image || mainImage;
+  const mainImage = product.colors?.[0]?.images?.find(img => img.main)?.image || product.colors?.[0]?.images?.[0]?.image;
+  const hoverImage = product.colors?.[0]?.images?.find(img => !img.main)?.image || mainImage;
 
   return (
     <motion.div
@@ -24,7 +24,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, isLiked, onLi
       className="group cursor-pointer"
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-primary/5 rounded-lg mb-4">
-        <Link to={`/products/${product.slug}`}>
+        <Link to={`/product/${product.slug}`}>
           <img
             src={mainImage}
             alt={product.title}
@@ -83,7 +83,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, isLiked, onLi
         </div>
       </div>
 
-      <Link to={`/products/${product.slug}`}>
+      <Link to={`/product/${product.slug}`}>
         <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1 truncate">{product.title}</h3>
         <div className="flex items-center gap-3">
           <p className="text-primary font-semibold">₼{product.discountPrice}</p>

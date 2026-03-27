@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, ProductSize } from '../types';
-import { productApi } from '../services/api';
+import { productApi, reviewApi } from '../services/api';
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -15,6 +15,7 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedSizeId, setSelectedSizeId] = useState<number | null>(null);
+  const [averageRate, setAverageRate] = useState<number>(0);
 
   const productSizes = useMemo(() => {
     if (!product) return [];
@@ -34,8 +35,20 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
       setSelectedColorIndex(0);
       setSelectedImageIndex(0);
       setSelectedSizeId(null);
+      fetchAverageRate(product.id);
     }
   }, [product]);
+
+  const fetchAverageRate = async (productId: number) => {
+    try {
+      const response = await reviewApi.getProductAverageRate(productId);
+      if (response.data.success) {
+        setAverageRate(response.data.data ?? 0);
+      }
+    } catch (err) {
+      console.error('Error fetching average rate:', err);
+    }
+  };
 
   useEffect(() => {
     setSelectedImageIndex(0);
@@ -75,14 +88,14 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    src={product.colors[selectedColorIndex]?.images[selectedImageIndex]?.image}
+                    src={product.colors?.[selectedColorIndex]?.images?.[selectedImageIndex]?.image}
                     alt={product.title}
                     className="absolute inset-0 w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
                 </AnimatePresence>
                 
-                {product.colors[selectedColorIndex]?.images.length > 1 && (
+                {product.colors?.[selectedColorIndex]?.images && product.colors[selectedColorIndex].images.length > 1 && (
                   <>
                     <button
                       onClick={() => setSelectedImageIndex(prev => (prev === 0 ? product.colors[selectedColorIndex].images.length - 1 : prev - 1))}
@@ -100,13 +113,13 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
                 )}
               </div>
 
-              {product.colors[selectedColorIndex]?.images.length > 1 && (
+              {product.colors?.[selectedColorIndex]?.images && product.colors[selectedColorIndex].images.length > 1 && (
                 <div className="flex gap-2 p-4 overflow-x-auto bg-white dark:bg-background-dark/50 border-t border-primary/5">
                   {product.colors[selectedColorIndex].images.map((img, idx) => (
                     <button
                       key={idx}
                       onClick={() => setSelectedImageIndex(idx)}
-                      className={`relative w-16 h-20 flex-shrink-0 overflow-hidden rounded border-2 transition-all ${
+                      className={`relative w-16 h-20 flex-shrink-0 overflow-hidden rounded border-2 transition-all cursor-pointer ${
                         selectedImageIndex === idx ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'
                       }`}
                     >
@@ -124,17 +137,27 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
 
             <div className="w-full md:w-1/2 p-10 flex flex-col justify-center space-y-6">
               <div className="space-y-3">
-                <span className="text-[10px] font-bold text-primary/40 uppercase tracking-widest">{product.categoryName}</span>
-                <h2 className="text-4xl font-light text-primary leading-tight dark:text-slate-100">{product.title}</h2>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-primary/40 uppercase tracking-widest">{product.categoryName}</span>
+                  <div className="flex items-center gap-1 text-primary">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span key={star} className={`material-symbols-outlined text-xs ${averageRate >= star - 0.5 ? 'icon-fill' : ''}`}>
+                        {averageRate >= star ? 'star' : averageRate >= star - 0.5 ? 'star_half' : 'star'}
+                      </span>
+                    ))}
+                    <span className="text-[10px] font-bold ml-1">{averageRate > 0 ? averageRate.toFixed(1) : '0.0'}</span>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-semibold text-primary leading-tight dark:text-slate-100">{product.title}</h2>
                 <div className="flex items-center gap-4">
-                  <span className="text-2xl font-semibold text-primary dark:text-slate-100">₼{product.discountPrice}</span>
+                  <span className="text-xl font-bold text-primary dark:text-slate-100">₼{product.discountPrice}</span>
                   {product.hasDiscount && (
-                    <span className="text-lg text-slate-400 line-through">₼{product.originalPrice}</span>
+                    <span className="text-base text-slate-400 line-through">₼{product.originalPrice}</span>
                   )}
                 </div>
               </div>
 
-              <p className="text-slate-500 text-sm leading-relaxed">
+              <p className="text-slate-500 text-xs leading-relaxed">
                 {product.description || "Experience the pinnacle of craftsmanship with this exquisite piece from our latest collection."}
               </p>
 
@@ -146,7 +169,7 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
                       <div
                         key={c.id}
                         onClick={() => setSelectedColorIndex(idx)}
-                        className={`w-7 h-7 rounded-full border cursor-pointer hover:scale-110 transition-all shadow-sm flex items-center justify-center ${
+                        className={`w-6 h-6 rounded-full border cursor-pointer hover:scale-110 transition-all shadow-sm flex items-center justify-center ${
                           selectedColorIndex === idx ? 'border-primary ring-2 ring-primary/20 scale-110' : 'border-primary/10'
                         }`}
                         style={{ backgroundColor: c.colorCode }}
@@ -173,14 +196,14 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
                   <span className="text-xs font-bold text-primary/40 uppercase tracking-widest">Select Size</span>
                   <div className="grid grid-cols-5 gap-2">
                     {productSizes.map(s => {
-                      const isAvailableForColor = product.colors[selectedColorIndex]?.items.some(item => item.productSize.id === s.id && item.stockRemaining > 0);
+                      const isAvailableForColor = product.colors?.[selectedColorIndex]?.items?.some(item => item.productSize?.id === s.id && item.stockRemaining > 0);
                       
                       return (
                         <button
                           key={s.id}
                           onClick={() => isAvailableForColor && setSelectedSizeId(s.id)}
                           disabled={!isAvailableForColor}
-                          className={`border text-xs py-2 transition-all uppercase tracking-wider cursor-pointer ${
+                          className={`border text-[10px] py-1.5 transition-all uppercase tracking-wider cursor-pointer ${
                             selectedSizeId === s.id
                               ? 'bg-primary text-white border-primary'
                               : isAvailableForColor
@@ -196,19 +219,24 @@ export default function QuickViewModal({ product, onClose, onLike, isLiked }: Qu
                 </div>
               </div>
 
-              <div className="flex gap-4">
-                <button className="flex-1 py-4 text-xs font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => {
+                    onClose();
+                    window.location.href = `/product/${product.slug}`;
+                  }}
+                  className="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer
                   bg-primary text-white border border-primary/10 hover:bg-white hover:text-primary
                   dark:bg-white dark:text-background-light dark:hover:bg-background-light dark:hover:text-white">
                   View Product
                 </button>
                 <button 
                   onClick={(e) => onLike(product.id, e)}
-                  className={`px-6 border border-primary/10 transition-all duration-300 flex items-center justify-center group/btn cursor-pointer
+                  className={`px-5 border border-primary/10 transition-all duration-300 flex items-center justify-center group/btn cursor-pointer
                     bg-white dark:bg-slate-900
                     ${isLiked ? 'border-red-500/20' : ''}`}
                 >
-                  <span className={`material-symbols-outlined transition-all duration-300
+                  <span className={`material-symbols-outlined text-lg transition-all duration-300
                     ${isLiked 
                       ? 'text-red-500 icon-fill' 
                       : 'text-slate-900 dark:text-slate-100 group-hover/btn:icon-fill'}`}>
