@@ -194,7 +194,7 @@ export default function ProductDetail() {
         <Header />
         <div className="flex-1 flex flex-col items-center justify-center p-6">
           <h2 className="text-2xl font-black text-primary mb-4 uppercase tracking-tighter">{error || 'Product not found'}</h2>
-          <Link to="/products" className="text-primary underline font-bold uppercase tracking-widest text-sm">Back to Products</Link>
+          <Link to="/products" className="text-primary dark:text-white underline font-bold uppercase tracking-widest text-sm">Back to Products</Link>
         </div>
         <Footer />
       </div>
@@ -207,7 +207,7 @@ export default function ProductDetail() {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-8 flex-1">
         {/* Breadcrumbs */}
-        <nav className="flex text-xs font-medium text-slate-500 mb-8">
+        <nav className="flex text-xs font-medium text-slate-500 dark:text-slate-400 mb-8">
           <Link className="hover:text-primary transition-colors" to="/">Home</Link>
           <span className="mx-2">/</span>
           <Link className="hover:text-primary transition-colors" to="/products">Collections</Link>
@@ -247,7 +247,7 @@ export default function ProductDetail() {
                   />
                 </AnimatePresence>
                 {product.hasDiscount && (
-                  <div className="absolute top-4 left-4 bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-none uppercase tracking-widest shadow-lg">
+                  <div className="absolute top-4 left-4 bg-primary text-white dark:text-slate-950 text-xs font-bold px-3 py-1.5 rounded-none uppercase tracking-widest shadow-lg">
                     -{product.discountRate}%
                   </div>
                 )}
@@ -267,7 +267,7 @@ export default function ProductDetail() {
                 {product.hasDiscount && (
                   <>
                     <span className="text-base text-slate-400 line-through">₼{product.originalPrice.toFixed(2)}</span>
-                    <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded">SAVE {product.discountRate}%</span>
+                    <span className="bg-primary text-white dark:text-slate-950 text-[10px] font-bold px-2 py-0.5 rounded">SAVE {product.discountRate}%</span>
                   </>
                 )}
               </div>
@@ -294,7 +294,7 @@ export default function ProductDetail() {
               <div>
                 <div className="flex justify-between mb-3">
                   <p className="text-xs font-bold uppercase tracking-widest">Select Size</p>
-                  <button className="text-[10px] font-bold text-primary underline uppercase tracking-widest cursor-pointer">Size Guide</button>
+                  <button className="text-[10px] font-bold text-primary dark:text-white underline uppercase tracking-widest cursor-pointer">Size Guide</button>
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   {selectedColor?.items.map((item) => (
@@ -302,7 +302,7 @@ export default function ProductDetail() {
                       key={item.id}
                       onClick={() => setSelectedSize(item)}
                       disabled={item.stockRemaining === 0}
-                      className={`border py-2 text-xs transition-all cursor-pointer ${
+                      className={`border py-2 text-xs transition-all cursor-pointer text-slate-900 dark:text-slate-100 ${
                         selectedSize?.id === item.id 
                           ? 'border-2 border-primary font-bold' 
                           : 'border-slate-200 dark:border-slate-700 font-medium hover:border-primary'
@@ -331,14 +331,14 @@ export default function ProductDetail() {
               <div className="flex gap-3">
                 <button 
                   onClick={handleAddToCart}
-                  className="flex-1 bg-primary text-white py-3 rounded-lg font-bold tracking-widest uppercase hover:opacity-90 transition-opacity flex items-center justify-center gap-3 shadow-lg cursor-pointer"
+                  className="flex-1 bg-primary text-white dark:text-slate-950 py-3 rounded-lg font-bold tracking-widest uppercase hover:opacity-90 transition-opacity flex items-center justify-center gap-3 shadow-lg cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-xl">shopping_cart</span>
                   Add to Cart
                 </button>
                 <button 
                   onClick={handleLike}
-                  className={`aspect-square w-12 border rounded-lg flex items-center justify-center transition-all cursor-pointer ${product.liked ? 'bg-primary text-white border-primary' : 'border-primary text-primary hover:bg-primary hover:text-white'}`}
+                  className={`aspect-square w-12 border rounded-lg flex items-center justify-center transition-all cursor-pointer ${product.liked ? 'bg-primary text-white dark:text-slate-950 border-primary' : 'border-primary text-primary dark:text-white hover:bg-primary hover:text-white dark:hover:text-slate-950'}`}
                 >
                   <span className={`material-symbols-outlined text-xl ${product.liked ? 'icon-fill' : ''}`}>favorite</span>
                 </button>
@@ -387,7 +387,7 @@ export default function ProductDetail() {
             </div>
             <button 
               onClick={() => setIsReviewModalOpen(true)}
-              className="bg-primary/10 text-primary border border-primary px-6 py-2.5 rounded-lg font-bold text-xs hover:bg-primary hover:text-white transition-all flex items-center gap-2 uppercase tracking-widest shadow-sm cursor-pointer"
+              className="bg-primary/10 text-primary dark:text-white border border-primary px-6 py-2.5 rounded-lg font-bold text-xs hover:bg-primary hover:text-white dark:hover:text-slate-950 transition-all flex items-center gap-2 uppercase tracking-widest shadow-sm cursor-pointer"
             >
               <span className="material-symbols-outlined text-sm">edit_square</span>
               Add New Review
@@ -442,7 +442,7 @@ export default function ProductDetail() {
                   fetchReviews(product.id, nextPage);
                 }}
                 disabled={reviewsLoading}
-                className="text-sm font-bold text-primary underline uppercase tracking-[0.2em] hover:opacity-70 transition-opacity disabled:opacity-50 cursor-pointer"
+                className="text-sm font-bold text-primary dark:text-white underline uppercase tracking-[0.2em] hover:opacity-70 transition-opacity disabled:opacity-50 cursor-pointer"
               >
                 {reviewsLoading ? 'Loading...' : 'View More Reviews'}
               </button>
@@ -501,14 +501,14 @@ export default function ProductDetail() {
                   <button 
                     type="submit"
                     disabled={submittingReview}
-                    className="flex-1 bg-primary text-white py-4 rounded-lg font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg cursor-pointer"
+                    className="flex-1 bg-primary text-white dark:text-slate-950 py-4 rounded-lg font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg cursor-pointer"
                   >
                     {submittingReview ? 'Submitting...' : 'Post Review'}
                   </button>
                   <button 
                     type="button"
                     onClick={() => setIsReviewModalOpen(false)}
-                    className="flex-1 border border-primary text-primary py-4 rounded-lg font-bold uppercase tracking-widest text-xs hover:bg-primary/5 transition-colors cursor-pointer"
+                    className="flex-1 border border-primary text-primary dark:text-white py-4 rounded-lg font-bold uppercase tracking-widest text-xs hover:bg-primary/5 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
