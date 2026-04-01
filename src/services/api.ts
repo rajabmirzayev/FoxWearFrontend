@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest, Address, AddressRequest } from '../types';
+import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest, Address, AddressRequest, CartData, CartItemData } from '../types';
 import storage from './storage';
 
 export const API_BASE_URL = 'http://localhost:8080';
@@ -218,6 +218,16 @@ export const addressApi = {
   create: (data: AddressRequest) => api.post<ApiResponse<Address>>('/api/v1/addresses', data),
   update: (id: number, data: AddressRequest) => api.put<ApiResponse<Address>>(`/api/v1/addresses/${id}`, data),
   delete: (id: number) => api.delete<ApiResponse<{}>>(`/api/v1/addresses/${id}`),
+};
+
+export const cartApi = {
+  getCart: () => api.get<ApiResponse<CartData>>('/api/v1/carts'),
+  addItem: (data: { productItemId: number; quantity: number }) => api.post<ApiResponse<CartItemData>>('/api/v1/carts', data),
+  clearCart: () => api.delete<ApiResponse<null>>('/api/v1/carts'),
+  increaseQuantity: (itemId: number) => api.patch<ApiResponse<CartItemData>>(`/api/v1/carts/increase/${itemId}`),
+  decreaseQuantity: (itemId: number) => api.patch<ApiResponse<CartItemData>>(`/api/v1/carts/decrease/${itemId}`),
+  getCount: () => api.get<ApiResponse<number>>('/api/v1/carts/count'),
+  removeItem: (itemId: number) => api.delete<ApiResponse<null>>(`/api/v1/carts/${itemId}`),
 };
 
 export default api;

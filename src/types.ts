@@ -235,3 +235,24 @@ export interface RegisterRequest {
   gender: 'MALE' | 'FEMALE' | 'UNKNOWN';
   birthDate: string;
 }
+
+export interface CartItemData {
+  id: number;
+  productItemId: number;
+  productName: string;
+  colorName: string;
+  imageUrl: string;
+  sizeValue: string;
+  slug: string;
+  quantity: number;
+  originalUnitPrice: number;
+  actualUnitPrice: number;
+  subTotal: number;
+}
+
+export interface CartData {
+  id: number;
+  userId: number;
+  items: CartItemData[];
+  totalPrice: number;
+}

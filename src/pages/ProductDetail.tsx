@@ -6,10 +6,12 @@ import Footer from '../components/Footer';
 import { productApi, reviewApi, userApi } from '../services/api';
 import { Product, Review, User, ApiResponse, ProductColor, ProductItem } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { isLoggedIn, userProfile } = useAuth();
+  const { addToCart } = useCart();
   const navigate = useNavigate();
   
   const [product, setProduct] = useState<Product | null>(null);
@@ -29,6 +31,7 @@ export default function ProductDetail() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [newReview, setNewReview] = useState({ rate: 5, description: '' });
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [showFlyItem, setShowFlyItem] = useState<string | null>(null);
 
   useEffect(() => {
     if (slug) {
@@ -126,13 +129,20 @@ export default function ProductDetail() {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedSize) {
       alert('Please select a size');
       return;
     }
-    // Mock add to cart
-    alert(`Added ${product?.title} (${selectedColor?.colorName}, ${selectedSize.productSize.sizeValue}) to cart!`);
+    
+    try {
+      await addToCart(selectedSize.id, 1);
+      // Trigger fly animation
+      setShowFlyItem(mainImage);
+      setTimeout(() => setShowFlyItem(null), 1000);
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+    }
   };
 
   const handleLike = async () => {
@@ -452,6 +462,37 @@ export default function ProductDetail() {
       </main>
 
       <Footer />
+      
+      {/* Flying Item Animation */}
+      <AnimatePresence>
+        {showFlyItem && (
+          <motion.div
+            initial={{ 
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              x: '-50%',
+              y: '-50%',
+              scale: 1,
+              opacity: 1,
+              zIndex: 9999
+            }}
+            animate={{ 
+              top: '20px',
+              left: 'calc(100% - 100px)',
+              scale: 0.1,
+              opacity: 0,
+            }}
+            transition={{ 
+              duration: 0.8,
+              ease: [0.4, 0, 0.2, 1]
+            }}
+            className="size-40 rounded-xl overflow-hidden shadow-2xl pointer-events-none"
+          >
+            <img src={showFlyItem} alt="Flying item" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Review Modal */}
       <AnimatePresence>

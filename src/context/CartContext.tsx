@@ -1,28 +1,19 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product } from '../types';
-
-interface CartItem {
-  id: string; // Unique ID for the cart item (product.id + color + size)
-  productId: number;
-  title: string;
-  slug: string;
-  price: number;
-  image: string;
-  color: string;
-  colorCode: string;
-  size: string;
-  quantity: number;
-  stockRemaining: number;
-}
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { Product, CartItemData, CartData } from '../types';
+import { cartApi } from '../services/api';
+import storage from '../services/storage';
 
 interface CartContextType {
-  cart: CartItem[];
-  addToCart: (product: Product, color: string, colorCode: string, size: string, quantity: number) => void;
-  removeFromCart: (cartItemId: string) => void;
-  updateQuantity: (cartItemId: string, quantity: number) => void;
-  clearCart: () => void;
+  cart: CartItemData[];
+  addToCart: (productItemId: number, quantity: number) => Promise<void>;
+  removeFromCart: (itemId: number) => Promise<void>;
+  increaseQuantity: (itemId: number) => Promise<void>;
+  decreaseQuantity: (itemId: number) => Promise<void>;
+  clearCart: () => Promise<void>;
+  refreshCart: () => Promise<void>;
   cartTotal: number;
   cartCount: number;
+  loading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -36,81 +27,116 @@ export const useCart = () => {
 };
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    const savedCart = localStorage.getItem('cart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const [cart, setCart] = useState<CartItemData[]>([]);
+  const [cartTotal, setCartTotal] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const refreshCart = useCallback(async () => {
+    const token = storage.getItem('accessToken');
+    if (!token) {
+      setCart([]);
+      setCartTotal(0);
+      setCartCount(0);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const [cartResponse, countResponse] = await Promise.all([
+        cartApi.getCart(),
+        cartApi.getCount()
+      ]);
+
+      if (cartResponse.data.success) {
+        setCart(cartResponse.data.data.items);
+        setCartTotal(cartResponse.data.data.totalPrice);
+      }
+      
+      if (countResponse.data.success) {
+        setCartCount(countResponse.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch cart:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
+    refreshCart();
+  }, [refreshCart]);
 
-  const addToCart = (product: Product, colorName: string, colorCode: string, sizeName: string, quantity: number) => {
-    const cartItemId = `${product.id}-${colorName}-${sizeName}`;
-    
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === cartItemId);
-      
-      if (existingItem) {
-        return prevCart.map(item => 
-          item.id === cartItemId 
-            ? { ...item, quantity: Math.min(item.quantity + quantity, item.stockRemaining) }
-            : item
-        );
+  const addToCart = async (productItemId: number, quantity: number) => {
+    try {
+      const response = await cartApi.addItem({ productItemId, quantity });
+      if (response.data.success) {
+        await refreshCart();
       }
-
-      const colorObj = product.colors.find(c => c.colorName === colorName);
-      const sizeObj = colorObj?.items.find(i => i.productSize.sizeValue === sizeName);
-      const mainImage = colorObj?.images.find(img => img.main)?.image || colorObj?.images[0]?.image || '';
-
-      const newItem: CartItem = {
-        id: cartItemId,
-        productId: product.id,
-        title: product.title,
-        slug: product.slug,
-        price: product.hasDiscount ? product.discountPrice : product.originalPrice,
-        image: mainImage,
-        color: colorName,
-        colorCode: colorCode,
-        size: sizeName,
-        quantity: quantity,
-        stockRemaining: sizeObj?.stockRemaining || 0
-      };
-
-      return [...prevCart, newItem];
-    });
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      throw error;
+    }
   };
 
-  const removeFromCart = (cartItemId: string) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== cartItemId));
+  const removeFromCart = async (itemId: number) => {
+    try {
+      const response = await cartApi.removeItem(itemId);
+      if (response.data.success) {
+        await refreshCart();
+      }
+    } catch (error) {
+      console.error('Failed to remove from cart:', error);
+    }
   };
 
-  const updateQuantity = (cartItemId: string, quantity: number) => {
-    setCart(prevCart => 
-      prevCart.map(item => 
-        item.id === cartItemId 
-          ? { ...item, quantity: Math.max(1, Math.min(quantity, item.stockRemaining)) }
-          : item
-      )
-    );
+  const increaseQuantity = async (itemId: number) => {
+    try {
+      const response = await cartApi.increaseQuantity(itemId);
+      if (response.data.success) {
+        await refreshCart();
+      }
+    } catch (error) {
+      console.error('Failed to increase quantity:', error);
+    }
   };
 
-  const clearCart = () => {
-    setCart([]);
+  const decreaseQuantity = async (itemId: number) => {
+    try {
+      const response = await cartApi.decreaseQuantity(itemId);
+      if (response.data.success) {
+        await refreshCart();
+      }
+    } catch (error) {
+      console.error('Failed to decrease quantity:', error);
+    }
   };
 
-  const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
+  const clearCart = async () => {
+    try {
+      const response = await cartApi.clearCart();
+      if (response.data.success) {
+        setCart([]);
+        setCartTotal(0);
+        setCartCount(0);
+      }
+    } catch (error) {
+      console.error('Failed to clear cart:', error);
+    }
+  };
 
   return (
     <CartContext.Provider value={{ 
       cart, 
       addToCart, 
       removeFromCart, 
-      updateQuantity, 
+      increaseQuantity,
+      decreaseQuantity,
       clearCart, 
+      refreshCart,
       cartTotal, 
-      cartCount 
+      cartCount,
+      loading
     }}>
       {children}
     </CartContext.Provider>

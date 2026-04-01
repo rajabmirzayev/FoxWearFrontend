@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import SearchPopup from './SearchPopup';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const { isLoggedIn, userProfile, logout } = useAuth();
+  const { cartCount } = useCart();
   const [showMenu, setShowMenu] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -80,10 +83,19 @@ export default function Header() {
           >
             <span className="material-symbols-outlined">search</span>
           </button>
-          <button className="hover:opacity-70 transition-all relative cursor-pointer">
+          <Link to="/cart" className="hover:opacity-70 transition-all relative cursor-pointer">
             <span className="material-symbols-outlined">shopping_bag</span>
-            <span className="absolute -top-1 -right-1 bg-primary text-[10px] text-white dark:text-background-light rounded-full size-4 flex items-center justify-center font-bold shadow-lg">0</span>
-          </button>
+            {cartCount > 0 && (
+              <motion.span 
+                key={cartCount}
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="absolute -top-1 -right-1 bg-primary text-[10px] text-white dark:text-background-light rounded-full size-4 flex items-center justify-center font-bold shadow-lg"
+              >
+                {cartCount}
+              </motion.span>
+            )}
+          </Link>
           
           {isLoggedIn ? (
             <div className="relative" ref={menuRef}>
