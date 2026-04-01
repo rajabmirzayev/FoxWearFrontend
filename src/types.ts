@@ -219,6 +219,7 @@ export interface Review {
   rate: number;
   userId: number;
   user?: User;
+  product?: Product;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -5,7 +5,7 @@ const MENU_ITEMS = [
   { label: 'Profile Details', path: '/profile', icon: 'person' },
   { label: 'Change Password', path: '/change-password', icon: 'lock' },
   { label: 'My Orders', path: '/orders', icon: 'shopping_basket' },
-  { label: 'My Reviews', path: '/reviews', icon: 'rate_review' },
+  { label: 'My Reviews', path: '/my-reviews', icon: 'rate_review' },
   { label: 'My Messages', path: '/messages', icon: 'mail' },
   { label: 'My Addresses', path: '/addresses', icon: 'location_on' },
   { label: 'My Cards', path: '/cards', icon: 'credit_card' },

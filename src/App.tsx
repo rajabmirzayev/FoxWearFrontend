@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import LoginPage from './pages/LoginPage';
 import AdminLayout from './components/AdminLayout';
 import ProductList from './pages/ProductList';
@@ -12,6 +13,7 @@ import Orders from './pages/Orders';
 import Sales from './pages/Sales';
 import Customers from './pages/Customers';
 import Settings from './pages/Settings';
+import AdminReviews from './pages/AdminReviews';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import Collections from './pages/Collections';
@@ -25,7 +27,10 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import ChangePassword from './pages/ChangePassword';
 import Addresses from './pages/Addresses';
+import MyReviews from './pages/MyReviews';
 import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
   const { isLoggedIn, userProfile, loading } = useAuth();
@@ -54,12 +59,15 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/product/:slug" element={<ProductDetail />} />
-            <Route path="/collections" element={<Collections />} />
+        <CartProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/product/:slug" element={<ProductDetail />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/collections" element={<Collections />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/reviews" element={<Reviews />} />
@@ -83,6 +91,11 @@ export default function App() {
                 <Addresses />
               </ProtectedRoute>
             } />
+            <Route path="/my-reviews" element={
+              <ProtectedRoute>
+                <MyReviews />
+              </ProtectedRoute>
+            } />
             <Route 
               path="/admin/*" 
               element={
@@ -96,6 +109,7 @@ export default function App() {
                       <Route path="orders" element={<Orders />} />
                       <Route path="sales" element={<Sales />} />
                       <Route path="customers" element={<Customers />} />
+                      <Route path="reviews" element={<AdminReviews />} />
                       <Route path="settings" element={<Settings />} />
                       <Route path="*" element={<Navigate to="dashboard" replace />} />
                     </Routes>
@@ -106,7 +120,8 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
-      </AuthProvider>
-    </ThemeProvider>
-  );
+      </CartProvider>
+    </AuthProvider>
+  </ThemeProvider>
+);
 }

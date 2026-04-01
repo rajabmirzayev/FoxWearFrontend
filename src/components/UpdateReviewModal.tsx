@@ -9,9 +9,10 @@ interface UpdateReviewModalProps {
   onClose: () => void;
   onSuccess: () => void;
   review: Review;
+  type?: 'site' | 'product';
 }
 
-export default function UpdateReviewModal({ isOpen, onClose, onSuccess, review }: UpdateReviewModalProps) {
+export default function UpdateReviewModal({ isOpen, onClose, onSuccess, review, type = 'site' }: UpdateReviewModalProps) {
   const [rate, setRate] = useState(review.rate);
   const [hoverRate, setHoverRate] = useState(0);
   const [description, setDescription] = useState(review.description);
@@ -45,10 +46,9 @@ export default function UpdateReviewModal({ isOpen, onClose, onSuccess, review }
         throw new Error('Review ID is missing');
       }
 
-      const response = await reviewApi.updateSiteReview(review.id, {
-        rate,
-        description
-      });
+      const response = type === 'site'
+        ? await reviewApi.updateSiteReview(review.id, { rate, description })
+        : await reviewApi.updateProductReview(review.id, { rate, description });
 
       if (response.data.success) {
         onSuccess();

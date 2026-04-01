@@ -20,7 +20,6 @@ export default function Reviews() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -110,15 +109,9 @@ export default function Reviews() {
     }
   };
 
-  const handleEdit = (review: Review) => {
-    setEditingReview(review);
-    setIsUpdateModalOpen(true);
-  };
-
   const handleModalClose = () => {
     setIsAddModalOpen(false);
     setIsUpdateModalOpen(false);
-    setEditingReview(null);
   };
 
   const renderStars = (rate: number, className = "icon-fill text-sm") => {
@@ -177,7 +170,6 @@ export default function Reviews() {
         <div className="mb-16 flex justify-end">
           <button 
             onClick={() => {
-              setEditingReview(null);
               isLoggedIn ? setIsAddModalOpen(true) : navigate('/login');
             }}
             className="bg-primary text-background-light px-8 py-4 flex items-center gap-3 hover:bg-primary/90 transition-all duration-300 cursor-pointer"
@@ -227,12 +219,6 @@ export default function Reviews() {
                       </span>
                     </div>
                     <div className="flex gap-4">
-                      <button 
-                        onClick={() => handleEdit(review)}
-                        className="text-primary/60 hover:text-primary transition-colors cursor-pointer"
-                      >
-                        <span className="material-symbols-outlined text-lg">edit_note</span>
-                      </button>
                       <button 
                         onClick={() => handleDeleteClick(review.id!)}
                         className="text-primary/60 hover:text-error transition-colors cursor-pointer"
@@ -346,15 +332,6 @@ export default function Reviews() {
         onClose={handleModalClose} 
         onSuccess={fetchData}
       />
-
-      {editingReview && (
-        <UpdateReviewModal
-          isOpen={isUpdateModalOpen}
-          onClose={handleModalClose}
-          onSuccess={fetchData}
-          review={editingReview}
-        />
-      )}
 
       <Modal
         isOpen={isDeleteModalOpen}

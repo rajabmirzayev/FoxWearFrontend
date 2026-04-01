@@ -160,6 +160,8 @@ export const authApi = {
   forgotPassword: (email: string) => api.post<ApiResponse<null>>('/api/v1/auth/forgot-password', { email }),
   resetPassword: (token: string, data: any) => api.post<ApiResponse<null>>(`/api/v1/auth/reset?token=${token}`, data),
   verifyEmail: () => api.patch<ApiResponse<null>>('/api/v1/auth/verify-email'),
+  sendPhoneVerificationCode: (phoneNumber: string) => api.post<ApiResponse<null>>('/api/v1/auth/phone/send', { phoneNumber }),
+  verifyPhoneCode: (phoneNumber: string, code: string) => api.post<ApiResponse<null>>('/api/v1/auth/phone/verify', { phoneNumber, code }),
   changePassword: (data: any) => api.patch<ApiResponse<null>>('/api/v1/auth/change-password', data),
 };
 
@@ -189,6 +191,7 @@ export const reviewApi = {
   // Product Reviews
   getProductReviews: (productId: number, params?: { page?: number; size?: number }) => 
     api.get<ApiResponse<ReviewPage>>(`/api/v1/reviews/product/${productId}`, { params }),
+  getMyProductReviews: () => api.get<ApiResponse<Review[]>>('/api/v1/reviews/product/my'),
   createProductReview: (productId: number, data: { rate: number; description: string }) => 
     api.post<ApiResponse<Review>>(`/api/v1/reviews/product/${productId}`, { ...data, productId }),
   updateProductReview: (reviewId: number, data: { rate: number; description: string }) => 
