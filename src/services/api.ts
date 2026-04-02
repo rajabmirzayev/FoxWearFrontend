@@ -220,6 +220,12 @@ export const addressApi = {
   delete: (id: number) => api.delete<ApiResponse<{}>>(`/api/v1/addresses/${id}`),
 };
 
+export const orderApi = {
+  create: (data: any) => api.post<ApiResponse<any>>('/api/v1/orders', data),
+  getAll: (params: any) => api.get<ApiResponse<any>>('/api/v1/orders', { params }),
+  getById: (id: number) => api.get<ApiResponse<any>>(`/api/v1/orders/${id}`),
+};
+
 export const cartApi = {
   getCart: () => api.get<ApiResponse<CartData>>('/api/v1/carts'),
   addItem: (data: { productItemId: number; quantity: number }) => api.post<ApiResponse<CartItemData>>('/api/v1/carts', data),

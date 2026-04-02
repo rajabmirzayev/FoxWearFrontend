@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { CheckoutProvider } from './context/CheckoutContext';
 import LoginPage from './pages/LoginPage';
 import AdminLayout from './components/AdminLayout';
 import ProductList from './pages/ProductList';
@@ -31,6 +32,7 @@ import MyReviews from './pages/MyReviews';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Payment from './pages/Payment';
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
   const { isLoggedIn, userProfile, loading } = useAuth();
@@ -60,14 +62,16 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <CartProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/product/:slug" element={<ProductDetail />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/collections" element={<Collections />} />
+          <CheckoutProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/product/:slug" element={<ProductDetail />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/payment" element={<Payment />} />
+                <Route path="/collections" element={<Collections />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/reviews" element={<Reviews />} />
@@ -120,8 +124,9 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
-      </CartProvider>
-    </AuthProvider>
-  </ThemeProvider>
+      </CheckoutProvider>
+    </CartProvider>
+  </AuthProvider>
+</ThemeProvider>
 );
 }

@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useCart } from '../context/CartContext';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 
 export default function Cart() {
   const { cart, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal, cartCount, loading } = useCart();
@@ -13,7 +12,7 @@ export default function Cart() {
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
       <Header />
       
-      <main className="flex-1 px-6 py-12 md:px-20 lg:px-40 max-w-7xl mx-auto w-full pt-32">
+      <main className="flex-1 px-6 py-12 md:px-20 lg:px-12 max-w-7xl mx-auto w-full pt-32">
         {/* Breadcrumbs */}
         <div className="flex items-center gap-2 mb-10 text-xs font-medium uppercase tracking-widest text-slate-400">
           <Link className="hover:text-primary transition-colors" to="/">Home</Link>
@@ -149,8 +148,6 @@ export default function Cart() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

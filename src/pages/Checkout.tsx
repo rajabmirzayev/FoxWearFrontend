@@ -1,165 +1,269 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useCheckout } from '../context/CheckoutContext';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
+import { addressApi } from '../services/api';
+import { Address } from '../types';
 
 export default function Checkout() {
-  const { cart, cartTotal, clearCart } = useCart();
+  const { cart, cartTotal } = useCart();
+  const { checkoutData, updateCheckoutData } = useCheckout();
   const navigate = useNavigate();
-  const [isProcessing, setIsProcessing] = useState(false);
+  
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState('');
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsProcessing(true);
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const fetchAddresses = async () => {
+    try {
+      const response = await addressApi.getAll();
+      if (response.data.success) {
+        const addrList = response.data.data;
+        setAddresses(addrList);
+        
+        // Set default address if available and not already set
+        if (!checkoutData.addressSnapshot && addrList.length > 0) {
+          const defaultAddr = addrList.find(a => a.isDefault) || addrList[0];
+          selectAddress(defaultAddr);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching addresses:', err);
+      setError('Failed to load addresses.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const selectAddress = (addr: Address) => {
+    const snapshot = `${addr.title}: ${addr.city}, ${addr.region}, ${addr.street} ${addr.block ? 'Blok ' + addr.block : ''} ${addr.floor ? 'Mərtəbə ' + addr.floor : ''} ${addr.doorNumber ? 'Mənzil ' + addr.doorNumber : ''}`.trim();
+    updateCheckoutData({ 
+      addressSnapshot: snapshot,
+      latitude: addr.latitude,
+      longitude: addr.longitude
+    });
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setIsApplyingCoupon(true);
+    try {
+      // Placeholder for coupon validation API
+      // const response = await api.get(`/api/v1/coupons/validate?code=${couponCode}`);
+      // if (response.data.success) {
+      //   updateCheckoutData({ couponId: response.data.data.id });
+      // }
+      alert('Coupon feature coming soon!');
+    } catch (err) {
+      console.error('Coupon error:', err);
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    // Always keep +994
+    if (!value.startsWith('+994')) return '+994 ';
     
-    // Simulate order placement
-    setTimeout(() => {
-      setIsProcessing(false);
-      clearCart();
-      alert('Order placed successfully! Thank you for shopping with FoxWear.');
-      navigate('/');
-    }, 2000);
+    // Get only digits after +994
+    const digits = value.slice(4).replace(/\D/g, '');
+    
+    let formatted = '+994';
+    
+    if (digits.length === 0) return '+994 ';
+    
+    if (digits.length > 0) {
+      formatted += ' ' + digits.substring(0, 2);
+    }
+    if (digits.length > 2) {
+      formatted += ' ' + digits.substring(2, 5);
+    }
+    if (digits.length > 5) {
+      formatted += ' ' + digits.substring(5, 7);
+    }
+    if (digits.length > 7) {
+      formatted += ' ' + digits.substring(7, 9);
+    }
+    
+    return formatted;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    updateCheckoutData({ phoneNumber: formatted });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Phone number validation
+    const phoneRegex = /^(\+994\s(50|51|55|70|77|99|10)\s\d{3}\s\d{2}\s\d{2})?$/;
+    if (!phoneRegex.test(checkoutData.phoneNumber)) {
+      setError('Phone number must be in format: +994 50 123 45 67');
+      return;
+    }
+
+    if (!checkoutData.addressSnapshot) {
+      setError('Please select a shipping address');
+      return;
+    }
+
+    navigate('/payment');
   };
 
   if (cart.length === 0) {
-    navigate('/cart');
-    return null;
+    return <Navigate to="/cart" replace />;
   }
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300 font-display">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-8 py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Checkout Form */}
-          <div className="lg:col-span-7 space-y-8">
-            <header>
-              <h1 className="text-3xl font-black text-primary uppercase tracking-tighter">Checkout</h1>
-              <p className="text-primary/60 font-medium mt-2">Complete your order details below</p>
-            </header>
+      <main className="max-w-7xl mx-auto px-6 py-32 md:px-20 lg:px-12">
+        {/* Breadcrumbs */}
+        <div className="flex items-center gap-2 mb-10 text-xs font-medium uppercase tracking-widest text-slate-400">
+          <Link className="hover:text-primary transition-colors" to="/cart">Cart</Link>
+          <span className="material-symbols-outlined text-sm">chevron_right</span>
+          <span className="text-primary dark:text-slate-100">Checkout</span>
+        </div>
 
-            <form onSubmit={handlePlaceOrder} className="space-y-8">
-              {/* Shipping Information */}
-              <section className="space-y-4">
-                <h3 className="text-xs font-black uppercase tracking-widest text-primary/40">Shipping Information</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-primary/60">First Name</label>
-                    <input required type="text" className="w-full bg-background-soft border border-border-subtle rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary outline-none dark:text-white" placeholder="John" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Last Name</label>
-                    <input required type="text" className="w-full bg-background-soft border border-border-subtle rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary outline-none dark:text-white" placeholder="Doe" />
-                  </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          <div className="lg:col-span-8">
+            <h2 className="text-4xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-8 uppercase">Shipping Details</h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Address Selection */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-end">
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">Select Delivery Address</label>
+                  <Link to="/addresses" className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-1 group">
+                    <span className="material-symbols-outlined text-sm">add</span>
+                    <span className="group-hover:underline">Add New Address</span>
+                  </Link>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Email Address</label>
-                  <input required type="email" className="w-full bg-background-soft border border-border-subtle rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary outline-none dark:text-white" placeholder="john@example.com" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Shipping Address</label>
-                  <input required type="text" className="w-full bg-background-soft border border-border-subtle rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary outline-none dark:text-white" placeholder="123 Fashion St, Baku" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-primary/60">City</label>
-                    <input required type="text" className="w-full bg-background-soft border border-border-subtle rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary outline-none dark:text-white" placeholder="Baku" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Phone Number</label>
-                    <input required type="tel" className="w-full bg-background-soft border border-border-subtle rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary outline-none dark:text-white" placeholder="+994 50 000 00 00" />
-                  </div>
-                </div>
-              </section>
-
-              {/* Payment Method */}
-              <section className="space-y-4">
-                <h3 className="text-xs font-black uppercase tracking-widest text-primary/40">Payment Method</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <label className="relative flex items-center gap-4 p-4 bg-background-soft border-2 border-primary rounded-xl cursor-pointer">
-                    <input type="radio" name="payment" defaultChecked className="size-4 text-primary focus:ring-primary" />
-                    <div className="flex flex-col">
-                      <span className="text-sm font-bold text-primary">Credit / Debit Card</span>
-                      <span className="text-[10px] text-primary/60 uppercase tracking-widest">Visa, Mastercard</span>
-                    </div>
-                  </label>
-                  <label className="relative flex items-center gap-4 p-4 bg-background-soft border border-border-subtle rounded-xl cursor-pointer hover:border-primary/20 transition-colors">
-                    <input type="radio" name="payment" className="size-4 text-primary focus:ring-primary" />
-                    <div className="flex flex-col">
-                      <span className="text-sm font-bold text-primary">Cash on Delivery</span>
-                      <span className="text-[10px] text-primary/60 uppercase tracking-widest">Pay when you receive</span>
-                    </div>
-                  </label>
-                </div>
-              </section>
-
-              <button 
-                type="submit"
-                disabled={isProcessing}
-                className="w-full py-4 bg-primary text-white dark:text-background-light rounded-full font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20 disabled:opacity-50 flex items-center justify-center gap-3"
-              >
-                {isProcessing ? (
-                  <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                
+                {loading ? (
+                  <div className="h-14 bg-primary/5 animate-pulse rounded-lg"></div>
                 ) : (
-                  <span className="material-symbols-outlined">lock</span>
+                  <select 
+                    className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 text-sm font-medium transition-all dark:text-white appearance-none cursor-pointer"
+                    onChange={(e) => {
+                      const addr = addresses.find(a => a.id === parseInt(e.target.value));
+                      if (addr) selectAddress(addr);
+                    }}
+                    value={addresses.find(a => {
+                      const snapshot = `${a.title}: ${a.city}, ${a.region}, ${a.street} ${a.block ? 'Blok ' + a.block : ''} ${a.floor ? 'Mərtəbə ' + a.floor : ''} ${a.doorNumber ? 'Mənzil ' + a.doorNumber : ''}`.trim();
+                      return snapshot === checkoutData.addressSnapshot;
+                    })?.id || ''}
+                  >
+                    <option value="" disabled className="bg-white dark:bg-stone-900">Choose an address</option>
+                    {addresses.map(addr => (
+                      <option key={addr.id} value={addr.id} className="bg-white dark:bg-stone-900">
+                        {addr.title} - {addr.fullAddressText}
+                      </option>
+                    ))}
+                  </select>
                 )}
-                {isProcessing ? 'Processing...' : `Pay ${cartTotal.toFixed(2)} ₼`}
-              </button>
+              </div>
+
+              {/* Phone Number */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">Phone Number</label>
+                <input 
+                  required
+                  type="tel"
+                  placeholder="+994 50 123 45 67"
+                  className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 text-sm font-medium transition-all placeholder:text-primary/40 dark:text-white"
+                  value={checkoutData.phoneNumber}
+                  onChange={handlePhoneChange}
+                  maxLength={17}
+                />
+                <span className="text-[10px] text-primary/50 mt-1 uppercase tracking-widest text-center block">Hint: Azerbaijan international format</span>
+              </div>
+
+              {/* Order Note */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">Order Note (Optional)</label>
+                <textarea 
+                  placeholder="Any special instructions for delivery..."
+                  rows={3}
+                  className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 text-sm font-medium transition-all placeholder:text-primary/40 dark:text-white resize-none"
+                  value={checkoutData.orderNote}
+                  onChange={(e) => updateCheckoutData({ orderNote: e.target.value })}
+                />
+              </div>
+
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+                  {error}
+                </div>
+              )}
+
+              <div className="pt-8">
+                <button
+                  type="submit"
+                  className="w-full bg-primary hover:bg-[#5a4237] dark:hover:bg-white text-white dark:text-background-dark font-bold py-5 px-8 rounded transition-all shadow-xl shadow-primary/20 flex items-center justify-center uppercase tracking-widest text-sm cursor-pointer"
+                >
+                  Continue to Payment
+                </button>
+              </div>
             </form>
           </div>
 
-          {/* Order Summary Sidebar */}
-          <div className="lg:col-span-5">
-            <div className="sticky top-24 space-y-6">
-              <div className="p-8 bg-background-soft rounded-3xl border border-border-subtle space-y-6">
-                <h3 className="text-xl font-black text-primary uppercase tracking-tight">Your Items</h3>
-                <div className="space-y-4 max-h-[400px] overflow-auto pr-2 custom-scrollbar">
-                  {cart.map((item) => (
-                    <div key={item.id} className="flex gap-4">
-                      <div className="size-16 rounded-xl overflow-hidden bg-background-light border border-border-subtle shrink-0">
-                        <img src={item.imageUrl} alt={item.productName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-bold text-primary truncate">{item.productName}</h4>
-                        <p className="text-[10px] text-primary/60 font-medium uppercase tracking-widest">
-                          {item.colorName} / {item.sizeValue} x {item.quantity}
-                        </p>
-                      </div>
-                      <p className="text-sm font-bold text-primary">{(item.actualUnitPrice * item.quantity).toFixed(2)} ₼</p>
-                    </div>
-                  ))}
+          <div className="lg:col-span-4">
+            <div className="bg-primary/5 dark:bg-primary/10 rounded-xl p-8 sticky top-32">
+              <h3 className="text-xl font-black text-slate-900 dark:text-slate-100 uppercase tracking-tight border-b border-primary/10 pb-4 mb-6">Order Summary</h3>
+              <div className="space-y-4 mb-8">
+                <div className="flex justify-between text-slate-600 dark:text-slate-400 font-medium">
+                  <span>Subtotal</span>
+                  <span className="text-slate-900 dark:text-slate-100">₼{cartTotal.toFixed(2)}</span>
                 </div>
-
-                <div className="pt-6 border-t border-border-subtle space-y-3">
-                  <div className="flex justify-between text-sm text-primary/60 font-medium">
-                    <span>Subtotal</span>
-                    <span>{cartTotal.toFixed(2)} ₼</span>
-                  </div>
-                  <div className="flex justify-between text-sm text-primary/60 font-medium">
-                    <span>Shipping</span>
-                    <span className="text-emerald-500">Free</span>
-                  </div>
-                  <div className="pt-4 border-t border-border-subtle flex justify-between">
-                    <span className="text-lg font-black text-primary">Total</span>
-                    <span className="text-lg font-black text-primary">{cartTotal.toFixed(2)} ₼</span>
-                  </div>
+                <div className="flex justify-between text-slate-600 dark:text-slate-400 font-medium">
+                  <span>Shipping</span>
+                  <span className="text-emerald-500 font-bold">FREE</span>
+                </div>
+                <div className="pt-4 border-t border-primary/10 flex justify-between">
+                  <span className="text-lg font-black text-slate-900 dark:text-slate-100">Total</span>
+                  <span className="text-2xl font-black text-primary dark:text-slate-100">₼{cartTotal.toFixed(2)}</span>
                 </div>
               </div>
 
-              <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl flex items-center gap-4">
-                <span className="material-symbols-outlined text-emerald-500">verified_user</span>
-                <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest leading-relaxed">
-                  Your payment is secured with 256-bit SSL encryption. We never store your card details.
-                </p>
+              {/* Coupon */}
+              <div className="space-y-3 mb-8 pt-6 border-t border-primary/10">
+                <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">Coupon Code</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text"
+                    placeholder="Enter code"
+                    className="flex-1 bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-2 text-[11px] font-medium transition-all placeholder:text-primary/40 dark:text-white"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                  />
+                  <button 
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    disabled={isApplyingCoupon || !couponCode.trim()}
+                    className="px-3 bg-primary text-white dark:text-background-dark font-bold uppercase tracking-widest text-[9px] rounded hover:bg-[#5a4237] dark:hover:bg-white transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
+                  >
+                    {isApplyingCoupon ? '...' : 'Apply'}
+                  </button>
+                </div>
               </div>
+
+              <p className="text-[10px] text-center text-slate-400 uppercase tracking-widest px-4">
+                Taxes and shipping are calculated at this step.
+              </p>
             </div>
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
