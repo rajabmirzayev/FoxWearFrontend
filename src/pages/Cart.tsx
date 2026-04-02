@@ -5,11 +5,13 @@ import { useCart } from '../context/CartContext';
 import Header from '../components/Header';
 
 export default function Cart() {
-  const { cart, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal, cartCount, loading } = useCart();
+  const { cart, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal, cartOriginalTotal, cartCount, loading } = useCart();
   const navigate = useNavigate();
 
+  const discount = cartOriginalTotal - cartTotal;
+
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
       <Header />
       
       <main className="flex-1 px-6 py-12 md:px-20 lg:px-12 max-w-7xl mx-auto w-full pt-32">
@@ -72,7 +74,12 @@ export default function Cart() {
                             <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{item.productName}</h3>
                             <p className="text-slate-400 text-sm mt-1 uppercase tracking-wider">{item.colorName} | {item.sizeValue}</p>
                           </div>
-                          <p className="text-lg font-bold text-slate-900 dark:text-slate-100">₼{item.actualUnitPrice.toFixed(2)}</p>
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-slate-900 dark:text-slate-100">₼{item.actualUnitPrice.toFixed(2)}</p>
+                            {item.originalUnitPrice > item.actualUnitPrice && (
+                              <p className="text-sm text-slate-400 line-through">₼{item.originalUnitPrice.toFixed(2)}</p>
+                            )}
+                          </div>
                         </div>
                         <div className="flex justify-between items-end mt-8 sm:mt-auto">
                           <div className="flex items-center gap-4 bg-background-light dark:bg-background-dark border border-primary/20 rounded-lg p-1 px-3">
@@ -110,22 +117,23 @@ export default function Cart() {
             </Link>
           </div>
 
-          {/* Order Summary Sidebar */}
-          <div className="lg:col-span-4">
-            <div className="bg-primary/5 dark:bg-primary/10 rounded-xl p-8 sticky top-32">
+          <div className="lg:col-span-4 relative">
+            <div className="bg-primary/5 dark:bg-primary/10 rounded-xl p-8 sticky top-32 h-fit">
               <h3 className="text-xl font-black text-slate-900 dark:text-slate-100 uppercase tracking-tight border-b border-primary/10 pb-4 mb-6">Order Summary</h3>
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between text-slate-600 dark:text-slate-400 font-medium">
                   <span>Subtotal</span>
-                  <span className="text-slate-900 dark:text-slate-100">₼{cartTotal.toFixed(2)}</span>
+                  <span className="text-slate-900 dark:text-slate-100">₼{cartOriginalTotal.toFixed(2)}</span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-emerald-500 font-medium">
+                    <span>Discount</span>
+                    <span>-₼{discount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-slate-600 dark:text-slate-400 font-medium">
                   <span>Shipping</span>
-                  <span className="text-slate-900 dark:text-slate-100 text-right max-w-[120px]">Calculated at next step</span>
-                </div>
-                <div className="flex justify-between text-slate-600 dark:text-slate-400 font-medium">
-                  <span>Taxes</span>
-                  <span className="text-slate-900 dark:text-slate-100">₼0.00</span>
+                  <span className="text-emerald-500 font-bold uppercase tracking-widest text-[10px]">Free</span>
                 </div>
                 <div className="pt-4 border-t border-primary/10 flex justify-between">
                   <span className="text-lg font-black text-slate-900 dark:text-slate-100">Total</span>
@@ -141,7 +149,7 @@ export default function Cart() {
                   Proceed to Checkout
                 </button>
                 <p className="text-[10px] text-center text-slate-400 uppercase tracking-widest px-4">
-                  Free standard shipping on orders over ₼200. Secure checkout powered by Stripe.
+                  Free standard shipping on all orders. Secure checkout powered by FOXWEAR.
                 </p>
               </div>
             </div>

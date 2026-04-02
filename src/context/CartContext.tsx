@@ -12,6 +12,7 @@ interface CartContextType {
   clearCart: () => Promise<void>;
   refreshCart: () => Promise<void>;
   cartTotal: number;
+  cartOriginalTotal: number;
   cartCount: number;
   loading: boolean;
 }
@@ -29,6 +30,7 @@ export const useCart = () => {
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItemData[]>([]);
   const [cartTotal, setCartTotal] = useState(0);
+  const [cartOriginalTotal, setCartOriginalTotal] = useState(0);
   const [cartCount, setCartCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -37,6 +39,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!token) {
       setCart([]);
       setCartTotal(0);
+      setCartOriginalTotal(0);
       setCartCount(0);
       return;
     }
@@ -51,6 +54,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (cartResponse.data.success) {
         setCart(cartResponse.data.data.items);
         setCartTotal(cartResponse.data.data.totalPrice);
+        setCartOriginalTotal(cartResponse.data.data.totalOriginalPrice);
       }
       
       if (countResponse.data.success) {
@@ -135,6 +139,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       clearCart, 
       refreshCart,
       cartTotal, 
+      cartOriginalTotal,
       cartCount,
       loading
     }}>

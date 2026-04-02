@@ -6,9 +6,12 @@ import Header from '../components/Header';
 import { orderApi } from '../services/api';
 
 export default function Payment() {
-  const { cart, cartTotal, clearCart, refreshCart } = useCart();
+  const { cart, cartTotal, cartOriginalTotal, clearCart, refreshCart } = useCart();
   const { checkoutData, updateCheckoutData, resetCheckoutData } = useCheckout();
   const navigate = useNavigate();
+  
+  const discount = cartOriginalTotal - cartTotal;
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -272,17 +275,23 @@ export default function Payment() {
             </form>
           </div>
 
-          <div className="lg:col-span-4">
-            <div className="bg-primary/5 dark:bg-primary/10 rounded-xl p-8 sticky top-32">
+          <div className="lg:col-span-4 relative">
+            <div className="bg-primary/5 dark:bg-primary/10 rounded-xl p-8 sticky top-32 h-fit">
               <h3 className="text-xl font-black text-slate-900 dark:text-slate-100 uppercase tracking-tight border-b border-primary/10 pb-4 mb-6">Order Summary</h3>
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between text-slate-600 dark:text-slate-400 font-medium">
                   <span>Subtotal</span>
-                  <span className="text-slate-900 dark:text-slate-100">₼{cartTotal.toFixed(2)}</span>
+                  <span className="text-slate-900 dark:text-slate-100">₼{cartOriginalTotal.toFixed(2)}</span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-emerald-500 font-medium">
+                    <span>Discount</span>
+                    <span>-₼{discount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-slate-600 dark:text-slate-400 font-medium">
                   <span>Shipping</span>
-                  <span className="text-emerald-500 font-bold">FREE</span>
+                  <span className="text-emerald-500 font-bold uppercase tracking-widest text-[10px]">Free</span>
                 </div>
                 <div className="pt-4 border-t border-primary/10 flex justify-between">
                   <span className="text-lg font-black text-slate-900 dark:text-slate-100">Total</span>

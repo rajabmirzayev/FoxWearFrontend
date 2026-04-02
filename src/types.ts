@@ -243,10 +243,11 @@ export interface CartItemData {
   colorName: string;
   imageUrl: string;
   sizeValue: string;
-  slug: string;
   quantity: number;
+  slug: string;
   originalUnitPrice: number;
   actualUnitPrice: number;
+  originalSubTotal: number;
   subTotal: number;
 }
 
@@ -254,5 +255,6 @@ export interface CartData {
   id: number;
   userId: number;
   items: CartItemData[];
+  totalOriginalPrice: number;
   totalPrice: number;
 }
