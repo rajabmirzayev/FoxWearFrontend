@@ -122,7 +122,9 @@ export default function Payment() {
       <main className="max-w-7xl mx-auto px-6 py-32 md:px-20 lg:px-12">
         {/* Breadcrumbs */}
         <div className="flex items-center gap-2 mb-10 text-xs font-medium uppercase tracking-widest text-slate-400">
-          <Link className="hover:text-primary transition-colors" to="/cart">Cart</Link>
+          <Link className="hover:text-primary transition-colors" to="/">Home</Link>
+          <span className="material-symbols-outlined text-sm">chevron_right</span>
+          <Link className="hover:text-primary transition-colors" to="/cart">Shopping Bag</Link>
           <span className="material-symbols-outlined text-sm">chevron_right</span>
           <Link className="hover:text-primary transition-colors" to="/checkout">Checkout</Link>
           <span className="material-symbols-outlined text-sm">chevron_right</span>
