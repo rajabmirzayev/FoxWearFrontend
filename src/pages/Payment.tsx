@@ -6,7 +6,7 @@ import Header from '../components/Header';
 import { orderApi } from '../services/api';
 
 export default function Payment() {
-  const { cart, cartTotal, cartOriginalTotal, clearCart, refreshCart } = useCart();
+  const { cart, cartTotal, cartOriginalTotal, cartShippingFee, clearCart, refreshCart } = useCart();
   const { checkoutData, updateCheckoutData, resetCheckoutData } = useCheckout();
   const navigate = useNavigate();
   
@@ -256,7 +256,7 @@ export default function Payment() {
                 <button
                   type="button"
                   onClick={() => navigate('/checkout')}
-                  className="px-8 py-4 border border-primary/20 text-primary font-bold uppercase tracking-widest text-sm rounded hover:bg-primary/5 transition-colors"
+                  className="px-8 py-4 border border-primary/20 text-primary font-bold uppercase tracking-widest text-sm rounded hover:bg-primary/5 transition-colors cursor-pointer"
                 >
                   Back to Checkout
                 </button>
@@ -291,7 +291,11 @@ export default function Payment() {
                 )}
                 <div className="flex justify-between text-slate-600 dark:text-slate-400 font-medium">
                   <span>Shipping</span>
-                  <span className="text-emerald-500 font-bold uppercase tracking-widest text-[10px]">Free</span>
+                  {cartShippingFee > 0 ? (
+                    <span className="text-slate-900 dark:text-slate-100">₼{cartShippingFee.toFixed(2)}</span>
+                  ) : (
+                    <span className="text-emerald-500 font-bold uppercase tracking-widest text-[10px]">Free</span>
+                  )}
                 </div>
                 <div className="pt-4 border-t border-primary/10 flex justify-between">
                   <span className="text-lg font-black text-slate-900 dark:text-slate-100">Total</span>
@@ -312,6 +316,9 @@ export default function Payment() {
                   </div>
                 )}
               </div>
+              <p className="text-[10px] text-center text-slate-400 uppercase tracking-widest px-4 mt-8">
+                Delivery is free for orders over 70 AZN. Secure checkout powered by FOXWEAR.
+              </p>
             </div>
           </div>
         </div>

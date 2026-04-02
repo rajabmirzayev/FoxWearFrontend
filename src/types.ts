@@ -257,4 +257,5 @@ export interface CartData {
   items: CartItemData[];
   totalOriginalPrice: number;
   totalPrice: number;
+  shippingFee: number;
 }

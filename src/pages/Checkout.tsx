@@ -7,7 +7,7 @@ import { addressApi } from '../services/api';
 import { Address } from '../types';
 
 export default function Checkout() {
-  const { cart, cartTotal, cartOriginalTotal } = useCart();
+  const { cart, cartTotal, cartOriginalTotal, cartShippingFee } = useCart();
   const { checkoutData, updateCheckoutData } = useCheckout();
   const navigate = useNavigate();
   
@@ -235,7 +235,11 @@ export default function Checkout() {
                 )}
                 <div className="flex justify-between text-slate-600 dark:text-slate-400 font-medium">
                   <span>Shipping</span>
-                  <span className="text-emerald-500 font-bold uppercase tracking-widest text-[10px]">Free</span>
+                  {cartShippingFee > 0 ? (
+                    <span className="text-slate-900 dark:text-slate-100">₼{cartShippingFee.toFixed(2)}</span>
+                  ) : (
+                    <span className="text-emerald-500 font-bold uppercase tracking-widest text-[10px]">Free</span>
+                  )}
                 </div>
                 <div className="pt-4 border-t border-primary/10 flex justify-between">
                   <span className="text-lg font-black text-slate-900 dark:text-slate-100">Total</span>
@@ -266,7 +270,7 @@ export default function Checkout() {
               </div>
 
               <p className="text-[10px] text-center text-slate-400 uppercase tracking-widest px-4">
-                Taxes and shipping are calculated at this step.
+                Delivery is free for orders over 70 AZN. Secure checkout powered by FOXWEAR.
               </p>
             </div>
           </div>

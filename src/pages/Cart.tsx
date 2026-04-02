@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import Header from '../components/Header';
 
 export default function Cart() {
-  const { cart, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal, cartOriginalTotal, cartCount, loading } = useCart();
+  const { cart, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal, cartOriginalTotal, cartShippingFee, cartCount, loading } = useCart();
   const navigate = useNavigate();
 
   const discount = cartOriginalTotal - cartTotal;
@@ -28,6 +28,16 @@ export default function Cart() {
             <div>
               <h2 className="text-4xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-2 uppercase">Shopping Bag</h2>
               <p className="text-slate-500 font-medium">{cartCount} Items selected for checkout</p>
+            </div>
+
+            {/* Free Shipping Notification */}
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-center gap-4">
+              <div className="bg-emerald-500 text-white rounded-full p-1 flex items-center justify-center">
+                <span className="material-symbols-outlined text-sm">local_shipping</span>
+              </div>
+              <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
+                Delivery is free for orders over 70 AZN.
+              </p>
             </div>
 
             {loading && cart.length === 0 ? (
@@ -133,7 +143,11 @@ export default function Cart() {
                 )}
                 <div className="flex justify-between text-slate-600 dark:text-slate-400 font-medium">
                   <span>Shipping</span>
-                  <span className="text-emerald-500 font-bold uppercase tracking-widest text-[10px]">Free</span>
+                  {cartShippingFee > 0 ? (
+                    <span className="text-slate-900 dark:text-slate-100">₼{cartShippingFee.toFixed(2)}</span>
+                  ) : (
+                    <span className="text-emerald-500 font-bold uppercase tracking-widest text-[10px]">Free</span>
+                  )}
                 </div>
                 <div className="pt-4 border-t border-primary/10 flex justify-between">
                   <span className="text-lg font-black text-slate-900 dark:text-slate-100">Total</span>
@@ -149,7 +163,7 @@ export default function Cart() {
                   Proceed to Checkout
                 </button>
                 <p className="text-[10px] text-center text-slate-400 uppercase tracking-widest px-4">
-                  Free standard shipping on all orders. Secure checkout powered by FOXWEAR.
+                  Delivery is free for orders over 70 AZN. Secure checkout powered by FOXWEAR.
                 </p>
               </div>
             </div>
