@@ -15,7 +15,11 @@ interface CartContextType {
   cartOriginalTotal: number;
   cartShippingFee: number;
   cartCount: number;
+  couponApplied: boolean;
+  couponId: number | null;
   loading: boolean;
+  applyCoupon: (code: string) => Promise<void>;
+  removeCoupon: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -34,6 +38,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [cartOriginalTotal, setCartOriginalTotal] = useState(0);
   const [cartShippingFee, setCartShippingFee] = useState(0);
   const [cartCount, setCartCount] = useState(0);
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponId, setCouponId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
   const refreshCart = useCallback(async () => {
@@ -44,6 +50,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setCartOriginalTotal(0);
       setCartShippingFee(0);
       setCartCount(0);
+      setCouponApplied(false);
+      setCouponId(null);
       return;
     }
 
@@ -59,6 +67,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setCartTotal(cartResponse.data.data.totalPrice);
         setCartOriginalTotal(cartResponse.data.data.totalOriginalPrice);
         setCartShippingFee(cartResponse.data.data.shippingFee);
+        setCouponApplied(cartResponse.data.data.couponApplied);
+        setCouponId(cartResponse.data.data.couponId);
       }
       
       if (countResponse.data.success) {
@@ -127,9 +137,43 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setCart([]);
         setCartTotal(0);
         setCartCount(0);
+        setCouponApplied(false);
+        setCouponId(null);
       }
     } catch (error) {
       console.error('Failed to clear cart:', error);
+    }
+  };
+
+  const applyCoupon = async (code: string) => {
+    try {
+      const response = await cartApi.applyCoupon(code);
+      if (response.data.success) {
+        await refreshCart();
+      } else {
+        // Use the message from the response if success is false
+        throw new Error(response.data.message || 'Coupon could not be applied');
+      }
+    } catch (error: any) {
+      console.error('Failed to apply coupon:', error);
+      // Extract message from axios error response if available
+      const apiMessage = error.response?.data?.message;
+      if (apiMessage) {
+        throw new Error(apiMessage);
+      }
+      // If it's already an Error object from the 'else' block above, it will have the message
+      throw error;
+    }
+  };
+
+  const removeCoupon = async () => {
+    try {
+      const response = await cartApi.removeCoupon();
+      if (response.data.success) {
+        await refreshCart();
+      }
+    } catch (error) {
+      console.error('Failed to remove coupon:', error);
     }
   };
 
@@ -146,7 +190,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       cartOriginalTotal,
       cartShippingFee,
       cartCount,
-      loading
+      couponApplied,
+      couponId,
+      loading,
+      applyCoupon,
+      removeCoupon
     }}>
       {children}
     </CartContext.Provider>

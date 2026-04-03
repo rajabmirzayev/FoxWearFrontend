@@ -234,6 +234,8 @@ export const cartApi = {
   decreaseQuantity: (itemId: number) => api.patch<ApiResponse<CartItemData>>(`/api/v1/carts/decrease/${itemId}`),
   getCount: () => api.get<ApiResponse<number>>('/api/v1/carts/count'),
   removeItem: (itemId: number) => api.delete<ApiResponse<null>>(`/api/v1/carts/${itemId}`),
+  applyCoupon: (code: string) => api.patch<ApiResponse<CartData>>(`/api/v1/carts/coupon/${code}`),
+  removeCoupon: () => api.delete<ApiResponse<CartData>>('/api/v1/carts/coupon'),
 };
 
 export default api;

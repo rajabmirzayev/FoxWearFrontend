@@ -258,4 +258,6 @@ export interface CartData {
   totalOriginalPrice: number;
   totalPrice: number;
   shippingFee: number;
+  couponApplied: boolean;
+  couponId: number | null;
 }

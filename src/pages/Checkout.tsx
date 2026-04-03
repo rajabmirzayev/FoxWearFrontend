@@ -7,7 +7,7 @@ import { addressApi } from '../services/api';
 import { Address } from '../types';
 
 export default function Checkout() {
-  const { cart, cartTotal, cartOriginalTotal, cartShippingFee } = useCart();
+  const { cart, cartTotal, cartOriginalTotal, cartShippingFee, couponApplied, applyCoupon, removeCoupon } = useCart();
   const { checkoutData, updateCheckoutData } = useCheckout();
   const navigate = useNavigate();
   
@@ -18,6 +18,7 @@ export default function Checkout() {
   const [error, setError] = useState<string | null>(null);
   const [couponCode, setCouponCode] = useState('');
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAddresses();
@@ -45,7 +46,7 @@ export default function Checkout() {
   };
 
   const selectAddress = (addr: Address) => {
-    const snapshot = `${addr.title}: ${addr.city}, ${addr.region}, ${addr.street} ${addr.block ? 'Blok ' + addr.block : ''} ${addr.floor ? 'Mərtəbə ' + addr.floor : ''} ${addr.doorNumber ? 'Mənzil ' + addr.doorNumber : ''}`.trim();
+    const snapshot = `${addr.title}: ${addr.city}, ${addr.region}, ${addr.street} ${addr.block ? 'Block ' + addr.block : ''} ${addr.floor ? 'Floor ' + addr.floor : ''} ${addr.doorNumber ? 'Apartment ' + addr.doorNumber : ''}`.trim();
     updateCheckoutData({ 
       addressSnapshot: snapshot,
       latitude: addr.latitude,
@@ -56,17 +57,22 @@ export default function Checkout() {
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
     setIsApplyingCoupon(true);
+    setCouponError(null);
     try {
-      // Placeholder for coupon validation API
-      // const response = await api.get(`/api/v1/coupons/validate?code=${couponCode}`);
-      // if (response.data.success) {
-      //   updateCheckoutData({ couponId: response.data.data.id });
-      // }
-      alert('Coupon feature coming soon!');
-    } catch (err) {
-      console.error('Coupon error:', err);
+      await applyCoupon(couponCode);
+      setCouponCode('');
+    } catch (err: any) {
+      setCouponError(err.message);
     } finally {
       setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = async () => {
+    try {
+      await removeCoupon();
+    } catch (err) {
+      console.error('Failed to remove coupon:', err);
     }
   };
 
@@ -163,7 +169,7 @@ export default function Checkout() {
                       if (addr) selectAddress(addr);
                     }}
                     value={addresses.find(a => {
-                      const snapshot = `${a.title}: ${a.city}, ${a.region}, ${a.street} ${a.block ? 'Blok ' + a.block : ''} ${a.floor ? 'Mərtəbə ' + a.floor : ''} ${a.doorNumber ? 'Mənzil ' + a.doorNumber : ''}`.trim();
+                      const snapshot = `${a.title}: ${a.city}, ${a.region}, ${a.street} ${a.block ? 'Block ' + a.block : ''} ${a.floor ? 'Floor ' + a.floor : ''} ${a.doorNumber ? 'Apartment ' + a.doorNumber : ''}`.trim();
                       return snapshot === checkoutData.addressSnapshot;
                     })?.id || ''}
                   >
@@ -252,27 +258,47 @@ export default function Checkout() {
               {/* Coupon */}
               <div className="space-y-3 mb-8 pt-6 border-t border-primary/10">
                 <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">Coupon Code</label>
-                <div className="flex gap-2">
-                  <input 
-                    type="text"
-                    placeholder="Enter code"
-                    className="flex-1 bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-2 text-[11px] font-medium transition-all placeholder:text-primary/40 dark:text-white"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                  />
-                  <button 
-                    type="button"
-                    onClick={handleApplyCoupon}
-                    disabled={isApplyingCoupon || !couponCode.trim()}
-                    className="px-3 bg-primary text-white dark:text-background-dark font-bold uppercase tracking-widest text-[9px] rounded hover:bg-[#5a4237] dark:hover:bg-white transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
-                  >
-                    {isApplyingCoupon ? '...' : 'Apply'}
-                  </button>
-                </div>
+                {couponApplied ? (
+                  <div className="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-emerald-500 text-sm">check_circle</span>
+                      <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-widest">Coupon Applied</span>
+                    </div>
+                    <button 
+                      onClick={handleRemoveCoupon}
+                      className="text-[10px] font-bold text-red-500 hover:text-red-600 uppercase tracking-widest cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        placeholder="Enter code"
+                        className="flex-1 bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-2 text-[11px] font-medium transition-all placeholder:text-primary/40 dark:text-white"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                      />
+                      <button 
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        disabled={isApplyingCoupon || !couponCode.trim()}
+                        className="px-3 bg-primary text-white dark:text-background-dark font-bold uppercase tracking-widest text-[9px] rounded hover:bg-[#5a4237] dark:hover:bg-white transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
+                      >
+                        {isApplyingCoupon ? '...' : 'Apply'}
+                      </button>
+                    </div>
+                    {couponError && (
+                      <p className="text-[10px] text-red-500 font-medium uppercase tracking-widest">{couponError}</p>
+                    )}
+                  </>
+                )}
               </div>
 
               <p className="text-[10px] text-center text-slate-400 uppercase tracking-widest px-4">
-                Delivery is free for orders over 70 AZN. Secure checkout powered by FOXWEAR.
+                Free shipping on orders over 70 AZN. Secure checkout powered by FOXWEAR.
               </p>
             </div>
           </div>

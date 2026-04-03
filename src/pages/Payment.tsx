@@ -6,7 +6,7 @@ import Header from '../components/Header';
 import { orderApi } from '../services/api';
 
 export default function Payment() {
-  const { cart, cartTotal, cartOriginalTotal, cartShippingFee, clearCart, refreshCart } = useCart();
+  const { cart, cartTotal, cartOriginalTotal, cartShippingFee, couponId, clearCart, refreshCart } = useCart();
   const { checkoutData, updateCheckoutData, resetCheckoutData } = useCheckout();
   const navigate = useNavigate();
   
@@ -77,7 +77,7 @@ export default function Payment() {
         orderNote: checkoutData.orderNote,
         latitude: checkoutData.latitude,
         longitude: checkoutData.longitude,
-        couponId: checkoutData.couponId,
+        couponId: couponId,
         phoneNumber: checkoutData.phoneNumber,
         cardNumber: checkoutData.paymentMethod === 'CARD' ? cardDetails.cardNumber.replace(/\s/g, '') : null,
         expiryMonth: checkoutData.paymentMethod === 'CARD' ? expiryMonth : null,
@@ -319,7 +319,7 @@ export default function Payment() {
                 )}
               </div>
               <p className="text-[10px] text-center text-slate-400 uppercase tracking-widest px-4 mt-8">
-                Delivery is free for orders over 70 AZN. Secure checkout powered by FOXWEAR.
+                Free shipping on orders over 70 AZN. Secure checkout powered by FOXWEAR.
               </p>
             </div>
           </div>
