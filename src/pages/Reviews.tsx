@@ -290,36 +290,41 @@ export default function Reviews() {
 
           {/* Pagination */}
           {allReviewsPage && allReviewsPage.totalPages > 1 && (
-            <div className="mt-16 flex justify-center items-center gap-8">
-              <button 
-                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
-                disabled={currentPage === 0}
-                className="font-label text-[10px] tracking-[0.3em] uppercase text-primary/60 hover:text-primary transition-colors flex items-center gap-2 disabled:opacity-30 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-sm">arrow_back</span> Previous
-              </button>
-              <div className="flex gap-4">
-                {[...Array(allReviewsPage.totalPages)].map((_, i) => (
-                  <span 
+            <div className="mt-20 flex flex-col items-center gap-6">
+              <p className="text-sm text-primary/50 font-label uppercase tracking-widest">
+                Showing {allReviewsPage.content.length} of {allReviewsPage.totalElements} reviews
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                  disabled={allReviewsPage.first}
+                  className="w-10 h-10 flex items-center justify-center border border-primary/10 hover:border-primary transition-colors text-primary/40 disabled:opacity-30 cursor-pointer disabled:cursor-default"
+                >
+                  <span className="material-symbols-outlined">chevron_left</span>
+                </button>
+
+                {Array.from({ length: allReviewsPage.totalPages }).map((_, i) => (
+                  <button
                     key={i}
                     onClick={() => setCurrentPage(i)}
-                    className={`font-label text-[10px] tracking-[0.3em] cursor-pointer transition-colors ${
-                      currentPage === i 
-                        ? 'font-bold text-primary border-b border-primary pb-1' 
-                        : 'text-primary/60 hover:text-primary'
+                    className={`w-10 h-10 flex items-center justify-center border transition-colors font-headline font-bold cursor-pointer ${
+                      currentPage === i
+                        ? 'bg-primary text-background-light border-primary'
+                        : 'border-primary/10 hover:border-primary text-primary/60'
                     }`}
                   >
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
+                    {i + 1}
+                  </button>
                 ))}
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(allReviewsPage.totalPages - 1, prev + 1))}
+                  disabled={allReviewsPage.last}
+                  className="w-10 h-10 flex items-center justify-center border border-primary/10 hover:border-primary transition-colors text-primary/40 disabled:opacity-30 cursor-pointer disabled:cursor-default"
+                >
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </button>
               </div>
-              <button 
-                onClick={() => setCurrentPage(prev => Math.min(allReviewsPage.totalPages - 1, prev + 1))}
-                disabled={currentPage === allReviewsPage.totalPages - 1}
-                className="font-label text-[10px] tracking-[0.3em] uppercase text-primary/60 hover:text-primary transition-colors flex items-center gap-2 disabled:opacity-30 cursor-pointer"
-              >
-                Next <span className="material-symbols-outlined text-sm">arrow_forward</span>
-              </button>
             </div>
           )}
         </section>
