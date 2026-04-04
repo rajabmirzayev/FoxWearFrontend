@@ -31,6 +31,8 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   // Username Check State
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
@@ -528,11 +530,20 @@ export default function Register() {
                         value={formData.password}
                         onChange={handleChange}
                         autoComplete="new-password"
-                        className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white" 
+                        className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white pr-10" 
                         placeholder="Enter secure password" 
                         required 
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-primary/40 hover:text-primary transition-colors focus:outline-none cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-xl">
+                          {showPassword ? 'visibility_off' : 'visibility'}
+                        </span>
+                      </button>
                     </div>
                     <p className="text-[10px] text-primary/60 mt-2 uppercase tracking-tight leading-relaxed">Must include 8+ chars, uppercase, lowercase, and a symbol</p>
                   </label>
@@ -544,11 +555,20 @@ export default function Register() {
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         autoComplete="new-password"
-                        className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white" 
+                        className="w-full bg-transparent border-0 border-b border-primary/20 focus:ring-0 focus:border-primary focus:outline-none px-0 py-3 font-body font-light text-lg transition-all dark:text-white pr-10" 
                         placeholder="Repeat password" 
                         required 
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-primary/40 hover:text-primary transition-colors focus:outline-none cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-xl">
+                          {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                        </span>
+                      </button>
                     </div>
                   </label>
                 </div>
