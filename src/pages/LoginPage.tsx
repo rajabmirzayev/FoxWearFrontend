@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import api, { API_BASE_URL } from '../services/api';
+import api, { API_BASE_URL, userApi } from '../services/api';
 import storage from '../services/storage';
 import { ApiResponse, AuthData } from '../types';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { login } = useAuth();
 
   React.useEffect(() => {
     const token = storage.getItem('accessToken');
@@ -39,21 +41,29 @@ export default function LoginPage() {
       });
 
       if (response.data.success) {
-        storage.setItem('accessToken', response.data.data.accessToken, rememberMe);
-        storage.setItem('refreshToken', response.data.data.refreshToken, rememberMe);
-        storage.setItem('username', response.data.data.username, rememberMe);
-        storage.setItem('role', response.data.data.role, rememberMe);
+        const { accessToken, refreshToken } = response.data.data;
         
-        // Redirection logic:
-        // 1. If there's a 'from' path in location state, go there
-        // 2. Otherwise, if ADMIN go to admin panel, if USER go to home
-        const from = location.state?.from?.pathname;
-        if (from) {
-          navigate(from, { replace: true });
-        } else if (response.data.data.role === 'ADMIN') {
-          navigate('/admin/products', { replace: true });
-        } else {
-          navigate('/', { replace: true });
+        // Fetch full profile to update AuthContext state immediately
+        try {
+          const profileResponse = await userApi.getProfileWithToken(accessToken);
+          if (profileResponse.data.success) {
+            login(accessToken, refreshToken, profileResponse.data.data, rememberMe);
+            
+            // Redirection logic:
+            const from = location.state?.from?.pathname;
+            if (from) {
+              navigate(from, { replace: true });
+            } else if (response.data.data.role === 'ADMIN') {
+              navigate('/admin/products', { replace: true });
+            } else {
+              navigate('/', { replace: true });
+            }
+          } else {
+            setError('Could not retrieve user profile');
+          }
+        } catch (profileErr) {
+          console.error('Error fetching profile after login:', profileErr);
+          setError('An error occurred while fetching your profile');
         }
       } else {
         setError(response.data.message || 'Login failed');
