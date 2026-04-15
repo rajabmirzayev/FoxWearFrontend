@@ -171,6 +171,7 @@ export const bannerApi = {
 
 export const productApi = {
   getMostLiked: () => api.get<ApiResponse<Product[]>>('/api/v1/products/most-liked'),
+  getMyLikedProducts: () => api.get<ApiResponse<Product[]>>('/api/v1/products/my-liked-products'),
   like: (productId: number) => api.post(`/api/v1/likes/${productId}`),
   getAll: (params: any) => api.get<ApiResponse<ProductPage>>('/api/v1/products', { params }),
   getAllAdmin: (params: any) => api.get<ApiResponse<ProductPage>>('/api/admin/products', { params }),

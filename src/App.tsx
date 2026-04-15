@@ -29,6 +29,7 @@ import ResetPassword from './pages/ResetPassword';
 import ChangePassword from './pages/ChangePassword';
 import Addresses from './pages/Addresses';
 import MyReviews from './pages/MyReviews';
+import MyFavorites from './pages/MyFavorites';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -98,6 +99,11 @@ export default function App() {
             <Route path="/my-reviews" element={
               <ProtectedRoute>
                 <MyReviews />
+              </ProtectedRoute>
+            } />
+            <Route path="/my-favorites" element={
+              <ProtectedRoute>
+                <MyFavorites />
               </ProtectedRoute>
             } />
             <Route 

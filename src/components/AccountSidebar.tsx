@@ -8,7 +8,7 @@ const MENU_ITEMS = [
   { label: 'My Reviews', path: '/my-reviews', icon: 'rate_review' },
   { label: 'My Messages', path: '/messages', icon: 'mail' },
   { label: 'My Addresses', path: '/addresses', icon: 'location_on' },
-  { label: 'My Cards', path: '/cards', icon: 'credit_card' },
+  { label: 'My Favorites', path: '/my-favorites', icon: 'favorite' },
 ];
 
 export default function AccountSidebar() {
