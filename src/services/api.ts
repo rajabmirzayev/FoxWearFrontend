@@ -224,6 +224,8 @@ export const addressApi = {
 export const orderApi = {
   create: (data: any) => api.post<ApiResponse<any>>('/api/v1/orders', data),
   getAll: (params: any) => api.get<ApiResponse<any>>('/api/v1/orders', { params }),
+  getMyOrders: () => api.get<ApiResponse<any[]>>('/api/v1/orders/my'),
+  getByOrderNumber: (orderNumber: string) => api.get<ApiResponse<any>>(`/api/v1/orders/${orderNumber}`),
   getById: (id: number) => api.get<ApiResponse<any>>(`/api/v1/orders/${id}`),
 };
 

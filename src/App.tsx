@@ -30,6 +30,9 @@ import ChangePassword from './pages/ChangePassword';
 import Addresses from './pages/Addresses';
 import MyReviews from './pages/MyReviews';
 import MyFavorites from './pages/MyFavorites';
+import MyOrders from './pages/MyOrders';
+import OrderDetail from './pages/OrderDetail';
+import Messages from './pages/Messages';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -89,6 +92,21 @@ export default function App() {
             <Route path="/profile" element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/orders" element={
+              <ProtectedRoute>
+                <MyOrders />
+              </ProtectedRoute>
+            } />
+            <Route path="/orders/:orderNumber" element={
+              <ProtectedRoute>
+                <OrderDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/messages" element={
+              <ProtectedRoute>
+                <Messages />
               </ProtectedRoute>
             } />
             <Route path="/addresses" element={

@@ -101,7 +101,7 @@ export default function Header() {
             <div className="relative" ref={menuRef}>
               <button 
                 onClick={() => setShowMenu(!showMenu)}
-                className={`size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary overflow-hidden border border-primary/10 hover:opacity-70 transition-all cursor-pointer ${window.location.pathname === '/profile' ? 'ring-2 ring-primary' : ''}`}
+                className={`size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary overflow-hidden border border-primary/10 hover:opacity-70 transition-all cursor-pointer ${['/profile', '/orders', '/addresses', '/my-reviews', '/my-favorites', '/change-password', '/messages'].includes(window.location.pathname) ? 'ring-2 ring-primary' : ''}`}
               >
                 {userProfile?.profilePicture ? (
                   <img 
@@ -126,14 +126,55 @@ export default function Header() {
                   <Link 
                     to="/profile"
                     onClick={() => setShowMenu(false)}
-                    className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"
+                    className="w-full text-left px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-lg">person</span>
-                    Profile
+                    Profile Details
                   </Link>
+                  <Link 
+                    to="/orders"
+                    onClick={() => setShowMenu(false)}
+                    className="w-full text-left px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">shopping_basket</span>
+                    My Orders
+                  </Link>
+                  <Link 
+                    to="/my-favorites"
+                    onClick={() => setShowMenu(false)}
+                    className="w-full text-left px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">favorite</span>
+                    My Favorites
+                  </Link>
+                  <Link 
+                    to="/my-reviews"
+                    onClick={() => setShowMenu(false)}
+                    className="w-full text-left px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">rate_review</span>
+                    My Reviews
+                  </Link>
+                  <Link 
+                    to="/messages"
+                    onClick={() => setShowMenu(false)}
+                    className="w-full text-left px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">mail</span>
+                    My Messages
+                  </Link>
+                  <Link 
+                    to="/addresses"
+                    onClick={() => setShowMenu(false)}
+                    className="w-full text-left px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">location_on</span>
+                    My Addresses
+                  </Link>
+                  <div className="h-px bg-primary/5 my-1 mx-2"></div>
                   <button 
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"
+                    className="w-full text-left px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-red-500 hover:bg-primary/5 transition-colors flex items-center gap-3 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-lg">logout</span>
                     Logout
