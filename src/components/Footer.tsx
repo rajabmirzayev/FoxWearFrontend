@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Instagram, Music2 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { bannerApi } from '../services/api';
+import { Banner } from '../types';
 
 export default function Footer() {
   const { theme } = useTheme();
+  const [footerBanner, setFooterBanner] = useState<Banner | null>(null);
+
+  useEffect(() => {
+    const fetchFooterBanner = async () => {
+      try {
+        const response = await bannerApi.getBanner('footer');
+        if (response.data.success && response.data.data) {
+          setFooterBanner(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching footer banner:', error);
+      }
+    };
+    fetchFooterBanner();
+  }, []);
+
   return (
     <footer className="py-20 px-6 lg:px-10 bg-primary text-white/90 dark:text-background-light/90">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -18,14 +37,24 @@ export default function Footer() {
             <h5 className="text-white dark:text-background-light text-xl font-black tracking-tighter uppercase italic">FoxWear</h5>
           </div>
           <p className="text-white/50 dark:text-background-light/50 text-sm leading-relaxed mb-8 font-medium max-w-xs">
-            Redefining premium modern fashion with a focus on quality and minimalist aesthetics.
+            {footerBanner?.title || "Redefining premium modern fashion with a focus on quality and minimalist aesthetics."}
           </p>
           <div className="flex gap-4">
-            <a className="size-10 rounded-full border border-white/20 dark:border-background-light/20 flex items-center justify-center text-white dark:text-background-light hover:bg-white dark:hover:bg-background-light hover:text-primary transition-all" href="#">
-              <span className="material-symbols-outlined text-xl">share</span>
+            <a 
+              className="size-10 rounded-full border border-white/20 dark:border-background-light/20 flex items-center justify-center text-white dark:text-background-light hover:bg-white dark:hover:bg-background-light hover:text-primary transition-all" 
+              href="https://www.instagram.com/foxwear.az/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <Instagram size={20} />
             </a>
-            <a className="size-10 rounded-full border border-white/20 dark:border-background-light/20 flex items-center justify-center text-white dark:text-background-light hover:bg-white dark:hover:bg-background-light hover:text-primary transition-all" href="#">
-              <span className="material-symbols-outlined text-xl">camera</span>
+            <a 
+              className="size-10 rounded-full border border-white/20 dark:border-background-light/20 flex items-center justify-center text-white dark:text-background-light hover:bg-white dark:hover:bg-background-light hover:text-primary transition-all" 
+              href="https://www.tiktok.com/@foxwear.az" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <Music2 size={20} />
             </a>
           </div>
         </div>

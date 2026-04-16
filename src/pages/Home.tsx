@@ -77,7 +77,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const [bannerRes, productsRes] = await Promise.all([
-          bannerApi.getHomeBanner(),
+          bannerApi.getBanner('homepage'),
           productApi.getMostLiked()
         ]);
 

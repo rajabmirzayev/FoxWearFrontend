@@ -166,7 +166,7 @@ export const authApi = {
 };
 
 export const bannerApi = {
-  getHomeBanner: () => api.get<ApiResponse<Banner>>('/api/v1/dynamic/banner?placement=homepage'),
+  getBanner: (placement: string) => api.get<ApiResponse<Banner>>(`/api/v1/dynamic/banner?placement=${placement}`),
 };
 
 export const productApi = {
