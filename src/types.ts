@@ -261,3 +261,21 @@ export interface CartData {
   couponApplied: boolean;
   couponId: number | null;
 }
+
+export interface ContactMessageRequest {
+  userId: number;
+  email: string;
+  fullName: string;
+  subject: string;
+  message: string;
+}
+
+export interface ContactMessage {
+  id: number;
+  userId: number;
+  email: string;
+  fullName: string;
+  subject: string;
+  message: string;
+  answered: boolean;
+}

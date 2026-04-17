@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest, Address, AddressRequest, CartData, CartItemData } from '../types';
+import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest, Address, AddressRequest, CartData, CartItemData, ContactMessageRequest, ContactMessage } from '../types';
 import storage from './storage';
 
 export const API_BASE_URL = 'http://localhost:8080';
@@ -239,6 +239,10 @@ export const cartApi = {
   removeItem: (itemId: number) => api.delete<ApiResponse<null>>(`/api/v1/carts/${itemId}`),
   applyCoupon: (code: string) => api.patch<ApiResponse<CartData>>(`/api/v1/carts/coupon/${code}`),
   removeCoupon: () => api.delete<ApiResponse<CartData>>('/api/v1/carts/coupon'),
+};
+
+export const contactApi = {
+  sendMessage: (data: ContactMessageRequest) => api.post<ApiResponse<ContactMessage>>('/api/v1/messages/contact', data),
 };
 
 export default api;
