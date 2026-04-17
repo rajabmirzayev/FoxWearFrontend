@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { motion } from 'motion/react';
+import { Instagram, Music2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { contactApi } from '../services/api';
 
@@ -173,16 +174,12 @@ export default function Contact() {
             <div className="pt-8 border-t border-primary/10">
               <h3 className="text-xs uppercase tracking-[0.2em] font-bold mb-6 text-primary/50">Follow Our Journey</h3>
               <div className="flex gap-6">
-                <a className="flex items-center gap-2 text-primary hover:opacity-60 transition-colors" href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-                  <span className="material-symbols-outlined">camera</span>
+                <a className="flex items-center gap-2 text-primary hover:opacity-60 transition-colors" href="https://www.instagram.com/foxwear.az/" target="_blank" rel="noopener noreferrer">
+                  <Instagram size={20} />
                   <span className="text-sm font-medium">Instagram</span>
                 </a>
-                <a className="flex items-center gap-2 text-primary hover:opacity-60 transition-colors" href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-                  <span className="material-symbols-outlined">public</span>
-                  <span className="text-sm font-medium">Facebook</span>
-                </a>
-                <a className="flex items-center gap-2 text-primary hover:opacity-60 transition-colors" href="https://tiktok.com" target="_blank" rel="noopener noreferrer">
-                  <span className="material-symbols-outlined">video_library</span>
+                <a className="flex items-center gap-2 text-primary hover:opacity-60 transition-colors" href="https://www.tiktok.com/@foxwear.az" target="_blank" rel="noopener noreferrer">
+                  <Music2 size={20} />
                   <span className="text-sm font-medium">TikTok</span>
                 </a>
               </div>
