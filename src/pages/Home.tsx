@@ -113,10 +113,22 @@ export default function Home() {
   };
 
   const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
-      scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+    if (scrollRef.current && scrollRef.current.children.length > 0) {
+      const container = scrollRef.current;
+      const items = Array.from(container.children) as HTMLElement[];
+      const firstItem = items[0];
+      const secondItem = items[1];
+      
+      // Calculate scroll amount based on the distance between the first two items to account for gap
+      let scrollAmount = 0;
+      if (secondItem) {
+        scrollAmount = secondItem.offsetLeft - firstItem.offsetLeft;
+      } else {
+        scrollAmount = firstItem.offsetWidth + 40; // Fallback
+      }
+
+      const scrollTo = direction === 'left' ? container.scrollLeft - scrollAmount : container.scrollLeft + scrollAmount;
+      container.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
   };
 
