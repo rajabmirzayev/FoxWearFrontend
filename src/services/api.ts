@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest, Address, AddressRequest, CartData, CartItemData, ContactMessageRequest, ContactMessage } from '../types';
+import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest, Address, AddressRequest, CartData, CartItemData, ContactMessageRequest, ContactMessage, UserAdminFilter, UserAdminPage } from '../types';
 import storage from './storage';
 
 export const API_BASE_URL = 'http://localhost:8080';
@@ -211,6 +211,12 @@ export const userApi = {
   updateProfile: (data: any) => api.put<ApiResponse<User>>('/api/v1/users', data),
   getUserById: (id: number) => api.get<ApiResponse<User>>(`/api/v1/users/public/${id}`),
   checkUsernameExists: (username: string) => api.get<ApiResponse<boolean>>(`/api/v1/users/public/username-exists/${username}`),
+  getAllAdmin: (params: UserAdminFilter) => api.get<ApiResponse<UserAdminPage>>('/api/admin/users', { params }),
+  getUserAdminById: (id: number) => api.get<ApiResponse<User>>(`/api/admin/users/${id}`),
+  updateRoleAdmin: (id: number, role: string) => api.patch<ApiResponse<User>>(`/api/admin/users/${id}/role`, null, { params: { role } }),
+  getUserStatuses: () => api.get<ApiResponse<string[]>>(`/api/admin/users/statuses`),
+  getUserRoles: () => api.get<ApiResponse<string[]>>(`/api/admin/users/roles`),
+  getUserGenders: () => api.get<ApiResponse<string[]>>(`/api/admin/users/genders`),
 };
 
 export const addressApi = {

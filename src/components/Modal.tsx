@@ -5,7 +5,8 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  message: string;
+  message?: string;
+  children?: React.ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
   onConfirm: () => void;
@@ -17,6 +18,7 @@ export default function Modal({
   onClose,
   title,
   message,
+  children,
   confirmLabel = 'Yes',
   cancelLabel = 'No',
   onConfirm,
@@ -55,7 +57,8 @@ export default function Modal({
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-primary mb-2">{title}</h3>
-                  <p className="text-primary/70 leading-relaxed">{message}</p>
+                  {message && <p className="text-primary/70 leading-relaxed">{message}</p>}
+                  {children}
                 </div>
               </div>
             </div>
@@ -63,7 +66,7 @@ export default function Modal({
             <div className="flex items-center justify-end gap-3 px-6 py-4 bg-background-soft border-t border-border-subtle">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-primary/60 hover:text-primary transition-colors"
+                className="px-4 py-2 text-sm font-medium text-primary/60 hover:text-primary transition-colors cursor-pointer"
               >
                 {cancelLabel}
               </button>
@@ -72,7 +75,7 @@ export default function Modal({
                   onConfirm();
                   onClose();
                 }}
-                className="px-6 py-2 rounded-lg text-sm font-bold transition-all bg-primary text-white dark:text-background-light hover:bg-primary/90 shadow-lg shadow-primary/20"
+                className="px-6 py-2 rounded-lg text-sm font-bold transition-all bg-primary text-white dark:text-background-light hover:bg-primary/90 shadow-lg shadow-primary/20 cursor-pointer"
               >
                 {confirmLabel}
               </button>

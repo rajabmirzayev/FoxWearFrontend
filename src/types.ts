@@ -149,8 +149,36 @@ export interface User {
   role: string;
   status: string;
   twoFactorEnabled: boolean;
-  emailVerified: boolean;
-  phoneNumberVerified: boolean;
+  isEmailVerified: boolean;
+  isPhoneNumberVerified: boolean;
+  emailVerified?: boolean;
+  phoneNumberVerified?: boolean;
+}
+
+export interface UserAdminFilter {
+  page?: number;
+  size?: number;
+  genders?: ('MALE' | 'FEMALE' | 'UNKNOWN')[];
+  roles?: string[];
+  statuses?: string[];
+  isEmailVerified?: boolean;
+  isPhoneNumberVerified?: boolean;
+  twoFactorEnabled?: boolean;
+  direction?: 'ASC' | 'DESC';
+  searchKeyword?: string;
+  sortBy?: string;
+}
+
+export interface UserAdminPage {
+  totalPages: number;
+  totalElements: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  size: number;
+  number: number;
+  content: User[];
+  empty: boolean;
 }
 
 export interface UserProfile {
