@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest, Address, AddressRequest, CartData, CartItemData, ContactMessageRequest, ContactMessage, UserAdminFilter, UserAdminPage } from '../types';
+import { ApiResponse, AuthData, Banner, Product, Review, ReviewPage, ProductPage, Category, ProductSize, Color, UserProfile, User, RegisterRequest, Address, AddressRequest, CartData, CartItemData, ContactMessageRequest, ContactMessage, UserAdminFilter, UserAdminPage, OrderAdminFilter, OrderAdminPage, Order } from '../types';
 import storage from './storage';
 
 export const API_BASE_URL = 'http://localhost:8080';
@@ -230,9 +230,15 @@ export const addressApi = {
 export const orderApi = {
   create: (data: any) => api.post<ApiResponse<any>>('/api/v1/orders', data),
   getAll: (params: any) => api.get<ApiResponse<any>>('/api/v1/orders', { params }),
+  getAllAdmin: (params: OrderAdminFilter) => api.get<ApiResponse<OrderAdminPage>>('/api/admin/orders', { params }),
   getMyOrders: () => api.get<ApiResponse<any[]>>('/api/v1/orders/my'),
   getByOrderNumber: (orderNumber: string) => api.get<ApiResponse<any>>(`/api/v1/orders/${orderNumber}`),
   getById: (id: number) => api.get<ApiResponse<any>>(`/api/v1/orders/${id}`),
+  getAdminById: (id: number) => api.get<ApiResponse<any>>(`/api/admin/orders/${id}`),
+  getOrderStatuses: () => api.get<ApiResponse<string[]>>('/api/admin/orders/order-status'),
+  getPaymentStatuses: () => api.get<ApiResponse<string[]>>('/api/admin/orders/payment-status'),
+  getPaymentMethods: () => api.get<ApiResponse<string[]>>('/api/admin/orders/payment-method'),
+  updateStatus: (id: number, status: string) => api.patch<ApiResponse<Order>>(`/api/admin/orders/${id}/status`, null, { params: { status } }),
 };
 
 export const cartApi = {

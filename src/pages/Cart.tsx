@@ -66,8 +66,25 @@ export default function Cart() {
             </div>
 
             {loading && cart.length === 0 ? (
-              <div className="flex justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              <div className="flex flex-col border-t border-primary/10 animate-pulse">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="flex flex-col sm:flex-row gap-6 border-b border-primary/10 items-center sm:items-start py-8">
+                    <div className="w-full aspect-[3/4] bg-primary/5 rounded overflow-hidden sm:w-28 shrink-0"></div>
+                    <div className="flex flex-1 flex-col justify-between h-full w-full space-y-4">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-2">
+                          <div className="h-5 w-48 bg-primary/10 rounded"></div>
+                          <div className="h-3 w-32 bg-primary/5 rounded"></div>
+                        </div>
+                        <div className="h-5 w-20 bg-primary/10 rounded"></div>
+                      </div>
+                      <div className="flex justify-between items-end mt-8">
+                        <div className="h-8 w-24 bg-primary/5 rounded-lg"></div>
+                        <div className="h-4 w-16 bg-red-500/5 rounded"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : cart.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 gap-6 bg-primary/5 rounded-xl border border-primary/10">

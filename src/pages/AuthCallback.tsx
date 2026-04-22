@@ -54,10 +54,16 @@ export default function AuthCallback() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-        <h2 className="text-xl font-bold text-primary uppercase tracking-widest">{status}</h2>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">Please wait while we complete your login.</p>
+      <div className="text-center space-y-6 max-w-sm w-full px-6">
+        <div className="space-y-3 animate-pulse">
+          <div className="h-1 bg-primary/10 w-full rounded-full overflow-hidden relative">
+            <div className="absolute inset-y-0 left-0 bg-primary w-1/3 animate-[shimmer_2s_infinite]"></div>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <h2 className="text-xl font-headline font-black text-primary uppercase tracking-widest animate-pulse">{status}</h2>
+          <p className="text-[10px] uppercase font-black tracking-[0.2em] text-slate-400">Security Verification in Progress</p>
+        </div>
       </div>
     </div>
   );

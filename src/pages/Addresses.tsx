@@ -387,8 +387,20 @@ export default function Addresses() {
                 {success && <div className="mb-8 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 text-sm">{success}</div>}
 
                 {loading ? (
-                  <div className="flex justify-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-pulse">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-8 rounded-2xl h-48">
+                        <div className="h-4 w-32 bg-primary/10 rounded mb-4"></div>
+                        <div className="space-y-2">
+                          <div className="h-3 w-3/4 bg-primary/5 rounded"></div>
+                          <div className="h-3 w-1/2 bg-primary/5 rounded"></div>
+                        </div>
+                        <div className="flex gap-4 mt-8">
+                          <div className="h-3 w-12 bg-primary/5 rounded"></div>
+                          <div className="h-3 w-12 bg-red-500/10 rounded"></div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

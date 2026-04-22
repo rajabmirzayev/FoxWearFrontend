@@ -307,3 +307,41 @@ export interface ContactMessage {
   message: string;
   answered: boolean;
 }
+
+export interface Order {
+  id: number;
+  orderNumber: string;
+  userId: number;
+  status: string;
+  totalDiscountPrice: number;
+  shippingFee: number;
+  paymentStatus: string;
+  paymentMethod: string;
+  addressSnapshot: string;
+  phoneNumber: string;
+  latitudeSnapshot: number;
+  longitudeSnapshot: number;
+}
+
+export interface OrderAdminFilter {
+  orderStatuses?: string[];
+  paymentStatuses?: string[];
+  paymentMethods?: string[];
+  sortBy?: 'totalDiscountPrice' | 'createdAt' | 'updatedAt';
+  searchKeyword?: string;
+  page?: number;
+  size?: number;
+  direction?: 'ASC' | 'DESC';
+}
+
+export interface OrderAdminPage {
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  size: number;
+  number: number;
+  content: Order[];
+  empty: boolean;
+}

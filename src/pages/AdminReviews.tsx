@@ -125,13 +125,24 @@ export default function AdminReviews() {
             </thead>
             <tbody className="divide-y divide-border-subtle">
               {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-8 py-12 text-center">
-                    <div className="flex justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-                    </div>
-                  </td>
-                </tr>
+                Array.from({ length: 5 }).map((_, idx) => (
+                  <tr key={idx} className="animate-pulse">
+                    <td className="px-8 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="size-8 rounded-full bg-primary/10"></div>
+                        <div className="space-y-1.5">
+                          <div className="h-4 w-24 bg-primary/10 rounded"></div>
+                          <div className="h-3 w-32 bg-primary/5 rounded"></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-8 py-4"><div className="h-4 w-20 bg-amber-400/10 rounded"></div></td>
+                    <td className="px-8 py-4"><div className="h-4 w-64 bg-primary/5 rounded"></div></td>
+                    <td className="px-8 py-4"><div className="h-4 w-20 bg-primary/5 rounded"></div></td>
+                    <td className="px-8 py-4"><div className="h-6 w-16 bg-primary/10 rounded-full"></div></td>
+                    <td className="px-8 py-4 text-right"><div className="ml-auto size-8 bg-primary/5 rounded-lg"></div></td>
+                  </tr>
+                ))
               ) : filteredReviews.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-8 py-12 text-center text-primary/40">

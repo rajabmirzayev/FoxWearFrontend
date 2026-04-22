@@ -339,11 +339,32 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-[#f7f7f6] dark:bg-stone-950">
+      <div className="bg-[#f7f7f6] dark:bg-stone-950 min-h-screen flex flex-col">
         <Header />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        </div>
+        <main className="flex-1 pt-40 pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            <AccountSidebar />
+            <section className="lg:col-span-9 animate-pulse">
+              <div className="max-w-2xl">
+                <div className="mb-16 space-y-4">
+                  <div className="h-12 w-64 bg-primary/10 rounded-xl"></div>
+                  <div className="h-4 w-96 bg-primary/5 rounded"></div>
+                </div>
+                <div className="size-40 rounded-full bg-primary/5 mb-16"></div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="space-y-2">
+                        <div className="h-3 w-20 bg-primary/5 rounded"></div>
+                        <div className="h-10 w-full bg-primary/5 rounded-lg"></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
         <Footer />
       </div>
     );

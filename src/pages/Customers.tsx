@@ -328,6 +328,7 @@ export default function Customers() {
           <table className="w-full text-left border-collapse">
             <thead className="bg-background-soft border-b border-border-subtle sticky top-0 z-10">
               <tr>
+                <th className="px-8 py-4 text-xs font-bold text-primary uppercase tracking-widest">ID</th>
                 <th className="px-8 py-4 text-xs font-bold text-primary uppercase tracking-widest">User</th>
                 <th className="px-8 py-4 text-xs font-bold text-primary uppercase tracking-widest">Contact Info</th>
                 <th className="px-8 py-4 text-xs font-bold text-primary uppercase tracking-widest">Status</th>
@@ -339,6 +340,7 @@ export default function Customers() {
               {loading ? (
                 Array.from({ length: 5 }).map((_, idx) => (
                   <tr key={idx} className="animate-pulse">
+                    <td className="px-8 py-4"><div className="h-4 w-8 bg-primary/5 rounded"></div></td>
                     <td className="px-8 py-4">
                       <div className="flex items-center gap-4">
                         <div className="size-10 rounded-full bg-primary/10"></div>
@@ -361,7 +363,7 @@ export default function Customers() {
                 ))
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-8 py-12 text-center text-primary/40">
+                  <td colSpan={6} className="px-8 py-12 text-center text-primary/40">
                     <span className="material-symbols-outlined text-4xl p-6 bg-primary/5 rounded-full mb-4 inline-block">person_off</span>
                     <p className="text-xs font-bold uppercase tracking-widest">No customers found</p>
                   </td>
@@ -369,6 +371,9 @@ export default function Customers() {
               ) : (
                 users.map((user) => (
                   <tr key={user.id} className="hover:bg-background-soft transition-colors group">
+                    <td className="px-8 py-4 text-sm text-primary/60 font-mono">
+                      #{user.id}
+                    </td>
                     <td className="px-8 py-4">
                       <div className="flex items-center gap-4">
                         <div className="size-10 rounded-full overflow-hidden bg-primary/10 border border-primary/5">
@@ -446,7 +451,7 @@ export default function Customers() {
         {/* Pagination */}
         {pageInfo && (
           <div className="p-6 border-t border-border-subtle flex items-center justify-between">
-            <p className="text-xs font-bold text-primary/40 uppercase tracking-widest">
+            <p className="text-xs font-bold text-primary/60 uppercase tracking-widest">
               Showing {users.length} of {pageInfo.totalElements} Users
             </p>
             <div className="flex items-center gap-2">
@@ -463,7 +468,7 @@ export default function Customers() {
                   <button 
                     key={i}
                     onClick={() => handlePageChange(i)}
-                    className={`w-9 h-9 rounded-lg font-bold text-xs transition-all ${filters.page === i ? 'bg-primary text-white' : 'hover:bg-primary/5 text-primary'}`}
+                    className={`w-9 h-9 rounded-lg font-bold text-xs transition-all cursor-pointer ${filters.page === i ? 'bg-primary text-white dark:text-stone-900' : 'hover:bg-primary/5 text-primary'}`}
                   >
                     {i + 1}
                   </button>

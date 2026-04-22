@@ -95,8 +95,25 @@ export default function OrderDetail() {
     return (
       <div className="bg-[#f7f7f6] dark:bg-stone-950 min-h-screen flex flex-col">
         <Header />
-        <main className="flex-1 pt-40 pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <main className="flex-1 pt-40 pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            <div className="hidden lg:block lg:col-span-3 space-y-4">
+              <div className="h-10 w-full bg-primary/5 animate-pulse rounded-xl"></div>
+              <div className="h-10 w-3/4 bg-primary/5 animate-pulse rounded-xl"></div>
+              <div className="h-10 w-1/2 bg-primary/5 animate-pulse rounded-xl"></div>
+            </div>
+            <div className="lg:col-span-9 space-y-12">
+              <div className="space-y-4">
+                <div className="h-4 w-32 bg-primary/5 animate-pulse rounded"></div>
+                <div className="h-12 w-64 bg-primary/10 animate-pulse rounded-xl"></div>
+              </div>
+              <div className="h-32 w-full bg-primary/5 animate-pulse rounded-3xl"></div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 h-64 bg-primary/5 animate-pulse rounded-2xl"></div>
+                <div className="h-64 bg-primary/5 animate-pulse rounded-2xl"></div>
+              </div>
+            </div>
+          </div>
         </main>
         <Footer />
       </div>

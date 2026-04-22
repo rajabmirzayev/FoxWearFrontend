@@ -105,8 +105,20 @@ export default function MyReviews() {
             </header>
 
             {loading ? (
-              <div className="flex justify-center py-24">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              <div className="space-y-24 animate-pulse">
+                {[1, 2].map(section => (
+                  <section key={section}>
+                    <div className="flex items-center gap-6 mb-12">
+                      <div className="h-8 w-48 bg-primary/10 rounded-xl"></div>
+                      <div className="h-px flex-1 bg-primary/5"></div>
+                    </div>
+                    <div className="space-y-6">
+                      {[1, 2].map(i => (
+                        <div key={i} className="h-40 w-full bg-primary/5 rounded-2xl"></div>
+                      ))}
+                    </div>
+                  </section>
+                ))}
               </div>
             ) : (
               <div className="space-y-24">

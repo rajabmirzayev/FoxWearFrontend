@@ -44,8 +44,17 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-background-light dark:bg-background-dark p-8 space-y-8">
+        <div className="flex justify-between items-center animate-pulse">
+          <div className="h-10 w-48 bg-primary/10 rounded-xl"></div>
+          <div className="h-10 w-32 bg-primary/5 rounded-xl"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-pulse">
+          <div className="h-64 bg-primary/5 rounded-3xl"></div>
+          <div className="h-64 bg-primary/5 rounded-3xl"></div>
+          <div className="h-64 bg-primary/5 rounded-3xl"></div>
+        </div>
+        <div className="h-96 w-full bg-primary/5 rounded-3xl animate-pulse"></div>
       </div>
     );
   }
