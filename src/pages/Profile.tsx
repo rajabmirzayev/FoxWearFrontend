@@ -13,7 +13,7 @@ const MONTHS = [
 ];
 
 export default function Profile() {
-  const { user, refreshProfile } = useAuth();
+  const { userProfile, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const calendarRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +41,8 @@ export default function Profile() {
     phoneNumber: '',
     birthDate: '',
     gender: 'UNKNOWN',
-    profilePicture: ''
+    profilePicture: '',
+    role: ''
   });
 
   const [verificationStatus, setVerificationStatus] = useState({
@@ -51,7 +52,11 @@ export default function Profile() {
 
   // Verification State
   const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [showPhoneVerifyModal, setShowPhoneVerifyModal] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [phoneVerifying, setPhoneVerifying] = useState(false);
+  const [codeSent, setCodeSent] = useState(false);
 
   const formatPhoneNumber = (value: string) => {
     if (!value) return '';
@@ -116,7 +121,8 @@ export default function Profile() {
             phoneNumber: formatPhoneNumber(profile.phoneNumber || ''),
             birthDate: birthDate,
             gender: profile.gender || 'UNKNOWN',
-            profilePicture: profile.profilePicture || ''
+            profilePicture: profile.profilePicture || '',
+            role: profile.role || ''
           });
 
           setVerificationStatus({
@@ -520,6 +526,14 @@ export default function Profile() {
                       required
                     />
                   </div>
+                  {/* Role */}
+                  <div className="space-y-2 group">
+                    <label className="block font-headline font-bold uppercase tracking-[0.2em] text-[10px] text-primary/60 transition-colors">Account Role</label>
+                    <div className="w-full border-0 border-b border-outline-variant px-0 py-3 font-body font-bold text-lg text-primary dark:text-white flex items-center gap-2 select-none">
+                       <span className="material-symbols-outlined text-lg text-primary/40">verified</span>
+                       <span className="tracking-tighter">{formData.role}</span>
+                    </div>
+                  </div>
                   {/* Phone Number */}
                   <div className="space-y-2 group">
                     <div className="flex items-center justify-between">
@@ -528,7 +542,7 @@ export default function Profile() {
                         <button 
                           type="button" 
                           className="text-[9px] font-headline font-black uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors flex items-center gap-1 cursor-pointer"
-                          onClick={() => console.log('Verify phone')}
+                          onClick={() => setShowPhoneVerifyModal(true)}
                         >
                           <span className="material-symbols-outlined text-[12px]">verified_user</span>
                           Verify
