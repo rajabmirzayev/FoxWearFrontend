@@ -98,6 +98,7 @@ export default function App() {
               </ProtectedRoute>
             } />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/oauth2/callback" element={<AuthCallback />} />
             <Route path="/profile" element={
               <ProtectedRoute>
                 <Profile />
