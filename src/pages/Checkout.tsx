@@ -32,9 +32,13 @@ export default function Checkout() {
         setAddresses(addrList);
         
         // Set default address if available and not already set
-        if (!checkoutData.addressSnapshot && addrList.length > 0) {
-          const defaultAddr = addrList.find(a => a.isDefault) || addrList[0];
-          selectAddress(defaultAddr);
+        if (addrList.length > 0) {
+          const selectedAddr = addrList.find(a => {
+            const snapshot = `${a.title}: ${a.city}, ${a.region}, ${a.street} ${a.block ? 'Block ' + a.block : ''} ${a.floor ? 'Floor ' + a.floor : ''} ${a.doorNumber ? 'Apartment ' + a.doorNumber : ''}`.trim();
+            return snapshot === checkoutData.addressSnapshot;
+          }) || addrList.find(a => a.isDefault) || addrList[0];
+          
+          if (selectedAddr) selectAddress(selectedAddr);
         }
       }
     } catch (err) {
@@ -45,14 +49,34 @@ export default function Checkout() {
     }
   };
 
-  const selectAddress = (addr: Address) => {
-    const snapshot = `${addr.title}: ${addr.city}, ${addr.region}, ${addr.street} ${addr.block ? 'Block ' + addr.block : ''} ${addr.floor ? 'Floor ' + addr.floor : ''} ${addr.doorNumber ? 'Apartment ' + addr.doorNumber : ''}`.trim();
-    updateCheckoutData({ 
-      addressSnapshot: snapshot,
-      latitude: addr.latitude,
-      longitude: addr.longitude
-    });
+  const selectAddress = async (addr: Address) => {
+    try {
+      // Fetch full address details to ensure we have latitude and longitude
+      const response = await addressApi.getById(addr.id);
+      const fullAddr = response.data.success ? response.data.data : addr;
+      
+      const snapshot = `${fullAddr.title}: ${fullAddr.city}, ${fullAddr.region}, ${fullAddr.street} ${fullAddr.block ? 'Block ' + fullAddr.block : ''} ${fullAddr.floor ? 'Floor ' + fullAddr.floor : ''} ${fullAddr.doorNumber ? 'Apartment ' + fullAddr.doorNumber : ''}`.trim();
+      updateCheckoutData({ 
+        addressSnapshot: snapshot,
+        latitude: fullAddr.latitude,
+        longitude: fullAddr.longitude
+      });
+    } catch (err) {
+      console.error('Error fetching address details:', err);
+      // Fallback to the partial address if fetching fails
+      const snapshot = `${addr.title}: ${addr.city}, ${addr.region}, ${addr.street} ${addr.block ? 'Block ' + addr.block : ''} ${addr.floor ? 'Floor ' + addr.floor : ''} ${addr.doorNumber ? 'Apartment ' + addr.doorNumber : ''}`.trim();
+      updateCheckoutData({ 
+        addressSnapshot: snapshot,
+        latitude: addr.latitude,
+        longitude: addr.longitude
+      });
+    }
   };
+
+  const currentAddressId = addresses.find(a => {
+    const snapshot = `${a.title}: ${a.city}, ${a.region}, ${a.street} ${a.block ? 'Block ' + a.block : ''} ${a.floor ? 'Floor ' + a.floor : ''} ${a.doorNumber ? 'Apartment ' + a.doorNumber : ''}`.trim();
+    return snapshot === checkoutData.addressSnapshot;
+  })?.id || '';
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -123,6 +147,11 @@ export default function Checkout() {
       return;
     }
 
+    if (checkoutData.latitude === null || checkoutData.longitude === null) {
+      setError('Selected address is missing location data. Please try re-selecting or use another address.');
+      return;
+    }
+
     navigate('/payment');
   };
 
@@ -168,10 +197,7 @@ export default function Checkout() {
                       const addr = addresses.find(a => a.id === parseInt(e.target.value));
                       if (addr) selectAddress(addr);
                     }}
-                    value={addresses.find(a => {
-                      const snapshot = `${a.title}: ${a.city}, ${a.region}, ${a.street} ${a.block ? 'Block ' + a.block : ''} ${a.floor ? 'Floor ' + a.floor : ''} ${a.doorNumber ? 'Apartment ' + a.doorNumber : ''}`.trim();
-                      return snapshot === checkoutData.addressSnapshot;
-                    })?.id || ''}
+                    value={currentAddressId}
                   >
                     <option value="" disabled className="bg-white dark:bg-stone-900">Choose an address</option>
                     {addresses.map(addr => (
