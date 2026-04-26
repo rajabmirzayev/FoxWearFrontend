@@ -27,6 +27,17 @@ export default function AuthCallback() {
             login(token, refreshToken, profile, true);
             
             setStatus('Login successful!');
+            
+            // Redirect based on role
+            setTimeout(() => {
+              if (profile.role === 'ADMIN') {
+                navigate('/admin/dashboard', { replace: true });
+              } else if (profile.role === 'COURIER') {
+                navigate('/courier/dashboard', { replace: true });
+              } else {
+                navigate('/', { replace: true });
+              }
+            }, 500);
           } else {
             throw new Error('Failed to fetch profile');
           }
@@ -42,11 +53,6 @@ export default function AuthCallback() {
         setTimeout(() => navigate('/login', { replace: true }), 2000);
         return;
       }
-      
-      // Redirect to home page
-      setTimeout(() => {
-        navigate('/', { replace: true });
-      }, 500);
     };
 
     completeAuth();

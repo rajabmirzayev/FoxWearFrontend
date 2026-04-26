@@ -92,6 +92,12 @@
   }
 }
 
+@keyframes pulse {
+  0% { opacity: 0.5; scale: 0.8; }
+  50% { opacity: 1; scale: 1.2; }
+  100% { opacity: 0.5; scale: 0.8; }
+}
+
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
 }
@@ -159,12 +165,36 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-.dark input:-webkit-autofill,
-.dark input:-webkit-autofill:hover,
-.dark input:-webkit-autofill:focus,
-.dark input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #1e293b inset !important;
-  -webkit-text-fill-color: #f1f5f9 !important;
+/* Leaflet Routing Machine overrides */
+.leaflet-routing-container {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(73, 53, 44, 0.1) !important;
+    border-radius: 1.5rem !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    color: #1c1816 !important;
+    font-family: inherit !important;
+    width: 320px !important;
+    margin-top: 1.5rem !important;
+    margin-right: 1.5rem !important;
+}
+
+.leaflet-routing-container h2,
+.leaflet-routing-container h3,
+.leaflet-routing-container span,
+.leaflet-routing-container p,
+.leaflet-routing-container td {
+    color: #1c1816 !important;
+    font-weight: 700 !important;
+}
+
+.leaflet-routing-alt tr:hover {
+    background-color: rgba(73, 53, 44, 0.05) !important;
+}
+
+.leaflet-routing-icon {
+    filter: brightness(0.2) !important;
 }
 
 /* Hide browser-specific password reveal and clear icons */

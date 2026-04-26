@@ -33,12 +33,19 @@ import MyFavorites from './pages/MyFavorites';
 import MyOrders from './pages/MyOrders';
 import OrderDetail from './pages/OrderDetail';
 import Messages from './pages/Messages';
+import CourierDashboard from './pages/CourierDashboard';
+import CourierReadyOrders from './pages/CourierReadyOrders';
+import CourierOrderDetails from './pages/CourierOrderDetails';
+import CourierActiveDeliveries from './pages/CourierActiveDeliveries';
+import CourierNavigation from './pages/CourierNavigation';
+import CourierDeliveredOrders from './pages/CourierDeliveredOrders';
+import CourierLayout from './components/CourierLayout';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Payment from './pages/Payment';
 
-function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
+function ProtectedRoute({ children, requireAdmin = false, requireCourier = false }: { children: React.ReactNode, requireAdmin?: boolean, requireCourier?: boolean }) {
   const { isLoggedIn, userProfile, loading } = useAuth();
   const location = useLocation();
 
@@ -64,6 +71,10 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
   }
 
   if (requireAdmin && userProfile?.role !== 'ADMIN') {
+    return <Navigate to="/" replace />;
+  }
+
+  if (requireCourier && userProfile?.role !== 'COURIER') {
     return <Navigate to="/" replace />;
   }
 
@@ -122,6 +133,21 @@ export default function App() {
             <Route path="/addresses" element={
               <ProtectedRoute>
                 <Addresses />
+              </ProtectedRoute>
+            } />
+            <Route path="/courier/*" element={
+              <ProtectedRoute requireCourier>
+                <CourierLayout>
+                  <Routes>
+                    <Route path="dashboard" element={<CourierDashboard />} />
+                    <Route path="ready-orders" element={<CourierReadyOrders />} />
+                    <Route path="ready-orders/:orderId" element={<CourierOrderDetails />} />
+                    <Route path="active-deliveries" element={<CourierActiveDeliveries />} />
+                    <Route path="delivered-orders" element={<CourierDeliveredOrders />} />
+                    <Route path="navigation/:orderId" element={<CourierNavigation />} />
+                    <Route path="*" element={<Navigate to="dashboard" replace />} />
+                  </Routes>
+                </CourierLayout>
               </ProtectedRoute>
             } />
             <Route path="/my-reviews" element={

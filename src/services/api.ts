@@ -235,6 +235,14 @@ export const orderApi = {
   getByOrderNumber: (orderNumber: string) => api.get<ApiResponse<any>>(`/api/v1/orders/${orderNumber}`),
   getById: (id: number) => api.get<ApiResponse<any>>(`/api/v1/orders/${id}`),
   getAdminById: (id: number) => api.get<ApiResponse<any>>(`/api/admin/orders/${id}`),
+  // Courier Endpoints
+  getReadyOrders: () => api.get<ApiResponse<any[]>>('/api/v1/couriers/ready'),
+  getCourierOrderDetails: (orderId: number | string) => api.get<ApiResponse<any>>(`/api/v1/couriers/${orderId}`),
+  assignOrder: (orderId: number | string) => api.patch<ApiResponse<any>>(`/api/v1/couriers/assign/${orderId}`),
+  getActiveDeliveries: () => api.get<ApiResponse<any[]>>('/api/v1/couriers'),
+  deliverOrder: (orderId: number | string) => api.patch<ApiResponse<any>>(`/api/v1/couriers/deliver/${orderId}`),
+  getMyDeliveredOrders: (page = 0, size = 10) => api.get<ApiResponse<any>>(`/api/v1/couriers/my-delivered?page=${page}&size=${size}`),
+  
   getOrderStatuses: () => api.get<ApiResponse<string[]>>('/api/admin/orders/order-status'),
   getPaymentStatuses: () => api.get<ApiResponse<string[]>>('/api/admin/orders/payment-status'),
   getPaymentMethods: () => api.get<ApiResponse<string[]>>('/api/admin/orders/payment-method'),

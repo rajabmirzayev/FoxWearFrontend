@@ -15,7 +15,7 @@ export interface AuthData {
   accessToken: string;
   refreshToken: string;
   username: string;
-  role: 'USER' | 'ADMIN';
+  role: 'USER' | 'ADMIN' | 'COURIER';
 }
 
 export interface ProductSize {
@@ -191,7 +191,7 @@ export interface UserProfile {
   gender: 'MALE' | 'FEMALE' | 'UNKNOWN';
   birthDate: string;
   profilePicture: string | null;
-  role: 'USER' | 'ADMIN';
+  role: 'USER' | 'ADMIN' | 'COURIER';
   status: string;
   emailVerified: boolean;
   phoneNumberVerified: boolean;
